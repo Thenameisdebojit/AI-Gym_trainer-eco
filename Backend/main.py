@@ -1,13 +1,19 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from config.database import engine, Base
 from routes import workout, diet, chatbot, behavior
-from routes import recommendation
-
-app.include_router(recommendation.router)
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="AI Fitness Assistant")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(workout.router)
 app.include_router(diet.router)
