@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "FitAI",
+    "slug": "fitai-assistant",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A0A0F"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fitai.assistant",
+      "infoPlist": {
+        "NSCameraUsageDescription": "FitAI uses your camera for real-time pose detection and exercise tracking.",
+        "NSMicrophoneUsageDescription": "FitAI uses the microphone for voice feedback during workouts."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0A0A0F"
+      },
+      "package": "com.fitai.assistant",
+      "permissions": ["CAMERA", "RECORD_AUDIO"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "FitAI needs camera access for real-time AI pose detection."
+        }
+      ]
+    ],
+    "scheme": "fitai",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
