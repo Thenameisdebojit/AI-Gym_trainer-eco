@@ -23,10 +23,15 @@ ChartJS.register(
   Legend
 );
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "";
+
+const DIFFICULTY_COLORS = { beginner: "#22c55e", intermediate: "#f59e0b", advanced: "#ef4444" };
+const CATEGORY_ICONS = { freehand: "🤸", gym: "🏋️", calisthenics: "💪" };
 
 export default function Home() {
   const [stats, setStats] = useState(null);
+  const [exercises, setExercises] = useState([]);
+  const [activeCategory, setActiveCategory] = useState("all");
   const [diet, setDiet] = useState(null);
   const [chatMsg, setChatMsg] = useState("");
   const [chatReply, setChatReply] = useState("");
@@ -36,11 +41,12 @@ export default function Home() {
 
   useEffect(() => {
     fetchStats();
+    fetchExercises();
   }, []);
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/workout/stats`);
+      const res = await axios.get(`/api/workout/stats`);
       setStats(res.data);
     } catch (e) {
       setError("Backend not reachable. Make sure the API server is running.");
@@ -49,11 +55,18 @@ export default function Home() {
     }
   };
 
+  const fetchExercises = async () => {
+    try {
+      const res = await axios.get(`/api/recommendations`);
+      setExercises(res.data);
+    } catch (e) {
+      console.error("Could not load exercises:", e);
+    }
+  };
+
   const getDiet = async () => {
     try {
-      const res = await axios.post(`${API_BASE}/diet/`, null, {
-        params: { weight: 70, height: 170, goal: "gain" },
-      });
+      const res = await axios.post(`/api/diet`, { weight: 70, height: 170, goal: "gain" });
       setDiet(res.data);
     } catch (e) {
       alert("Diet service error: " + (e.message || "Unknown error"));
@@ -63,9 +76,7 @@ export default function Home() {
   const sendChat = async () => {
     if (!chatMsg) return;
     try {
-      const res = await axios.post(`${API_BASE}/chat/`, null, {
-        params: { message: chatMsg },
-      });
+      const res = await axios.post(`/api/chat`, { message: chatMsg });
       setChatReply(res.data.response);
     } catch (e) {
       alert("Chat error: " + (e.message || "Unknown error"));
@@ -74,9 +85,7 @@ export default function Home() {
 
   const checkBehavior = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/behavior/`, {
-        params: { days_missed: 2, consistency: 60 },
-      });
+      const res = await axios.get(`/api/behavior?days_missed=2&consistency=60`);
       setBehavior(res.data.prediction);
     } catch (e) {
       alert("Behavior check error: " + (e.message || "Unknown error"));
@@ -126,6 +135,66 @@ export default function Home() {
           <div style={{ fontSize: "0.875rem", opacity: 0.8 }}>Last Workout</div>
           <div style={{ fontSize: "2rem", fontWeight: "bold" }}>Curl</div>
         </div>
+      </div>
+
+      {/* Exercises */}
+      <div style={{ background: "white", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "1.5rem", marginBottom: "2rem" }}>
+        <h2 style={{ marginBottom: "1rem" }}>Exercises</h2>
+        <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", flexWrap: "wrap" }}>
+          {["all", "freehand", "gym", "calisthenics"].map(cat => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              style={{
+                padding: "0.35rem 1rem",
+                borderRadius: "999px",
+                border: "1px solid #d1d5db",
+                cursor: "pointer",
+                fontWeight: activeCategory === cat ? "700" : "400",
+                background: activeCategory === cat ? "#3b82f6" : "#f9fafb",
+                color: activeCategory === cat ? "white" : "#374151",
+              }}
+            >
+              {cat === "all" ? "All" : `${CATEGORY_ICONS[cat]} ${cat.charAt(0).toUpperCase() + cat.slice(1)}`}
+            </button>
+          ))}
+        </div>
+        {exercises.length === 0 ? (
+          <p style={{ color: "#9ca3af" }}>Loading exercises...</p>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem" }}>
+            {exercises
+              .filter(ex => activeCategory === "all" || ex.category === activeCategory)
+              .map(ex => (
+                <div key={ex.id} style={{
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "8px",
+                  padding: "1rem",
+                  background: "#fafafa",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.4rem",
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "1.1rem" }}>{CATEGORY_ICONS[ex.category] || "🏃"}</span>
+                    <span style={{
+                      fontSize: "0.7rem",
+                      fontWeight: "600",
+                      padding: "0.1rem 0.5rem",
+                      borderRadius: "999px",
+                      background: DIFFICULTY_COLORS[ex.difficulty] + "22",
+                      color: DIFFICULTY_COLORS[ex.difficulty],
+                    }}>{ex.difficulty}</span>
+                  </div>
+                  <div style={{ fontWeight: "700", fontSize: "0.95rem" }}>{ex.name}</div>
+                  <div style={{ color: "#6b7280", fontSize: "0.8rem" }}>{ex.description}</div>
+                  <div style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
+                    {ex.targetMuscles?.join(", ")} · {ex.caloriesPerRep} cal/rep
+                  </div>
+                </div>
+              ))}
+          </div>
+        )}
       </div>
 
       {/* Chart */}
