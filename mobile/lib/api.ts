@@ -12,10 +12,7 @@ const getBaseUrl = (): string => {
 
 export const API_BASE = getBaseUrl();
 
-export async function apiRequest<T>(
-  path: string,
-  options?: RequestInit
-): Promise<T> {
+export async function apiRequest<T>(path: string, options?: RequestInit): Promise<T> {
   const url = `${API_BASE}${path}`;
   const res = await fetch(url, {
     headers: { "Content-Type": "application/json", ...options?.headers },
@@ -45,12 +42,41 @@ export interface PoseDetectResult {
 export interface ExerciseData {
   id: string;
   name: string;
+  domain: string;
   category: string;
-  subcategory: string;
+  equipment: string[];
+  movement_pattern: string;
+  muscle_groups: string[];
   difficulty: string;
-  targetMuscles: string[];
+  is_compound: boolean;
+  calories_per_rep: number;
+}
+
+export interface GeneratedWorkoutExercise {
+  id: string;
+  name: string;
+  category: string;
+  sets: number;
+  reps: number;
+  muscle_groups: string[];
+}
+
+export interface GeneratedWorkout {
+  name: string;
   description: string;
-  caloriesPerRep: number;
+  goal: string;
+  level: string;
+  equipment: string;
+  duration_minutes: number;
+  estimated_calories: number;
+  exercises: GeneratedWorkoutExercise[];
+}
+
+export interface WorkoutGenerateParams {
+  goal: string;
+  equipment: string;
+  level: string;
+  duration_minutes?: number;
 }
 
 export const fetchStats = (): Promise<WorkoutStats> =>
@@ -76,3 +102,23 @@ export const fetchDiet = (weight: number, height: number, goal: string) =>
 
 export const sendChatMessage = (message: string) =>
   apiRequest<{ response: string }>(`/chat/?message=${encodeURIComponent(message)}`, { method: "POST" });
+
+export const generateWorkout = (params: WorkoutGenerateParams): Promise<GeneratedWorkout> =>
+  apiRequest<GeneratedWorkout>("/workout/generate", {
+    method: "POST",
+    body: JSON.stringify({
+      goal: params.goal,
+      equipment: params.equipment,
+      level: params.level,
+      duration_minutes: params.duration_minutes ?? 30,
+    }),
+  });
+
+export const fetchExercises = (domain?: string): Promise<ExerciseData[]> =>
+  apiRequest<ExerciseData[]>(domain ? `/exercises?domain=${domain}` : "/exercises");
+
+export const calculateCalories = (weight_kg: number, met_value: number, duration_minutes: number) =>
+  apiRequest<{ calories_burned: number }>("/calories/calculate", {
+    method: "POST",
+    body: JSON.stringify({ weight_kg, met_value, duration_minutes }),
+  });

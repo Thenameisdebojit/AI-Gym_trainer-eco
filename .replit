@@ -59,7 +59,7 @@ outputType = "console"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd mobile && EXPO_NO_TELEMETRY=1 npx expo start --port 8080 --web"
+args = "cd mobile && EXPO_NO_TELEMETRY=1 ./node_modules/.bin/expo start --web --port 8080"
 waitForPort = 8080
 
 [[ports]]

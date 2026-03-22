@@ -13,40 +13,42 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { COLORS, FONTS, SIZES, RADIUS, SPACING } from "@/constants/theme";
-import { EXERCISES, ExerciseCategory, getCategoryColor } from "@/constants/exercises";
+import {
+  EXERCISES,
+  ExerciseCategory,
+  getCategoryColor,
+  getCategoryIcon,
+  getCategoryLabel,
+  DifficultyLevel,
+} from "@/constants/exercises";
 
-const CATEGORIES = [
-  {
-    id: "freehand" as ExerciseCategory,
-    label: "Freehand",
-    subtitle: "No equipment needed",
-    icon: "body-outline",
-    color: COLORS.primary,
-    count: EXERCISES.filter(e => e.category === "freehand").length,
-  },
-  {
-    id: "gym" as ExerciseCategory,
-    label: "Gym",
-    subtitle: "Machine & weights",
-    icon: "barbell-outline",
-    color: COLORS.secondary,
-    count: EXERCISES.filter(e => e.category === "gym").length,
-  },
-  {
-    id: "calisthenics" as ExerciseCategory,
-    label: "Calisthenics",
-    subtitle: "Advanced bodyweight",
-    icon: "fitness-outline",
-    color: COLORS.purple,
-    count: EXERCISES.filter(e => e.category === "calisthenics").length,
-  },
+const ALL_CATEGORIES: ExerciseCategory[] = [
+  "gym",
+  "freehand",
+  "calisthenics",
+  "martial_arts",
+  "yoga",
+  "cardio",
+  "rehab",
 ];
 
-const DIFFICULTY_COLORS = {
+const CATEGORY_SUBTITLES: Record<ExerciseCategory, string> = {
+  gym: "Machines & weights",
+  freehand: "No equipment needed",
+  calisthenics: "Advanced bodyweight skills",
+  martial_arts: "Boxing, MMA & Kickboxing",
+  yoga: "Flexibility & mindfulness",
+  cardio: "HIIT & conditioning",
+  rehab: "Recovery & balance",
+};
+
+const DIFFICULTY_COLORS: Record<DifficultyLevel, string> = {
   beginner: COLORS.primary,
   intermediate: COLORS.amber,
   advanced: COLORS.secondary,
 };
+
+const MUSCLE_FILTERS = ["Chest", "Back", "Legs", "Shoulders", "Arms", "Core", "Glutes", "Calves"];
 
 export default function ExploreScreen() {
   const insets = useSafeAreaInsets();
@@ -56,25 +58,26 @@ export default function ExploreScreen() {
   const filtered = search.length > 1
     ? EXERCISES.filter(e =>
         e.name.toLowerCase().includes(search.toLowerCase()) ||
-        e.targetMuscles.some(m => m.toLowerCase().includes(search.toLowerCase()))
+        e.muscle_groups.some(m => m.toLowerCase().includes(search.toLowerCase())) ||
+        e.category.toLowerCase().includes(search.toLowerCase()) ||
+        e.subcategory.toLowerCase().includes(search.toLowerCase())
       )
     : [];
 
   return (
     <View style={[styles.container, { paddingTop: topPad }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Header */}
         <Animated.View entering={FadeInDown.delay(0).springify()} style={styles.header}>
           <Text style={styles.title}>Explore</Text>
           <Text style={styles.subtitle}>Find your perfect workout</Text>
         </Animated.View>
 
         {/* Search */}
-        <Animated.View entering={FadeInDown.delay(100).springify()} style={styles.searchWrapper}>
+        <Animated.View entering={FadeInDown.delay(80).springify()} style={styles.searchWrapper}>
           <Ionicons name="search-outline" size={18} color={COLORS.textMuted} style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search exercises or muscles..."
+            placeholder="Search exercises, muscles, categories..."
             placeholderTextColor={COLORS.textMuted}
             value={search}
             onChangeText={setSearch}
@@ -90,18 +93,18 @@ export default function ExploreScreen() {
         {filtered.length > 0 && (
           <Animated.View entering={FadeInDown.springify()}>
             <Text style={styles.sectionTitle}>Results ({filtered.length})</Text>
-            {filtered.map((ex, i) => (
+            {filtered.map((ex) => (
               <TouchableOpacity
                 key={ex.id}
                 style={styles.resultRow}
                 onPress={() => router.push({ pathname: "/exercise/detail", params: { id: ex.id, category: ex.category } })}
               >
                 <View style={[styles.resultIcon, { backgroundColor: getCategoryColor(ex.category) + "20" }]}>
-                  <Ionicons name={ex.icon as any} size={20} color={getCategoryColor(ex.category)} />
+                  <Ionicons name={getCategoryIcon(ex.category) as any} size={20} color={getCategoryColor(ex.category)} />
                 </View>
                 <View style={styles.resultInfo}>
                   <Text style={styles.resultName}>{ex.name}</Text>
-                  <Text style={styles.resultMeta}>{ex.subcategory} • {ex.targetMuscles[0]}</Text>
+                  <Text style={styles.resultMeta}>{getCategoryLabel(ex.category)} • {ex.muscle_groups[0]}</Text>
                 </View>
                 <View style={[styles.diffBadge, { backgroundColor: DIFFICULTY_COLORS[ex.difficulty] + "20" }]}>
                   <Text style={[styles.diffText, { color: DIFFICULTY_COLORS[ex.difficulty] }]}>{ex.difficulty}</Text>
@@ -111,47 +114,70 @@ export default function ExploreScreen() {
           </Animated.View>
         )}
 
-        {/* Categories */}
+        {/* Categories Grid */}
         {search.length === 0 && (
           <>
-            <Text style={styles.sectionTitle}>Categories</Text>
-            {CATEGORIES.map((cat, i) => (
-              <Animated.View key={cat.id} entering={FadeInDown.delay(i * 100 + 200).springify()}>
-                <TouchableOpacity
-                  style={[styles.categoryCard, { borderColor: cat.color + "30" }]}
-                  onPress={() => router.push({ pathname: "/exercise/[category]", params: { category: cat.id } })}
-                  activeOpacity={0.8}
-                >
-                  <View style={[styles.catIconBg, { backgroundColor: cat.color + "20" }]}>
-                    <Ionicons name={cat.icon as any} size={32} color={cat.color} />
-                  </View>
-                  <View style={styles.catInfo}>
-                    <Text style={styles.catLabel}>{cat.label}</Text>
-                    <Text style={styles.catSubtitle}>{cat.subtitle}</Text>
-                    <View style={styles.catBadge}>
-                      <Text style={[styles.catCount, { color: cat.color }]}>{cat.count} exercises</Text>
-                    </View>
-                  </View>
-                  <Ionicons name="chevron-forward" size={20} color={cat.color} />
-                </TouchableOpacity>
-              </Animated.View>
-            ))}
+            <Text style={styles.sectionTitle}>All Categories</Text>
+            <View style={styles.categoriesGrid}>
+              {ALL_CATEGORIES.map((cat, i) => {
+                const count = EXERCISES.filter(e => e.category === cat).length;
+                const color = getCategoryColor(cat);
+                return (
+                  <Animated.View key={cat} entering={FadeInDown.delay(i * 60 + 150).springify()} style={styles.catCardWrapper}>
+                    <TouchableOpacity
+                      style={[styles.catCard, { borderColor: color + "35" }]}
+                      onPress={() => router.push({ pathname: "/exercise/[category]", params: { category: cat } })}
+                      activeOpacity={0.8}
+                    >
+                      <View style={[styles.catIconBg, { backgroundColor: color + "20" }]}>
+                        <Ionicons name={getCategoryIcon(cat) as any} size={26} color={color} />
+                      </View>
+                      <Text style={[styles.catLabel, { color }]}>{getCategoryLabel(cat)}</Text>
+                      <Text style={styles.catSub}>{CATEGORY_SUBTITLES[cat]}</Text>
+                      <View style={[styles.catCountBadge, { backgroundColor: color + "15" }]}>
+                        <Text style={[styles.catCount, { color }]}>{count}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  </Animated.View>
+                );
+              })}
+            </View>
 
-            {/* Muscles Featured */}
-            <Text style={[styles.sectionTitle, { marginTop: SPACING.lg }]}>Target Muscles</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View style={styles.muscleRow}>
-                {["Chest", "Back", "Legs", "Shoulders", "Arms", "Core", "Glutes"].map((m) => (
-                  <TouchableOpacity
-                    key={m}
-                    style={styles.muscleChip}
-                    onPress={() => setSearch(m)}
-                  >
-                    <Text style={styles.muscleChipText}>{m}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </ScrollView>
+            {/* Muscle Filter */}
+            <Animated.View entering={FadeInDown.delay(600).springify()}>
+              <Text style={[styles.sectionTitle, { marginTop: SPACING.md }]}>Browse by Muscle</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View style={styles.muscleRow}>
+                  {MUSCLE_FILTERS.map((m) => (
+                    <TouchableOpacity
+                      key={m}
+                      style={styles.muscleChip}
+                      onPress={() => setSearch(m)}
+                    >
+                      <Text style={styles.muscleChipText}>{m}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </ScrollView>
+            </Animated.View>
+
+            {/* Equipment Tags */}
+            <Animated.View entering={FadeInDown.delay(700).springify()}>
+              <Text style={[styles.sectionTitle, { marginTop: SPACING.md }]}>Browse by Equipment</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View style={styles.muscleRow}>
+                  {["No Equipment", "Dumbbell", "Barbell", "Machine", "Cable", "Mat"].map((eq) => (
+                    <TouchableOpacity
+                      key={eq}
+                      style={[styles.muscleChip, { backgroundColor: COLORS.secondary + "15", borderColor: COLORS.secondary + "30" }]}
+                      onPress={() => setSearch(eq)}
+                    >
+                      <Text style={[styles.muscleChipText, { color: COLORS.secondary }]}>{eq}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </ScrollView>
+            </Animated.View>
           </>
         )}
 
@@ -181,28 +207,38 @@ const styles = StyleSheet.create({
   searchIcon: { marginRight: SPACING.sm },
   searchInput: { flex: 1, fontFamily: FONTS.regular, fontSize: SIZES.base, color: COLORS.text },
   sectionTitle: { fontFamily: FONTS.bold, fontSize: SIZES.lg, color: COLORS.text, marginBottom: SPACING.md },
-  categoryCard: {
+  categoriesGrid: {
     flexDirection: "row",
-    alignItems: "center",
+    flexWrap: "wrap",
+    gap: SPACING.sm,
+    marginBottom: SPACING.lg,
+  },
+  catCardWrapper: { width: "48.5%" },
+  catCard: {
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.xl,
-    padding: SPACING.lg,
-    marginBottom: SPACING.md,
+    padding: SPACING.base,
     borderWidth: 1,
-    gap: SPACING.base,
+    alignItems: "flex-start",
+    gap: SPACING.xs,
   },
   catIconBg: {
-    width: 64,
-    height: 64,
+    width: 52,
+    height: 52,
     borderRadius: RADIUS.lg,
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: SPACING.xs,
   },
-  catInfo: { flex: 1 },
-  catLabel: { fontFamily: FONTS.bold, fontSize: SIZES.lg, color: COLORS.text },
-  catSubtitle: { fontFamily: FONTS.regular, fontSize: SIZES.sm, color: COLORS.textSecondary, marginTop: 2 },
-  catBadge: { marginTop: SPACING.xs },
-  catCount: { fontFamily: FONTS.semiBold, fontSize: SIZES.sm },
+  catLabel: { fontFamily: FONTS.bold, fontSize: SIZES.base },
+  catSub: { fontFamily: FONTS.regular, fontSize: SIZES.xs, color: COLORS.textMuted, lineHeight: 16 },
+  catCountBadge: {
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 2,
+    borderRadius: RADIUS.full,
+    marginTop: SPACING.xs,
+  },
+  catCount: { fontFamily: FONTS.bold, fontSize: SIZES.xs },
   resultRow: {
     flexDirection: "row",
     alignItems: "center",

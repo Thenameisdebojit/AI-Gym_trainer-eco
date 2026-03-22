@@ -97,6 +97,33 @@ export default function ExerciseDetail() {
           ))}
         </Animated.View>
 
+        {/* Equipment & Variations */}
+        <Animated.View entering={FadeInDown.delay(175).springify()} style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="construct" size={18} color={color} />
+            <Text style={styles.cardTitle}>Equipment Needed</Text>
+          </View>
+          <View style={styles.muscleRow}>
+            {exercise.equipment.map((eq) => (
+              <View key={eq} style={[styles.muscleChip, { backgroundColor: COLORS.blue + "15", borderColor: COLORS.blue + "30" }]}>
+                <Text style={[styles.muscleText, { color: COLORS.blue }]}>{eq === "none" ? "No Equipment" : eq.replace("_", " ")}</Text>
+              </View>
+            ))}
+          </View>
+          {exercise.variations.length > 0 && (
+            <>
+              <Text style={[styles.cardTitle, { marginTop: SPACING.md, fontSize: SIZES.sm, color: COLORS.textSecondary }]}>Variations</Text>
+              <View style={[styles.muscleRow, { marginTop: SPACING.sm }]}>
+                {exercise.variations.map((v) => (
+                  <View key={v} style={[styles.muscleChip, { backgroundColor: color + "10", borderColor: color + "25" }]}>
+                    <Text style={[styles.muscleText, { color }]}>{v}</Text>
+                  </View>
+                ))}
+              </View>
+            </>
+          )}
+        </Animated.View>
+
         {/* Stats */}
         <Animated.View entering={FadeInDown.delay(200).springify()} style={styles.statsRow}>
           <View style={[styles.statCard, { borderColor: color + "30" }]}>
