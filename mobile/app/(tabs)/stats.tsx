@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Platform,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -13,6 +14,9 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { useQuery } from "@tanstack/react-query";
 import { fetchStats } from "@/lib/api";
 import { COLORS, FONTS, SIZES, RADIUS, SPACING } from "@/constants/theme";
+import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useWorkoutStore } from "@/store/useWorkoutStore";
 
 const WEEKLY_DATA = [
   { day: "Mon", reps: 45, calories: 120 },
@@ -64,10 +68,18 @@ export default function StatsScreen() {
     queryFn: fetchStats,
     retry: false,
   });
+  const { history, loadHistory } = useWorkoutStore();
+  const [streak, setStreak] = useState(0);
 
-  const weekTotal = WEEKLY_DATA.reduce((a, d) => a + d.reps, 0);
-  const weekCal = WEEKLY_DATA.reduce((a, d) => a + d.calories, 0);
-  const streak = 5;
+  useEffect(() => {
+    loadHistory();
+    AsyncStorage.getItem("fitai_streak").then(s => {
+      if (s) setStreak(parseInt(s, 10));
+    });
+  }, []);
+
+  const weekTotal = WEEKLY_DATA.reduce((a, d) => a + d.reps, 0) + history.reduce((a, h) => a + h.totalReps, 0);
+  const weekCal = WEEKLY_DATA.reduce((a, d) => a + d.calories, 0) + history.reduce((a, h) => a + h.totalCalories, 0);
 
   return (
     <View style={[styles.container, { paddingTop: topPad }]}>
@@ -147,10 +159,30 @@ export default function StatsScreen() {
               <Text style={styles.weekLabel}>Calories</Text>
             </View>
             <View style={styles.weekCard}>
-              <Text style={styles.weekValue}>{WEEKLY_DATA.filter(d => d.reps > 0).length}</Text>
-              <Text style={styles.weekLabel}>Active Days</Text>
+              <Text style={styles.weekValue}>{history.length + WEEKLY_DATA.filter(d => d.reps > 0).length}</Text>
+              <Text style={styles.weekLabel}>Sessions</Text>
             </View>
           </View>
+        </Animated.View>
+
+        {/* Workout History Link */}
+        <Animated.View entering={FadeInDown.delay(500).springify()}>
+          <TouchableOpacity
+            style={styles.historyLink}
+            onPress={() => router.push("/workout/history")}
+            activeOpacity={0.8}
+          >
+            <View style={styles.historyLinkLeft}>
+              <View style={styles.historyLinkIcon}>
+                <Ionicons name="time" size={20} color={COLORS.primary} />
+              </View>
+              <View>
+                <Text style={styles.historyLinkTitle}>Workout History</Text>
+                <Text style={styles.historyLinkSub}>{history.length} session{history.length !== 1 ? "s" : ""} recorded</Text>
+              </View>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={COLORS.primary} />
+          </TouchableOpacity>
         </Animated.View>
 
         <View style={{ height: SPACING.xxxl + 20 }} />
@@ -222,4 +254,17 @@ const styles = StyleSheet.create({
   },
   weekValue: { fontFamily: FONTS.bold, fontSize: SIZES.xl, color: COLORS.primary },
   weekLabel: { fontFamily: FONTS.regular, fontSize: SIZES.xs, color: COLORS.textSecondary, marginTop: 4, textAlign: "center" },
+  historyLink: {
+    flexDirection: "row", alignItems: "center", justifyContent: "space-between",
+    backgroundColor: COLORS.primaryDim, borderRadius: RADIUS.xl,
+    padding: SPACING.base, borderWidth: 1, borderColor: COLORS.primary + "30",
+    marginTop: SPACING.md,
+  },
+  historyLinkLeft: { flexDirection: "row", alignItems: "center", gap: SPACING.md },
+  historyLinkIcon: {
+    width: 44, height: 44, borderRadius: RADIUS.md,
+    backgroundColor: COLORS.primary + "20", alignItems: "center", justifyContent: "center",
+  },
+  historyLinkTitle: { fontFamily: FONTS.bold, fontSize: SIZES.base, color: COLORS.text },
+  historyLinkSub: { fontFamily: FONTS.regular, fontSize: SIZES.sm, color: COLORS.textSecondary, marginTop: 2 },
 });

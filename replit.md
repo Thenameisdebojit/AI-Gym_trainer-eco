@@ -135,9 +135,33 @@ Config files: `mobile/eas.json`, `mobile/app.json`
 - **YOLOv8** — Server-side detection via `/pose-detect` endpoint (returns keypoints + feedback)
 - Live workout screen simulates rep counting with AI feedback while camera permission system is ready for full MediaPipe integration
 
+## Workout Session Flow (Full Interactive Engine)
+Added complete end-to-end workout execution system:
+
+### New Files
+- **`mobile/store/useWorkoutStore.ts`** — Zustand global state store for workout plans, active sessions, completed sets, and persistent history
+- **`mobile/app/workout/session.tsx`** — Full exercise flow screen with:
+  - Intro phase: Shows full workout plan before starting
+  - Exercise phase: Rep counter (auto + manual), play/pause, set indicator, AI feedback messages
+  - Rest phase: 45-second countdown timer with skip option
+  - Done phase: Trophy screen with total reps, calories, sets, and time
+  - Persists data to AsyncStorage via Zustand
+- **`mobile/app/workout/history.tsx`** — Full workout history screen with session summary, totals, and clear option
+
+### Updated Files
+- **`mobile/app/(tabs)/workout.tsx`** — Added "Start Full Workout" button after generating a plan; added "History" header link; wired to Zustand store
+- **`mobile/app/(tabs)/stats.tsx`** — Connected real streak from AsyncStorage; shows workout history count from store; added "View History" card link
+- **`mobile/app/_layout.tsx`** — Registered new `workout/session` and `workout/history` routes
+
+### State Management Pattern
+- `setCurrentPlan(plan)` → saves plan to Zustand
+- `router.push("/workout/session")` → navigates to session
+- Session screen reads `currentPlan` from store, starts workout, tracks sets
+- `finishSession(duration)` → saves to AsyncStorage and resets active session
+
 ## Dependencies
 **Backend:** fastapi, uvicorn, numpy, pydantic, sqlalchemy, python-multipart
 
 **Frontend:** next, react, react-dom, axios, react-chartjs-2, chart.js
 
-**Mobile:** expo ~53, expo-router, react-native, @tanstack/react-query, react-native-reanimated, expo-camera, @expo-google-fonts/inter, async-storage
+**Mobile:** expo ~53, expo-router, react-native, @tanstack/react-query, react-native-reanimated, expo-camera, @expo-google-fonts/inter, async-storage, zustand

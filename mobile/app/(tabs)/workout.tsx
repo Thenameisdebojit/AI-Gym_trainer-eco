@@ -20,6 +20,7 @@ import {
   getCategoryIcon,
 } from "@/constants/exercises";
 import { generateWorkout } from "@/lib/api";
+import { useWorkoutStore, WorkoutPlan } from "@/store/useWorkoutStore";
 
 type Goal = "muscle_gain" | "fat_loss" | "flexibility" | "mma" | "general";
 type EquipmentLevel = "none" | "minimal" | "full_gym";
@@ -63,6 +64,7 @@ interface GeneratedWorkout {
 export default function WorkoutScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
+  const { setCurrentPlan } = useWorkoutStore();
 
   const [goal, setGoal] = useState<Goal>("general");
   const [equipment, setEquipment] = useState<EquipmentLevel>("none");
@@ -84,6 +86,29 @@ export default function WorkoutScreen() {
       setLoading(false);
     }
   }, [goal, equipment, level]);
+
+  const handleStartSession = useCallback((workout: GeneratedWorkout) => {
+    const plan: WorkoutPlan = {
+      id: `plan_${Date.now()}`,
+      name: workout.name,
+      description: workout.description,
+      goal,
+      level,
+      equipment,
+      duration_minutes: 30,
+      exercises: workout.exercises.map(ex => ({
+        id: ex.id,
+        name: ex.name,
+        sets: ex.sets,
+        reps: ex.reps,
+        category: ex.category,
+        restSeconds: 45,
+      })),
+      createdAt: Date.now(),
+    };
+    setCurrentPlan(plan);
+    router.push("/workout/session");
+  }, [goal, level, equipment, setCurrentPlan]);
 
   const generateLocalWorkout = (
     g: Goal,
@@ -145,8 +170,17 @@ export default function WorkoutScreen() {
     <View style={[styles.container, { paddingTop: topPad }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Animated.View entering={FadeInDown.delay(0).springify()} style={styles.header}>
-          <Text style={styles.title}>Workout</Text>
-          <Text style={styles.subtitle}>Train smart, not hard</Text>
+          <View>
+            <Text style={styles.title}>Workout</Text>
+            <Text style={styles.subtitle}>Train smart, not hard</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.historyHeaderBtn}
+            onPress={() => router.push("/workout/history")}
+          >
+            <Ionicons name="time-outline" size={20} color={COLORS.primary} />
+            <Text style={styles.historyHeaderBtnText}>History</Text>
+          </TouchableOpacity>
         </Animated.View>
 
         {/* AI Trainer Banner */}
@@ -286,6 +320,14 @@ export default function WorkoutScreen() {
                     </TouchableOpacity>
                   );
                 })}
+                <TouchableOpacity
+                  style={styles.startFullBtn}
+                  onPress={() => handleStartSession(generatedWorkout)}
+                  activeOpacity={0.85}
+                >
+                  <Ionicons name="play" size={18} color={COLORS.background} />
+                  <Text style={styles.startFullBtnText}>Start Full Workout</Text>
+                </TouchableOpacity>
               </Animated.View>
             )}
           </Animated.View>
@@ -364,9 +406,19 @@ export default function WorkoutScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   content: { paddingHorizontal: SPACING.xl },
-  header: { marginBottom: SPACING.lg, marginTop: SPACING.md },
+  header: {
+    flexDirection: "row", alignItems: "center", justifyContent: "space-between",
+    marginBottom: SPACING.lg, marginTop: SPACING.md,
+  },
   title: { fontFamily: FONTS.bold, fontSize: SIZES.xxxl, color: COLORS.text },
   subtitle: { fontFamily: FONTS.regular, fontSize: SIZES.md, color: COLORS.textSecondary, marginTop: 4 },
+  historyHeaderBtn: {
+    flexDirection: "row", alignItems: "center", gap: 4,
+    backgroundColor: COLORS.primaryDim, paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs + 2, borderRadius: RADIUS.full,
+    borderWidth: 1, borderColor: COLORS.primary + "30",
+  },
+  historyHeaderBtnText: { fontFamily: FONTS.semiBold, fontSize: SIZES.xs, color: COLORS.primary },
 
   aiBanner: {
     flexDirection: "row",
@@ -500,6 +552,23 @@ const styles = StyleSheet.create({
   genExNumText: { fontFamily: FONTS.bold, fontSize: SIZES.sm },
   genExName: { fontFamily: FONTS.semiBold, fontSize: SIZES.base, color: COLORS.text },
   genExSets: { fontFamily: FONTS.regular, fontSize: SIZES.xs, color: COLORS.textSecondary, marginTop: 2 },
+
+  startFullBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: SPACING.sm,
+    backgroundColor: COLORS.primary,
+    borderRadius: RADIUS.lg,
+    height: 48,
+    marginTop: SPACING.sm,
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 5,
+  },
+  startFullBtnText: { fontFamily: FONTS.bold, fontSize: SIZES.base, color: COLORS.background },
 
   sectionTitle: { fontFamily: FONTS.bold, fontSize: SIZES.lg, color: COLORS.text, marginBottom: SPACING.md },
   featuredGrid: { flexDirection: "row", flexWrap: "wrap", gap: SPACING.sm, marginBottom: SPACING.md },
