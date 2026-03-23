@@ -17,7 +17,8 @@ A complete AI-powered fitness ecosystem with a **Next.js web dashboard**, **Reac
 - `POST /workout/generate` — **Smart Workout Generator** (goal, equipment, level, duration)
 - `GET /exercises` — All 58+ exercises (optional `?domain=` filter)
 - `POST /calories/calculate` — Calorie estimation by MET, weight, duration
-- `POST /diet/` — Generate diet plan (weight, height, goal)
+- `POST /diet/` — **Full AI Diet Planner** (age, gender, height, weight, goal, activity, diet_type, budget, allergies) → BMR/TDEE/macros/5-meal plan/tips/supplements
+- `GET /diet/bmi` — BMI check (weight, height)
 - `POST /chat/` — Fitness chatbot
 - `GET /behavior/` — Workout consistency prediction
 - `GET /recommendations/` — Personalized exercise recommendations
