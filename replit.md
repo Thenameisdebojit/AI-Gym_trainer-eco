@@ -1,6 +1,39 @@
 # FitAI — Universal AI Fitness Trainer
 
-A complete AI-powered fitness ecosystem with a **Next.js web dashboard**, **React Native (Expo) mobile app**, and **FastAPI backend**. Features 7 exercise domains, a Smart Workout Generator, streak tracking, AI pose detection, exercise tracking, diet recommendations, behavioral coaching, and a fitness chatbot.
+A production-grade AI-powered fitness ecosystem with a **Next.js web dashboard** (fully reconstructed with premium UI/UX), **React Native (Expo) mobile app**, and **FastAPI backend**. Features 7 exercise domains, a Smart Workout Generator, streak tracking, AI pose detection, exercise tracking, diet recommendations, behavioral coaching, and a fitness chatbot.
+
+## Frontend Architecture (Reconstructed)
+
+### Component System (`/frontend/components/`)
+- **`cards/WorkoutCard.js`** — Reusable workout card (compact + full variants, gradient domain icons)
+- **`cards/StatCard.js`** — Stats card with 8 color variants (blue, green, orange, purple, light variants)
+- **`cards/BannerCard.js`** — Hero banner with gradient, badge, icon, CTA
+- **`ui/Button.js`** — Full-featured button (8 variants, 5 sizes, loading state, icon support)
+- **`ui/ProgressBar.js`** — Animated progress bar with label and percentage
+- **`ui/Tabs.js`** — Pill and underline tab variants
+- **`charts/WeightChart.js`** — Canvas-based smooth bezier weight chart
+
+### Screens (`/frontend/screens/`)
+- **`Training.js`** — Home: current plan card, stats, body-focus tabs, workout generator, recent + equipment sections
+- **`Discover.js`** — Search, hero banner, 7 category grid, 5 horizontal scroll sections
+- **`Report.js`** — Stats cards, weekly bar chart, streak & personal best, weight tracking + chart, BMI calculator
+- **`AICoach.js`** — Chat interface with quick prompts, AI chatbot, consistency analyzer
+- **`Settings.js`** — Profile card, premium banner, toggle switches, language, units, backup
+
+### Design System (`/frontend/app/globals.css`)
+- Primary: `#2563EB` (blue), Background: `#F8FAFC`, Cards: `#FFFFFF`, Text: `#0F172A`
+- CSS variables for all colors, shadows, radii, and spacing
+- Smooth `fadeIn`, `slideUp`, `scaleIn`, `shimmer` animations
+- Skeleton loading states via `.skeleton` class
+
+### API Routes (`/frontend/app/api/`)
+- `GET /api/exercises?domain=` — Proxy to backend exercise list
+- `POST /api/workout/generate` — Proxy to AI workout generator
+- `POST /api/chat` — Proxy to AI chatbot
+- `GET /api/behavior?days_missed=&consistency=` — Consistency risk analysis
+- `GET /api/recommendations` — Personalized exercise recommendations
+- `GET /api/workout/stats` — Workout statistics
+- `POST /api/diet` — AI diet plan generator
 
 ## Architecture
 
