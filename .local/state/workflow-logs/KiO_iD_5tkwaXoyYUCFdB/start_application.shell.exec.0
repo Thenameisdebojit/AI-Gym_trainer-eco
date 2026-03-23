@@ -1,0 +1,26 @@
+
+> ai-fitness-frontend@1.0.0 dev
+> next dev -p 5000 -H 0.0.0.0
+
+[1G[0K  [1m[38;2;173;127;168m▲ Next.js 14.2.35[39m[22m
+  - Local:        http://localhost:5000
+  - Network:      http://0.0.0.0:5000
+
+ [32m[1m✓[22m[39m Starting...
+ [32m[1m✓[22m[39m Ready in 1408ms
+ [37m[1m○[22m[39m Compiling / ...
+ [32m[1m✓[22m[39m Compiled / in 2.5s (630 modules)
+ GET / [32m200[39m in 34ms
+ [32m[1m✓[22m[39m Compiled /api/recommendations in 310ms (355 modules)
+ [32m[1m✓[22m[39m Compiled (357 modules)
+ GET /api/recommendations [32m200[39m in 525ms
+ GET /api/workout/stats [32m200[39m in 529ms
+ GET /api/recommendations [32m200[39m in 8ms
+ GET /api/workout/stats [32m200[39m in 11ms
+ [32m[1m✓[22m[39m Compiled in 802ms (653 modules)
+ GET / [32m200[39m in 170ms
+ GET /api/workout/stats [32m200[39m in 12ms
+ GET /api/recommendations [32m200[39m in 14ms
+ GET /api/workout/stats [32m200[39m in 10ms
+ GET /api/recommendations [32m200[39m in 12ms
+ [32m[1m✓[22m[39m Compiled in 337ms (639 modules)
