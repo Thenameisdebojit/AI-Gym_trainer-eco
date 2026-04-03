@@ -5,32 +5,32 @@ const BODY_PARTS = [
   {
     id: 'full_body', label: 'Full Body', subtitle: 'Total body strength & cardio',
     icon: '⚡', color: '#2563EB',
-    image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&h=400&fit=crop&auto=format',
+    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80&fit=crop&auto=format',
   },
   {
     id: 'chest', label: 'Chest', subtitle: 'Pecs, upper body push power',
     icon: '💪', color: '#DC2626',
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop&auto=format',
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80&fit=crop&auto=format',
   },
   {
     id: 'arms', label: 'Arms', subtitle: 'Biceps, triceps & forearms',
     icon: '🦾', color: '#7C3AED',
-    image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&h=400&fit=crop&auto=format',
+    image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800&q=80&fit=crop&auto=format',
   },
   {
     id: 'legs', label: 'Legs', subtitle: 'Quads, hamstrings & glutes',
     icon: '🦵', color: '#065F46',
-    image: 'https://images.unsplash.com/photo-1434608519344-49d77a124f18?w=600&h=400&fit=crop&auto=format',
+    image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=800&q=80&fit=crop&auto=format',
   },
   {
     id: 'back', label: 'Back', subtitle: 'Lats, traps & posterior chain',
     icon: '🎯', color: '#0891B2',
-    image: 'https://images.unsplash.com/photo-1574680178050-55c6a6a96e0a?w=600&h=400&fit=crop&auto=format',
+    image: 'https://images.unsplash.com/photo-1603287681836-b174ce5074c2?w=800&q=80&fit=crop&auto=format',
   },
   {
     id: 'abs', label: 'Abs', subtitle: 'Core strength & definition',
     icon: '🔥', color: '#F97316',
-    image: 'https://images.unsplash.com/photo-1521804906057-1df8fdb718b7?w=600&h=400&fit=crop&auto=format',
+    image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80&fit=crop&auto=format',
   },
 ];
 
@@ -370,33 +370,42 @@ const CHALLENGES = [
   {
     id: 'abs28',
     name: '28 Day Abs Challenge',
+    shortLabel: '28 DAYS',
     icon: '🔥',
     color: '#F97316',
+    bgGradient: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
+    bgImage: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=900&q=80&fit=crop&auto=format',
     totalDays: 28,
     desc: 'Daily core work to build visible abs in 4 weeks',
-    bodyPart: { id: 'abs', label: 'Abs', icon: '🔥', color: '#F97316', subtitle: 'Core strength & definition', image: 'https://images.unsplash.com/photo-1521804906057-1df8fdb718b7?w=600&h=400&fit=crop&auto=format' },
+    bodyPart: { id: 'abs', label: 'Abs', icon: '🔥', color: '#F97316', subtitle: 'Core strength & definition', image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80&fit=crop&auto=format' },
     mode: { id: 'home', label: 'Home' },
     levelSchedule: ['beginner', 'beginner', 'intermediate', 'intermediate', 'intermediate', 'advanced', 'advanced'],
   },
   {
     id: 'fullbody30',
     name: '30 Day Full Body',
+    shortLabel: '30 DAYS',
     icon: '⚡',
     color: '#2563EB',
+    bgGradient: 'linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%)',
+    bgImage: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=900&q=80&fit=crop&auto=format',
     totalDays: 30,
     desc: 'Progressive full-body program from foundation to elite',
-    bodyPart: { id: 'full_body', label: 'Full Body', icon: '⚡', color: '#2563EB', subtitle: 'Total body strength & cardio', image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&h=400&fit=crop&auto=format' },
+    bodyPart: { id: 'full_body', label: 'Full Body', icon: '⚡', color: '#2563EB', subtitle: 'Total body strength & cardio', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80&fit=crop&auto=format' },
     mode: { id: 'home', label: 'Home' },
     levelSchedule: ['beginner', 'beginner', 'beginner', 'intermediate', 'intermediate', 'intermediate', 'advanced'],
   },
   {
     id: 'fatburn14',
     name: '14 Day Fat Burn',
-    icon: '💪',
+    shortLabel: '14 DAYS',
+    icon: '🔥',
     color: '#EF4444',
+    bgGradient: 'linear-gradient(135deg, #DC2626 0%, #9333EA 100%)',
+    bgImage: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=900&q=80&fit=crop&auto=format',
     totalDays: 14,
     desc: 'Intense 2-week protocol for rapid fat loss',
-    bodyPart: { id: 'full_body', label: 'Full Body', icon: '⚡', color: '#EF4444', subtitle: 'Total body strength & cardio', image: 'https://images.unsplash.com/photo-1434608519344-49d77a124f18?w=600&h=400&fit=crop&auto=format' },
+    bodyPart: { id: 'full_body', label: 'Full Body', icon: '⚡', color: '#EF4444', subtitle: 'Total body strength & cardio', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80&fit=crop&auto=format' },
     mode: { id: 'gym', label: 'Gym' },
     levelSchedule: ['intermediate', 'intermediate', 'advanced', 'advanced', 'advanced', 'advanced', 'advanced'],
   },
@@ -506,6 +515,9 @@ export default function Training() {
   const [savedProgress, setSavedProgress] = useState(null);
   const [challengeProgress, setChallengeProgress] = useState({});
   const [activeChallengeId, setActiveChallengeId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [weeklyGoal, setWeeklyGoal] = useState(5);
+  const [editingGoal, setEditingGoal] = useState(false);
 
   const timerRef = useRef(null);
 
@@ -902,223 +914,305 @@ export default function Training() {
   return (
     <div style={{ padding: '28px 32px', maxWidth: '1100px', animation: 'fadeIn 0.35s ease' }}>
 
-      {navStep === 'home' && (
-        <>
-          <div style={{ marginBottom: '32px' }}>
-            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500, marginBottom: '4px' }}>
-              Good day 👋
+      {navStep === 'home' && (() => {
+        const today = new Date();
+        const todayDay = today.getDay();
+        const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const weekDays = Array.from({ length: 7 }, (_, i) => {
+          const d = new Date(today);
+          d.setDate(today.getDate() - todayDay + i);
+          return { label: days[d.getDay()], date: d.getDate(), isToday: d.toDateString() === today.toDateString() };
+        });
+        const weeklyDone = sessionStats?.this_week ?? Math.min(sessionStats?.total_sessions ?? 0, 3);
+        const filtered = BODY_PARTS.filter(bp =>
+          !searchQuery || bp.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          bp.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        return (
+          <>
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500, marginBottom: '2px' }}>Good day 👋</div>
+              <h1 style={{ fontSize: '28px', fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.03em', margin: 0 }}>Training</h1>
             </div>
-            <h1 style={{ fontSize: '30px', fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.03em', marginBottom: '6px' }}>
-              Training
-            </h1>
-            <p style={{ fontSize: '15px', color: 'var(--text-secondary)', fontWeight: 400 }}>
-              Choose a muscle group to start your personalized workout
-            </p>
-          </div>
 
-          <div style={{
-            background: 'linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #7C3AED 100%)',
-            borderRadius: '20px', padding: '20px 24px', marginBottom: '32px',
-            boxShadow: '0 12px 40px rgba(37,99,235,0.25)',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px',
-          }}>
-            <div>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.65)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '4px' }}>
-                Your Progress
-              </div>
-              <div style={{ fontSize: '22px', fontWeight: 800, color: '#fff' }}>
-                {sessionStats?.total_sessions ?? 0} Sessions Completed
-              </div>
-              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', marginTop: '4px' }}>
-                🔥 {Math.round(sessionStats?.total_calories ?? 0)} calories burned total
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              {[
-                { icon: '⏱', value: `${sessionStats?.total_minutes ?? 0} min`, label: 'Trained' },
-                { icon: '💪', value: sessionStats?.total_exercises ?? 0, label: 'Exercises' },
-              ].map((s, i) => (
-                <div key={i} style={{
-                  background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)',
-                  borderRadius: '14px', padding: '12px 18px', textAlign: 'center',
-                }}>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', marginBottom: '2px' }}>{s.icon} {s.label}</div>
-                  <div style={{ fontSize: '20px', fontWeight: 800, color: '#fff' }}>{s.value}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {savedProgress && savedProgress.exercises?.length > 0 && (
             <div style={{
-              background: 'linear-gradient(135deg, #0F172A, #1E293B)',
-              borderRadius: '16px', padding: '16px 20px', marginBottom: '24px',
-              border: '1px solid rgba(255,255,255,0.1)',
-              display: 'flex', alignItems: 'center', gap: '16px',
-              boxShadow: '0 8px 28px rgba(0,0,0,0.18)',
+              position: 'relative', marginBottom: '20px',
             }}>
-              <div style={{ fontSize: '32px', lineHeight: 1 }}>▶️</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '3px' }}>Continue Workout</div>
-                <div style={{ fontSize: '15px', fontWeight: 800, color: '#fff' }}>
-                  {savedProgress.selectedBody?.label} · {savedProgress.selectedLevel?.label} · {savedProgress.selectedMode?.label}
-                </div>
-                <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>
-                  Exercise {(savedProgress.exIdx || 0) + 1} of {savedProgress.exercises.length} · {Math.round(savedProgress.totalCals || 0)} cal burned
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button onClick={() => setSavedProgress(null)} style={{
-                  background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)',
-                  color: 'rgba(255,255,255,0.5)', padding: '8px 14px', borderRadius: '10px',
-                  fontSize: '12px', cursor: 'pointer', fontWeight: 600,
-                }}>Discard</button>
-                <button onClick={resumeWorkout} style={{
-                  background: 'linear-gradient(135deg, #2563EB, #7C3AED)', border: 'none',
-                  color: '#fff', padding: '8px 18px', borderRadius: '10px',
-                  fontSize: '13px', cursor: 'pointer', fontWeight: 700,
-                  boxShadow: '0 4px 14px rgba(37,99,235,0.4)',
-                }}>Resume →</button>
-              </div>
-            </div>
-          )}
-
-          <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '16px' }}>
-            Select Muscle Group
-          </div>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: '18px',
-          }}>
-            {BODY_PARTS.map(bp => (
-              <button
-                key={bp.id}
-                onClick={() => { setSelectedBody(bp); setNavStep('levels'); }}
-                onMouseEnter={() => setHoveredCard(bp.id)}
-                onMouseLeave={() => setHoveredCard(null)}
+              <div style={{
+                position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)',
+                fontSize: '16px', color: 'var(--text-tertiary)', pointerEvents: 'none',
+              }}>🔍</div>
+              <input
+                type="text"
+                placeholder="Search workouts, muscle groups..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
                 style={{
-                  position: 'relative', overflow: 'hidden',
-                  borderRadius: '18px', border: 'none', cursor: 'pointer',
-                  height: '180px', padding: 0, textAlign: 'left',
-                  transform: hoveredCard === bp.id ? 'translateY(-4px) scale(1.01)' : 'translateY(0) scale(1)',
-                  boxShadow: hoveredCard === bp.id
-                    ? `0 20px 50px rgba(0,0,0,0.2), 0 0 0 2px ${bp.color}`
-                    : '0 4px 20px rgba(0,0,0,0.1)',
-                  transition: 'all 0.25s ease',
-                  outline: 'none',
+                  width: '100%', boxSizing: 'border-box',
+                  padding: '14px 16px 14px 46px',
+                  borderRadius: '16px', border: '1.5px solid var(--border)',
+                  background: 'var(--surface)', color: 'var(--text)',
+                  fontSize: '14px', outline: 'none',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
+                  transition: 'border-color 0.2s ease',
                 }}
-              >
-                <img
-                  src={bp.image}
-                  alt={bp.label}
-                  style={{
-                    position: 'absolute', inset: 0, width: '100%', height: '100%',
-                    objectFit: 'cover',
-                    filter: hoveredCard === bp.id ? 'brightness(0.55)' : 'brightness(0.45)',
-                    transition: 'filter 0.3s ease',
-                  }}
-                />
-                <div style={{
-                  position: 'absolute', inset: 0,
-                  background: `linear-gradient(160deg, transparent 20%, ${bp.color}99 100%)`,
-                }} />
-                <div style={{
-                  position: 'relative', zIndex: 1,
-                  padding: '20px 22px',
-                  height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
-                }}>
-                  <div style={{ fontSize: '24px', marginBottom: '6px', lineHeight: 1 }}>{bp.icon}</div>
-                  <div style={{ fontSize: '20px', fontWeight: 800, color: '#fff', lineHeight: 1.2, marginBottom: '4px' }}>
-                    {bp.label}
-                  </div>
-                  <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.75)', fontWeight: 500 }}>
-                    {bp.subtitle}
-                  </div>
-                </div>
-                <div style={{
-                  position: 'absolute', top: '14px', right: '14px',
-                  background: hoveredCard === bp.id ? '#fff' : 'rgba(0,0,0,0.35)',
-                  backdropFilter: 'blur(6px)',
-                  borderRadius: '10px', padding: '5px 11px',
-                  fontSize: '11px', fontWeight: 700,
-                  color: hoveredCard === bp.id ? bp.color : 'rgba(255,255,255,0.9)',
-                  transition: 'all 0.2s ease',
-                }}>
-                  {hoveredCard === bp.id ? 'Start →' : (() => {
-                    const modes = EXERCISE_DB[bp.id] || {};
-                    const total = Object.values(modes).reduce((mSum, levels) =>
-                      mSum + Object.values(levels).reduce((lSum, exs) => lSum + exs.length, 0), 0);
-                    return `${total} exercises`;
-                  })()}
-                </div>
-              </button>
-            ))}
-          </div>
-
-          <div style={{ marginTop: '40px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>
-                Active Challenges
-              </div>
-              <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Build a streak</span>
+                onFocus={e => e.target.style.borderColor = '#2563EB'}
+                onBlur={e => e.target.style.borderColor = 'var(--border)'}
+              />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
-              {CHALLENGES.map(challenge => {
-                const cp = challengeProgress[challenge.id] || { currentDay: 0, completedDays: [] };
-                const pct = Math.round((cp.currentDay / challenge.totalDays) * 100);
-                const started = cp.currentDay > 0;
-                return (
-                  <div key={challenge.id} style={{
-                    background: 'var(--surface)', borderRadius: '18px',
-                    border: `1.5px solid ${started ? challenge.color + '40' : 'var(--border-light)'}`,
-                    padding: '20px', boxShadow: started ? `0 4px 20px ${challenge.color}15` : 'var(--shadow-sm)',
-                    transition: 'all 0.2s ease',
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', marginBottom: '16px' }}>
+
+            <div style={{
+              background: 'var(--surface)', borderRadius: '20px',
+              border: '1.5px solid var(--border-light)',
+              padding: '18px 20px', marginBottom: '20px',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text)' }}>Weekly Goal</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {editingGoal ? (
+                    <input
+                      type="number" min="1" max="7" value={weeklyGoal}
+                      onChange={e => setWeeklyGoal(Math.max(1, Math.min(7, Number(e.target.value))))}
+                      onBlur={() => setEditingGoal(false)}
+                      autoFocus
+                      style={{
+                        width: '48px', padding: '4px 8px', borderRadius: '8px',
+                        border: '1.5px solid #2563EB', background: 'var(--surface-2)',
+                        color: 'var(--text)', fontSize: '13px', fontWeight: 700, textAlign: 'center',
+                      }}
+                    />
+                  ) : (
+                    <>
+                      <span style={{ fontSize: '15px', fontWeight: 800, color: '#2563EB' }}>
+                        {weeklyDone}/{weeklyGoal}
+                      </span>
+                      <button onClick={() => setEditingGoal(true)} style={{
+                        background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px',
+                        color: 'var(--text-tertiary)', padding: '2px',
+                      }}>✏️</button>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '6px', justifyContent: 'space-between' }}>
+                {weekDays.map((d, i) => {
+                  const done = i < weeklyDone;
+                  return (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', flex: 1 }}>
+                      <div style={{ fontSize: '10px', fontWeight: 600, color: d.isToday ? '#2563EB' : 'var(--text-tertiary)', textTransform: 'uppercase' }}>{d.label}</div>
                       <div style={{
-                        width: '48px', height: '48px', borderRadius: '14px', flexShrink: 0,
-                        background: `${challenge.color}18`, border: `1.5px solid ${challenge.color}30`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px',
-                      }}>{challenge.icon}</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text)', lineHeight: 1.2, marginBottom: '4px' }}>{challenge.name}</div>
-                        <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{challenge.desc}</div>
+                        width: '36px', height: '36px', borderRadius: '50%',
+                        background: d.isToday ? '#2563EB' : done ? '#E0EAFF' : 'var(--surface-2)',
+                        border: d.isToday ? 'none' : done ? '2px solid #93C5FD' : '2px solid var(--border-light)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '12px', fontWeight: 700,
+                        color: d.isToday ? '#fff' : done ? '#2563EB' : 'var(--text-secondary)',
+                        transition: 'all 0.2s ease',
+                      }}>{d.date}</div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div style={{ marginTop: '12px', height: '5px', background: 'var(--surface-2)', borderRadius: '99px', overflow: 'hidden' }}>
+                <div style={{
+                  width: `${Math.min((weeklyDone / weeklyGoal) * 100, 100)}%`, height: '100%',
+                  background: 'linear-gradient(90deg, #2563EB, #7C3AED)',
+                  borderRadius: '99px', transition: 'width 0.6s ease',
+                }} />
+              </div>
+            </div>
+
+            {savedProgress && savedProgress.exercises?.length > 0 && (
+              <div style={{
+                background: 'linear-gradient(135deg, #0F172A, #1E293B)',
+                borderRadius: '16px', padding: '16px 20px', marginBottom: '20px',
+                border: '1px solid rgba(255,255,255,0.1)',
+                display: 'flex', alignItems: 'center', gap: '16px',
+                boxShadow: '0 8px 28px rgba(0,0,0,0.18)',
+              }}>
+                <div style={{ fontSize: '28px', lineHeight: 1 }}>▶️</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '2px' }}>Continue Workout</div>
+                  <div style={{ fontSize: '14px', fontWeight: 800, color: '#fff' }}>
+                    {savedProgress.selectedBody?.label} · {savedProgress.selectedLevel?.label}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>
+                    Exercise {(savedProgress.exIdx || 0) + 1}/{savedProgress.exercises.length} · {Math.round(savedProgress.totalCals || 0)} cal
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button onClick={() => setSavedProgress(null)} style={{
+                    background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)',
+                    color: 'rgba(255,255,255,0.5)', padding: '8px 12px', borderRadius: '10px',
+                    fontSize: '11px', cursor: 'pointer', fontWeight: 600,
+                  }}>Discard</button>
+                  <button onClick={resumeWorkout} style={{
+                    background: 'linear-gradient(135deg, #2563EB, #7C3AED)', border: 'none',
+                    color: '#fff', padding: '8px 16px', borderRadius: '10px',
+                    fontSize: '12px', cursor: 'pointer', fontWeight: 700,
+                  }}>Resume →</button>
+                </div>
+              </div>
+            )}
+
+            <div style={{ marginBottom: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                <div style={{ fontSize: '17px', fontWeight: 800, color: 'var(--text)' }}>Challenge 🔥</div>
+                <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>For the brave</span>
+              </div>
+              <div style={{ display: 'flex', gap: '16px', overflowX: 'auto', paddingBottom: '8px', scrollbarWidth: 'none' }}>
+                {CHALLENGES.map(challenge => {
+                  const cp = challengeProgress[challenge.id] || { currentDay: 0, completedDays: [] };
+                  const pct = Math.round((cp.currentDay / challenge.totalDays) * 100);
+                  const started = cp.currentDay > 0;
+                  return (
+                    <div key={challenge.id} style={{
+                      position: 'relative', overflow: 'hidden',
+                      borderRadius: '20px', flexShrink: 0,
+                      width: '300px', height: '200px',
+                      cursor: 'pointer',
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                      transition: 'transform 0.2s ease',
+                    }}
+                      onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
+                      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                    >
+                      <img
+                        src={challenge.bgImage}
+                        alt={challenge.name}
+                        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={e => e.target.style.display = 'none'}
+                      />
+                      <div style={{ position: 'absolute', inset: 0, background: challenge.bgGradient, opacity: 0.82 }} />
+                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.28)' }} />
+                      <div style={{ position: 'relative', zIndex: 1, height: '100%', padding: '18px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                        <div>
+                          <div style={{
+                            display: 'inline-block', background: 'rgba(255,255,255,0.2)',
+                            backdropFilter: 'blur(8px)', borderRadius: '8px',
+                            padding: '3px 10px', fontSize: '10px', fontWeight: 800,
+                            color: '#fff', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px',
+                          }}>{challenge.shortLabel}</div>
+                          <div style={{ fontSize: '20px', fontWeight: 900, color: '#fff', lineHeight: 1.2, marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '-0.01em' }}>
+                            {challenge.name.replace(/\d+ Day /i, '')}
+                          </div>
+                          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.4 }}>{challenge.desc}</div>
+                        </div>
+                        <div>
+                          {started && (
+                            <div style={{ marginBottom: '10px' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                                <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>DAY {cp.currentDay}</span>
+                                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>{pct}% Finished</span>
+                              </div>
+                              <div style={{ height: '4px', background: 'rgba(255,255,255,0.2)', borderRadius: '99px', overflow: 'hidden' }}>
+                                <div style={{ width: `${pct}%`, height: '100%', background: '#fff', borderRadius: '99px', transition: 'width 0.6s ease' }} />
+                              </div>
+                            </div>
+                          )}
+                          <button
+                            onClick={() => startChallenge(challenge)}
+                            style={{
+                              width: '100%', padding: '10px', borderRadius: '12px',
+                              background: '#fff', border: 'none',
+                              color: '#111', fontSize: '13px', fontWeight: 800,
+                              cursor: 'pointer', letterSpacing: '0.04em',
+                              boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
+                            }}
+                          >
+                            {started ? `▶ DAY ${cp.currentDay + 1}` : 'START'}
+                          </button>
+                        </div>
                       </div>
                     </div>
-                    {started && (
-                      <div style={{ marginBottom: '14px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                          <span style={{ fontSize: '12px', fontWeight: 600, color: challenge.color }}>Day {cp.currentDay} of {challenge.totalDays}</span>
-                          <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{pct}% done</span>
-                        </div>
-                        <div style={{ height: '6px', background: 'var(--surface-2)', borderRadius: '99px', overflow: 'hidden' }}>
-                          <div style={{ width: `${pct}%`, height: '100%', background: `linear-gradient(90deg, ${challenge.color}, ${challenge.color}bb)`, borderRadius: '99px', transition: 'width 0.6s ease' }} />
-                        </div>
-                      </div>
-                    )}
-                    <button
-                      onClick={() => startChallenge(challenge)}
-                      style={{
-                        width: '100%', padding: '12px', borderRadius: '12px',
-                        background: started ? `${challenge.color}18` : `linear-gradient(135deg, ${challenge.color}, ${challenge.color}bb)`,
-                        border: started ? `1.5px solid ${challenge.color}40` : 'none',
-                        color: started ? challenge.color : '#fff',
-                        fontSize: '13px', fontWeight: 700, cursor: 'pointer',
-                        boxShadow: started ? 'none' : `0 6px 20px ${challenge.color}35`,
-                        transition: 'all 0.15s ease',
-                      }}
-                    >
-                      {started ? `▶ Day ${cp.currentDay + 1} Workout` : '🚀 Start Challenge'}
-                    </button>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </>
-      )}
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+              <div style={{ fontSize: '17px', fontWeight: 800, color: 'var(--text)' }}>Body Focus</div>
+              {searchQuery && (
+                <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{filtered.length} result{filtered.length !== 1 ? 's' : ''}</span>
+              )}
+            </div>
+
+            {filtered.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-tertiary)' }}>
+                <div style={{ fontSize: '32px', marginBottom: '10px' }}>🔍</div>
+                <div style={{ fontSize: '15px', fontWeight: 600 }}>No results for "{searchQuery}"</div>
+                <div style={{ fontSize: '13px', marginTop: '4px' }}>Try "chest", "legs", or "abs"</div>
+              </div>
+            ) : (
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                gap: '14px',
+              }}>
+                {filtered.map(bp => (
+                  <button
+                    key={bp.id}
+                    onClick={() => { setSelectedBody(bp); setNavStep('levels'); }}
+                    onMouseEnter={() => setHoveredCard(bp.id)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                    style={{
+                      position: 'relative', overflow: 'hidden',
+                      borderRadius: '18px', border: 'none', cursor: 'pointer',
+                      height: '160px', padding: 0, textAlign: 'left',
+                      transform: hoveredCard === bp.id ? 'translateY(-3px) scale(1.01)' : 'translateY(0) scale(1)',
+                      boxShadow: hoveredCard === bp.id
+                        ? `0 16px 40px rgba(0,0,0,0.18), 0 0 0 2px ${bp.color}`
+                        : '0 3px 14px rgba(0,0,0,0.09)',
+                      transition: 'all 0.22s ease', outline: 'none',
+                    }}
+                  >
+                    <img
+                      src={bp.image}
+                      alt={bp.label}
+                      style={{
+                        position: 'absolute', inset: 0, width: '100%', height: '100%',
+                        objectFit: 'cover',
+                        filter: hoveredCard === bp.id ? 'brightness(0.5)' : 'brightness(0.4)',
+                        transition: 'filter 0.3s ease',
+                      }}
+                    />
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: `linear-gradient(160deg, transparent 20%, ${bp.color}aa 100%)`,
+                    }} />
+                    <div style={{
+                      position: 'relative', zIndex: 1,
+                      padding: '18px 20px', height: '100%',
+                      display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+                    }}>
+                      <div style={{ fontSize: '22px', marginBottom: '4px', lineHeight: 1 }}>{bp.icon}</div>
+                      <div style={{ fontSize: '19px', fontWeight: 800, color: '#fff', lineHeight: 1.2, marginBottom: '3px' }}>{bp.label}</div>
+                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', fontWeight: 500 }}>{bp.subtitle}</div>
+                    </div>
+                    <div style={{
+                      position: 'absolute', top: '12px', right: '12px',
+                      background: hoveredCard === bp.id ? '#fff' : 'rgba(0,0,0,0.35)',
+                      backdropFilter: 'blur(6px)',
+                      borderRadius: '10px', padding: '4px 10px',
+                      fontSize: '11px', fontWeight: 700,
+                      color: hoveredCard === bp.id ? bp.color : 'rgba(255,255,255,0.9)',
+                      transition: 'all 0.2s ease',
+                    }}>
+                      {hoveredCard === bp.id ? 'Start →' : (() => {
+                        const modes = EXERCISE_DB[bp.id] || {};
+                        const total = Object.values(modes).reduce((mSum, levels) =>
+                          mSum + Object.values(levels).reduce((lSum, exs) => lSum + exs.length, 0), 0);
+                        return `${total} exercises`;
+                      })()}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
+        );
+      })()}
 
       {navStep === 'levels' && selectedBody && (
         <>
