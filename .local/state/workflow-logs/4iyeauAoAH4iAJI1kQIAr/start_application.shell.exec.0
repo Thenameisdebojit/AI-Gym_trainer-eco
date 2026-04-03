@@ -1,0 +1,74 @@
+[1G[0K⠙[1G[0K
+> ai-fitness-frontend@1.0.0 dev
+> next dev -p 5000 -H 0.0.0.0
+
+[1G[0K⠙[1G[0K  [1m[38;2;173;127;168m▲ Next.js 14.2.35[39m[22m
+  - Local:        http://localhost:5000
+  - Network:      http://0.0.0.0:5000
+
+ [32m[1m✓[22m[39m Starting...
+ [32m[1m✓[22m[39m Ready in 3.2s
+ [37m[1m○[22m[39m Compiling / ...
+ [32m[1m✓[22m[39m Compiled / in 1149ms (475 modules)
+ GET / [32m200[39m in 1327ms
+ [32m[1m✓[22m[39m Compiled /api/recommendations in 121ms (240 modules)
+ [32m[1m✓[22m[39m Compiled (242 modules)
+ GET /api/recommendations [32m200[39m in 270ms
+ GET /api/workout/stats [32m200[39m in 275ms
+ GET /api/workout/stats [32m200[39m in 8ms
+ GET /api/recommendations [32m200[39m in 10ms
+ [32m[1m✓[22m[39m Compiled /api/exercises in 145ms (240 modules)
+ GET /api/exercises [32m200[39m in 221ms
+ GET /api/exercises [32m200[39m in 10ms
+ GET /api/exercises [32m200[39m in 10ms
+ GET /api/exercises [32m200[39m in 12ms
+ GET /api/exercises [32m200[39m in 10ms
+ [32m[1m✓[22m[39m Compiled /api/workout/stats in 55ms (242 modules)
+ GET /api/workout/stats [32m200[39m in 103ms
+ GET /api/workout/stats [32m200[39m in 6ms
+ [32m[1m✓[22m[39m Compiled /api/recommendations in 44ms (242 modules)
+ GET /api/workout/stats [32m200[39m in 129ms
+ GET /api/recommendations [32m200[39m in 136ms
+ GET /api/workout/stats [32m200[39m in 7ms
+ GET /api/recommendations [32m200[39m in 10ms
+ [32m[1m✓[22m[39m Compiled in 285ms (475 modules)
+ [32m[1m✓[22m[39m Compiled in 1247ms (473 modules)
+ [32m[1m✓[22m[39m Compiled /api/workout/stats in 157ms (239 modules)
+ [32m[1m✓[22m[39m Compiled (241 modules)
+ GET /api/workout/stats [32m200[39m in 257ms
+ GET /api/sessions?type=stats [32m200[39m in 277ms
+ GET /api/workout/stats [32m200[39m in 8ms
+ GET /api/sessions?type=stats [32m200[39m in 7ms
+ [32m[1m✓[22m[39m Compiled in 281ms (469 modules)
+ [32m[1m✓[22m[39m Compiled /api/sessions in 72ms (237 modules)
+ POST /api/sessions [32m200[39m in 186ms
+ GET /api/sessions?type=stats [32m200[39m in 9ms
+ [32m[1m✓[22m[39m Compiled /api/workout/stats in 46ms (239 modules)
+ GET /api/workout/stats [32m200[39m in 97ms
+ [32m[1m✓[22m[39m Compiled /api/recommendations in 98ms (241 modules)
+ GET /api/recommendations [32m200[39m in 137ms
+ GET /api/recommendations [32m200[39m in 7ms
+ [32m[1m✓[22m[39m Compiled in 256ms (475 modules)
+ GET / [32m200[39m in 172ms
+ GET /api/workout/stats [32m200[39m in 24ms
+ GET /api/workout/stats [32m200[39m in 17ms
+ GET /api/sessions?type=stats [32m200[39m in 45ms
+ GET /api/sessions?type=stats [32m200[39m in 52ms
+ GET / [32m200[39m in 20ms
+ GET /api/workout/stats [32m200[39m in 20ms
+ GET /api/sessions?type=stats [32m200[39m in 26ms
+ GET /api/workout/stats [32m200[39m in 18ms
+ GET /api/sessions?type=stats [32m200[39m in 59ms
+ GET / [32m200[39m in 21ms
+ GET /api/workout/stats [32m200[39m in 15ms
+ GET /api/sessions?type=stats [32m200[39m in 27ms
+ GET /api/workout/stats [32m200[39m in 7ms
+ GET /api/sessions?type=stats [32m200[39m in 12ms
+ GET /api/recommendations [32m200[39m in 7ms
+ GET /api/recommendations [32m200[39m in 6ms
+ GET / [32m200[39m in 79ms
+ GET /api/workout/stats [32m200[39m in 15ms
+ GET /api/sessions?type=stats [32m200[39m in 18ms
+ GET /api/workout/stats [32m200[39m in 19ms
+ GET /api/sessions?type=stats [32m200[39m in 24ms
+ [32m[1m✓[22m[39m Compiled in 998ms (467 modules)
