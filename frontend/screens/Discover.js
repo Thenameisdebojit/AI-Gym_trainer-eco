@@ -813,10 +813,13 @@ function SmallCard({ workout, onOpen, hovered, setHovered }) {
         {isHovered && <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ background: 'rgba(255,255,255,0.9)', borderRadius: 99, padding: '8px 20px', fontSize: 13, fontWeight: 800, color: catColor }}>▶ Start</div></div>}
       </div>
       <div style={{ padding: '12px 14px 14px' }}>
-        <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--text)', marginBottom: 6 }}>{workout.title}</div>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 99, background: `${catColor}15`, color: catColor }}>{workout.category}</span>
-          <span style={{ fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 99, background: `${LEVEL_COLORS[workout.level]}15`, color: LEVEL_COLORS[workout.level] }}>{workout.level}</span>
+        <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--text)', marginBottom: 8, lineHeight: 1.3 }}>{workout.title}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
+          <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 99, background: `${catColor}15`, color: catColor, textTransform: 'capitalize' }}>{workout.category}</span>
+          <span style={{ fontSize: 10, fontWeight: 600, padding: '3px 9px', borderRadius: 99, background: 'var(--surface-2)', color: 'var(--text-secondary)' }}>⏱ {workout.duration}m</span>
+        </div>
+        <div>
+          <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 99, background: `${LEVEL_COLORS[workout.level]}15`, color: LEVEL_COLORS[workout.level] }}>{workout.level}</span>
         </div>
       </div>
     </button>

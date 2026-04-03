@@ -366,6 +366,42 @@ const EXERCISE_DB = {
 
 const LEVEL_COLORS = { beginner: '#10B981', intermediate: '#F59E0B', advanced: '#EF4444' };
 
+const CHALLENGES = [
+  {
+    id: 'abs28',
+    name: '28 Day Abs Challenge',
+    icon: '🔥',
+    color: '#F97316',
+    totalDays: 28,
+    desc: 'Daily core work to build visible abs in 4 weeks',
+    bodyPart: { id: 'abs', label: 'Abs', icon: '🔥', color: '#F97316', subtitle: 'Core strength & definition', image: 'https://images.unsplash.com/photo-1521804906057-1df8fdb718b7?w=600&h=400&fit=crop&auto=format' },
+    mode: { id: 'home', label: 'Home' },
+    levelSchedule: ['beginner', 'beginner', 'intermediate', 'intermediate', 'intermediate', 'advanced', 'advanced'],
+  },
+  {
+    id: 'fullbody30',
+    name: '30 Day Full Body',
+    icon: '⚡',
+    color: '#2563EB',
+    totalDays: 30,
+    desc: 'Progressive full-body program from foundation to elite',
+    bodyPart: { id: 'full_body', label: 'Full Body', icon: '⚡', color: '#2563EB', subtitle: 'Total body strength & cardio', image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&h=400&fit=crop&auto=format' },
+    mode: { id: 'home', label: 'Home' },
+    levelSchedule: ['beginner', 'beginner', 'beginner', 'intermediate', 'intermediate', 'intermediate', 'advanced'],
+  },
+  {
+    id: 'fatburn14',
+    name: '14 Day Fat Burn',
+    icon: '💪',
+    color: '#EF4444',
+    totalDays: 14,
+    desc: 'Intense 2-week protocol for rapid fat loss',
+    bodyPart: { id: 'full_body', label: 'Full Body', icon: '⚡', color: '#EF4444', subtitle: 'Total body strength & cardio', image: 'https://images.unsplash.com/photo-1434608519344-49d77a124f18?w=600&h=400&fit=crop&auto=format' },
+    mode: { id: 'gym', label: 'Gym' },
+    levelSchedule: ['intermediate', 'intermediate', 'advanced', 'advanced', 'advanced', 'advanced', 'advanced'],
+  },
+];
+
 function ExerciseAnimIcon({ category }) {
   const icons = {
     chest: '🏋️', core: '🔥', legs: '🦵', back: '🎯', arms: '💪',
@@ -467,20 +503,40 @@ export default function Training() {
   const [totalCals, setTotalCals] = useState(0);
   const [completedCount, setCompletedCount] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [savedProgress, setSavedProgress] = useState(null);
+  const [challengeProgress, setChallengeProgress] = useState({});
+  const [activeChallengeId, setActiveChallengeId] = useState(null);
 
   const timerRef = useRef(null);
 
   useEffect(() => {
     fetch('/api/workout/stats').then(r => r.json()).then(setStats).catch(() => {});
     fetch('/api/sessions?type=stats').then(r => r.json()).then(setSessionStats).catch(() => {});
+    try {
+      const saved = JSON.parse(localStorage.getItem('fitai_workout_progress'));
+      if (saved && saved.exercises?.length > 0) setSavedProgress(saved);
+      const cp = JSON.parse(localStorage.getItem('fitai_challenge_progress') || '{}');
+      setChallengeProgress(cp);
+    } catch {}
   }, []);
+
+  useEffect(() => {
+    if (navStep === 'session' && exercises.length > 0) {
+      try {
+        localStorage.setItem('fitai_workout_progress', JSON.stringify({
+          exercises, exIdx, phase, totalCals, repsCount, completedCount,
+          sessionStart, selectedBody, selectedLevel, selectedMode, activeChallengeId,
+        }));
+      } catch {}
+    }
+  }, [navStep, exercises, exIdx, phase, totalCals, repsCount, completedCount, activeChallengeId]);
 
   const getExercises = useCallback(() => {
     if (!selectedBody || !selectedMode || !selectedLevel) return [];
     return EXERCISE_DB[selectedBody?.id]?.[selectedMode?.id]?.[selectedLevel?.id] || [];
   }, [selectedBody, selectedMode, selectedLevel]);
 
-  const startWorkout = () => {
+  const startWorkout = (challengeId = null) => {
     const exs = getExercises();
     setExercises(exs);
     setExIdx(0);
@@ -493,6 +549,54 @@ export default function Training() {
     setTotalCals(0);
     setCompletedCount(0);
     setSessionStart(Date.now());
+    setActiveChallengeId(challengeId);
+    setSavedProgress(null);
+    setNavStep('session');
+  };
+
+  const resumeWorkout = () => {
+    if (!savedProgress) return;
+    setExercises(savedProgress.exercises);
+    setExIdx(savedProgress.exIdx || 0);
+    setPhase('exercise');
+    setExerciseTimer(30);
+    setRestTimer(15);
+    setPaused(true);
+    setRepsCount(savedProgress.repsCount || 0);
+    setTotalCals(savedProgress.totalCals || 0);
+    setCompletedCount(savedProgress.completedCount || 0);
+    setSessionStart(savedProgress.sessionStart || Date.now());
+    setSelectedBody(savedProgress.selectedBody);
+    setSelectedLevel(savedProgress.selectedLevel);
+    setSelectedMode(savedProgress.selectedMode);
+    setActiveChallengeId(savedProgress.activeChallengeId || null);
+    setSavedProgress(null);
+    setNavStep('session');
+  };
+
+  const startChallenge = (challenge) => {
+    const cp = challengeProgress[challenge.id] || { currentDay: 0, completedDays: [] };
+    const nextDay = cp.currentDay;
+    const levelIdx = Math.floor((nextDay / challenge.totalDays) * challenge.levelSchedule.length);
+    const levelId = challenge.levelSchedule[Math.min(levelIdx, challenge.levelSchedule.length - 1)];
+    const levelObj = LEVELS.find(l => l.id === levelId) || LEVELS[0];
+    setSelectedBody(challenge.bodyPart);
+    setSelectedLevel(levelObj);
+    setSelectedMode(challenge.mode);
+    const exs = EXERCISE_DB[challenge.bodyPart.id]?.[challenge.mode.id]?.[levelId] || [];
+    setExercises(exs);
+    setExIdx(0);
+    setPhase('countdown');
+    setCountdown(5);
+    setExerciseTimer(30);
+    setRestTimer(15);
+    setPaused(false);
+    setRepsCount(0);
+    setTotalCals(0);
+    setCompletedCount(0);
+    setSessionStart(Date.now());
+    setActiveChallengeId(challenge.id);
+    setSavedProgress(null);
     setNavStep('session');
   };
 
@@ -576,7 +680,20 @@ export default function Training() {
         }),
       });
     } catch {}
+    try {
+      localStorage.removeItem('fitai_workout_progress');
+      if (activeChallengeId) {
+        const cp = JSON.parse(localStorage.getItem('fitai_challenge_progress') || '{}');
+        const prev = cp[activeChallengeId] || { currentDay: 0, completedDays: [] };
+        const nextDay = prev.currentDay + 1;
+        const updated = { ...cp, [activeChallengeId]: { currentDay: nextDay, completedDays: [...(prev.completedDays || []), prev.currentDay] } };
+        localStorage.setItem('fitai_challenge_progress', JSON.stringify(updated));
+        setChallengeProgress(updated);
+      }
+    } catch {}
     setSaving(false);
+    setActiveChallengeId(null);
+    setSavedProgress(null);
     setNavStep('home');
     setSelectedBody(null); setSelectedLevel(null); setSelectedMode(null);
     fetch('/api/sessions?type=stats').then(r => r.json()).then(setSessionStats).catch(() => {});
@@ -586,6 +703,9 @@ export default function Training() {
   const exitSession = () => {
     clearInterval(timerRef.current);
     setPaused(false);
+    try { localStorage.removeItem('fitai_workout_progress'); } catch {}
+    setActiveChallengeId(null);
+    setSavedProgress(null);
     setNavStep('workoutList');
   };
 
@@ -829,6 +949,40 @@ export default function Training() {
             </div>
           </div>
 
+          {savedProgress && savedProgress.exercises?.length > 0 && (
+            <div style={{
+              background: 'linear-gradient(135deg, #0F172A, #1E293B)',
+              borderRadius: '16px', padding: '16px 20px', marginBottom: '24px',
+              border: '1px solid rgba(255,255,255,0.1)',
+              display: 'flex', alignItems: 'center', gap: '16px',
+              boxShadow: '0 8px 28px rgba(0,0,0,0.18)',
+            }}>
+              <div style={{ fontSize: '32px', lineHeight: 1 }}>▶️</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '3px' }}>Continue Workout</div>
+                <div style={{ fontSize: '15px', fontWeight: 800, color: '#fff' }}>
+                  {savedProgress.selectedBody?.label} · {savedProgress.selectedLevel?.label} · {savedProgress.selectedMode?.label}
+                </div>
+                <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>
+                  Exercise {(savedProgress.exIdx || 0) + 1} of {savedProgress.exercises.length} · {Math.round(savedProgress.totalCals || 0)} cal burned
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button onClick={() => setSavedProgress(null)} style={{
+                  background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)',
+                  color: 'rgba(255,255,255,0.5)', padding: '8px 14px', borderRadius: '10px',
+                  fontSize: '12px', cursor: 'pointer', fontWeight: 600,
+                }}>Discard</button>
+                <button onClick={resumeWorkout} style={{
+                  background: 'linear-gradient(135deg, #2563EB, #7C3AED)', border: 'none',
+                  color: '#fff', padding: '8px 18px', borderRadius: '10px',
+                  fontSize: '13px', cursor: 'pointer', fontWeight: 700,
+                  boxShadow: '0 4px 14px rgba(37,99,235,0.4)',
+                }}>Resume →</button>
+              </div>
+            </div>
+          )}
+
           <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '16px' }}>
             Select Muscle Group
           </div>
@@ -883,18 +1037,85 @@ export default function Training() {
                     {bp.subtitle}
                   </div>
                 </div>
-                {hoveredCard === bp.id && (
-                  <div style={{
-                    position: 'absolute', top: '16px', right: '16px',
-                    background: '#fff', borderRadius: '10px', padding: '6px 12px',
-                    fontSize: '12px', fontWeight: 700, color: bp.color,
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                  }}>
-                    Start →
-                  </div>
-                )}
+                <div style={{
+                  position: 'absolute', top: '14px', right: '14px',
+                  background: hoveredCard === bp.id ? '#fff' : 'rgba(0,0,0,0.35)',
+                  backdropFilter: 'blur(6px)',
+                  borderRadius: '10px', padding: '5px 11px',
+                  fontSize: '11px', fontWeight: 700,
+                  color: hoveredCard === bp.id ? bp.color : 'rgba(255,255,255,0.9)',
+                  transition: 'all 0.2s ease',
+                }}>
+                  {hoveredCard === bp.id ? 'Start →' : (() => {
+                    const modes = EXERCISE_DB[bp.id] || {};
+                    const total = Object.values(modes).reduce((mSum, levels) =>
+                      mSum + Object.values(levels).reduce((lSum, exs) => lSum + exs.length, 0), 0);
+                    return `${total} exercises`;
+                  })()}
+                </div>
               </button>
             ))}
+          </div>
+
+          <div style={{ marginTop: '40px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>
+                Active Challenges
+              </div>
+              <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Build a streak</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
+              {CHALLENGES.map(challenge => {
+                const cp = challengeProgress[challenge.id] || { currentDay: 0, completedDays: [] };
+                const pct = Math.round((cp.currentDay / challenge.totalDays) * 100);
+                const started = cp.currentDay > 0;
+                return (
+                  <div key={challenge.id} style={{
+                    background: 'var(--surface)', borderRadius: '18px',
+                    border: `1.5px solid ${started ? challenge.color + '40' : 'var(--border-light)'}`,
+                    padding: '20px', boxShadow: started ? `0 4px 20px ${challenge.color}15` : 'var(--shadow-sm)',
+                    transition: 'all 0.2s ease',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', marginBottom: '16px' }}>
+                      <div style={{
+                        width: '48px', height: '48px', borderRadius: '14px', flexShrink: 0,
+                        background: `${challenge.color}18`, border: `1.5px solid ${challenge.color}30`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px',
+                      }}>{challenge.icon}</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text)', lineHeight: 1.2, marginBottom: '4px' }}>{challenge.name}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{challenge.desc}</div>
+                      </div>
+                    </div>
+                    {started && (
+                      <div style={{ marginBottom: '14px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                          <span style={{ fontSize: '12px', fontWeight: 600, color: challenge.color }}>Day {cp.currentDay} of {challenge.totalDays}</span>
+                          <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{pct}% done</span>
+                        </div>
+                        <div style={{ height: '6px', background: 'var(--surface-2)', borderRadius: '99px', overflow: 'hidden' }}>
+                          <div style={{ width: `${pct}%`, height: '100%', background: `linear-gradient(90deg, ${challenge.color}, ${challenge.color}bb)`, borderRadius: '99px', transition: 'width 0.6s ease' }} />
+                        </div>
+                      </div>
+                    )}
+                    <button
+                      onClick={() => startChallenge(challenge)}
+                      style={{
+                        width: '100%', padding: '12px', borderRadius: '12px',
+                        background: started ? `${challenge.color}18` : `linear-gradient(135deg, ${challenge.color}, ${challenge.color}bb)`,
+                        border: started ? `1.5px solid ${challenge.color}40` : 'none',
+                        color: started ? challenge.color : '#fff',
+                        fontSize: '13px', fontWeight: 700, cursor: 'pointer',
+                        boxShadow: started ? 'none' : `0 6px 20px ${challenge.color}35`,
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      {started ? `▶ Day ${cp.currentDay + 1} Workout` : '🚀 Start Challenge'}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </>
       )}
