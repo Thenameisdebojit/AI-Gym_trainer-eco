@@ -159,12 +159,14 @@ Config files: `mobile/eas.json`, `mobile/app.json`
   - Session auto-saved to backend on completion (POST /api/sessions)
   - Stats cards refresh from real saved sessions
 - **`frontend/screens/Discover.js`** — Full production rewrite:
-  - 24 real categorized workouts in catalog
+  - 24 real categorized workouts, each with a full exercise list (reps, duration, calories, type)
   - Live search filters by title, description, category, and level
   - Category filter chips (All, Gym, Cardio, Yoga, Calisthenics, Martial Arts, Rehab, Bodyweight)
-  - AI-powered exercise list from backend recommendations API
-  - Workout detail modal on click
-  - Empty state when no results
+  - Clicking a card opens a full DETAIL PAGE (not a modal): hero image, stats grid, complete exercise list
+  - "Start Workout" button on detail page triggers 5-second countdown → live session engine → save
+  - Three-view state machine: browse → detail → session
+  - Session saved to backend on completion; statistics update in real time
+  - Empty state with clear guidance when no results found
 - **`frontend/screens/Report.js`** — Full production rewrite:
   - All stats (sessions, calories, minutes) pulled from `/api/sessions?type=stats`
   - Recent Sessions list shows real saved sessions from backend (not hardcoded)
