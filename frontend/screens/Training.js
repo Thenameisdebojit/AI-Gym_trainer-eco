@@ -477,7 +477,7 @@ export default function Training() {
 
   const getExercises = useCallback(() => {
     if (!selectedBody || !selectedMode || !selectedLevel) return [];
-    return EXERCISE_DB[selectedBody]?.[selectedMode?.id]?.[selectedLevel?.id] || [];
+    return EXERCISE_DB[selectedBody?.id]?.[selectedMode?.id]?.[selectedLevel?.id] || [];
   }, [selectedBody, selectedMode, selectedLevel]);
 
   const startWorkout = () => {
@@ -625,6 +625,15 @@ export default function Training() {
               marginTop: '12px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
               color: '#fff', padding: '10px 24px', borderRadius: '12px', fontSize: '14px', cursor: 'pointer',
             }}>Cancel</button>
+          </div>
+        )}
+
+        {(phase === 'exercise' || phase === 'rest') && !currentExercise && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '16px' }}>
+            <div style={{ fontSize: '48px' }}>⚠️</div>
+            <div style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>No exercises found</div>
+            <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}>Please go back and select a workout.</div>
+            <button onClick={exitSession} style={{ marginTop: '12px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '12px 28px', borderRadius: '14px', fontSize: '15px', cursor: 'pointer' }}>Go Back</button>
           </div>
         )}
 

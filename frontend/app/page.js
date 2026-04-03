@@ -78,7 +78,7 @@ function FloatingChatbot() {
   return (
     <>
       {open && (
-        <div style={{ position: 'fixed', bottom: 90, right: 24, width: 340, background: 'var(--surface)', borderRadius: 20, boxShadow: '0 24px 64px rgba(0,0,0,0.18)', border: '1px solid var(--border)', zIndex: 1000, display: 'flex', flexDirection: 'column', overflow: 'hidden', animation: 'slideUp 0.2s ease' }}>
+        <div className="fab-popup" style={{ position: 'fixed', bottom: 90, right: 24, width: 340, background: 'var(--surface)', borderRadius: 20, boxShadow: '0 24px 64px rgba(0,0,0,0.18)', border: '1px solid var(--border)', zIndex: 1000, display: 'flex', flexDirection: 'column', overflow: 'hidden', animation: 'slideUp 0.2s ease' }}>
           <div style={{ background: 'linear-gradient(135deg,#1E40AF,#7C3AED)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>🤖</div>
             <div style={{ flex: 1 }}>
@@ -140,6 +140,7 @@ function FloatingChatbot() {
 
       <button
         onClick={() => setOpen(o => !o)}
+        className="fab-btn"
         style={{
           position: 'fixed', bottom: 24, right: 24, width: 56, height: 56, borderRadius: '50%',
           background: open ? '#0F172A' : 'linear-gradient(135deg,#2563EB,#7C3AED)',
@@ -147,7 +148,6 @@ function FloatingChatbot() {
           display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24,
           boxShadow: open ? '0 8px 24px rgba(0,0,0,0.25)' : '0 8px 28px rgba(37,99,235,0.45)',
           transition: 'all 0.2s ease',
-          transform: open ? 'rotate(0deg) scale(1)' : 'rotate(0deg) scale(1)',
         }}
         title="AI Coach"
       >
@@ -162,6 +162,10 @@ function FloatingChatbot() {
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes pulse { 0%,100% { opacity: 0.3; transform: scale(0.85); } 50% { opacity: 1; transform: scale(1); } }
         @keyframes ping { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(1.5); opacity: 0; } }
+        @media (max-width: 640px) {
+          .fab-btn { bottom: 80px !important; }
+          .fab-popup { bottom: 148px !important; }
+        }
       `}</style>
     </>
   );
