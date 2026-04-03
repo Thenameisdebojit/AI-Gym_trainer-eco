@@ -31,7 +31,7 @@ import { saveWorkout } from "@/lib/api";
 
 const { width } = Dimensions.get("window");
 
-type Phase = "intro" | "exercise" | "rest" | "done";
+type Phase = "countdown" | "intro" | "exercise" | "rest" | "done";
 
 function ProgressRing({ progress, color, size = 120 }: { progress: number; color: string; size?: number }) {
   const r = (size - 12) / 2;
@@ -96,7 +96,8 @@ export default function WorkoutSessionScreen() {
   const insets = useSafeAreaInsets();
   const { currentPlan, startSession, addCompletedSet, finishSession, cancelSession } = useWorkoutStore();
 
-  const [phase, setPhase] = useState<Phase>("intro");
+  const [phase, setPhase] = useState<Phase>("countdown");
+  const [countdownSec, setCountdownSec] = useState(5);
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [currentSet, setCurrentSet] = useState(1);
   const [reps, setReps] = useState(0);
@@ -111,6 +112,7 @@ export default function WorkoutSessionScreen() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const restRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoRepRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const sessionStartRef = useRef(Date.now());
 
   const FEEDBACK_MESSAGES = [
@@ -142,7 +144,23 @@ export default function WorkoutSessionScreen() {
     if (timerRef.current) clearInterval(timerRef.current);
     if (restRef.current) clearInterval(restRef.current);
     if (autoRepRef.current) clearInterval(autoRepRef.current);
+    if (countdownRef.current) clearInterval(countdownRef.current);
   };
+
+  useEffect(() => {
+    if (phase !== "countdown") return;
+    countdownRef.current = setInterval(() => {
+      setCountdownSec(s => {
+        if (s <= 1) {
+          if (countdownRef.current) clearInterval(countdownRef.current);
+          setPhase("intro");
+          return 0;
+        }
+        return s - 1;
+      });
+    }, 1000);
+    return () => { if (countdownRef.current) clearInterval(countdownRef.current); };
+  }, [phase]);
 
   useEffect(() => {
     if (phase === "exercise") {
@@ -269,6 +287,36 @@ export default function WorkoutSessionScreen() {
             <Text style={styles.backBtnText}>Go Back</Text>
           </TouchableOpacity>
         </View>
+      </View>
+    );
+  }
+
+  if (phase === "countdown") {
+    return (
+      <View style={{ flex: 1, backgroundColor: "#0F172A", alignItems: "center", justifyContent: "center" }}>
+        <Animated.View entering={FadeIn.duration(300)} style={{ alignItems: "center", gap: 24 }}>
+          <Text style={{ fontSize: 52, color: "#fff" }}>🏁</Text>
+          <Text style={{ fontSize: 20, fontWeight: "700", color: "rgba(255,255,255,0.8)" }}>Get Ready!</Text>
+          <View style={{
+            width: 140, height: 140, borderRadius: 70,
+            borderWidth: 6, borderColor: "#F97316",
+            alignItems: "center", justifyContent: "center",
+            backgroundColor: "rgba(249,115,22,0.12)",
+            shadowColor: "#F97316", shadowRadius: 20, shadowOpacity: 0.5,
+          }}>
+            <Text style={{ fontSize: 68, fontWeight: "900", color: "#F97316" }}>{countdownSec}</Text>
+          </View>
+          <Text style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", fontWeight: "600" }}>
+            {exercises.length} exercises ahead
+          </Text>
+          <TouchableOpacity onPress={() => { if (countdownRef.current) clearInterval(countdownRef.current); setPhase("intro"); }} style={{
+            marginTop: 8, paddingHorizontal: 28, paddingVertical: 12,
+            borderRadius: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.2)",
+            backgroundColor: "rgba(255,255,255,0.08)",
+          }}>
+            <Text style={{ color: "#94A3B8", fontSize: 14, fontWeight: "600" }}>Skip Countdown</Text>
+          </TouchableOpacity>
+        </Animated.View>
       </View>
     );
   }

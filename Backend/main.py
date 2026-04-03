@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config.database import engine, Base
-from routes import workout, diet, chatbot, behavior, recommendation, pose
+from routes import workout, diet, chatbot, behavior, recommendation, pose, sessions
 from routes import exercises as exercises_route
+from models import session as session_model
 
 Base.metadata.create_all(bind=engine)
 
@@ -27,6 +28,7 @@ app.include_router(behavior.router)
 app.include_router(recommendation.router)
 app.include_router(pose.router)
 app.include_router(exercises_route.router)
+app.include_router(sessions.router)
 
 
 @app.get("/")

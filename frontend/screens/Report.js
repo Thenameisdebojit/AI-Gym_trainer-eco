@@ -1,12 +1,15 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
-import StatCard from '../components/cards/StatCard';
+import { useState, useEffect } from 'react';
 import WeightChart from '../components/charts/WeightChart';
 import Button from '../components/ui/Button';
-import ProgressBar from '../components/ui/ProgressBar';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const TODAY = new Date().getDay();
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const BODY_PART_ICONS = {
+  chest: '💪', abs: '🔥', arms: '💪', legs: '🦵', back: '🎯',
+  full_body: '⚡', default: '🏋️',
+};
 
 function BMIScale({ bmi }) {
   const ranges = [
@@ -17,13 +20,10 @@ function BMIScale({ bmi }) {
   ];
   const current = ranges.find(r => bmi <= r.max) || ranges[3];
   const pct = Math.min(100, ((bmi - 10) / 30) * 100);
-
   return (
     <div>
       <div style={{ display: 'flex', gap: '4px', height: '12px', borderRadius: '99px', overflow: 'hidden', marginBottom: '10px' }}>
-        {ranges.map((r, i) => (
-          <div key={i} style={{ flex: 1, background: r.color, opacity: current.label === r.label ? 1 : 0.3 }} />
-        ))}
+        {ranges.map((r, i) => <div key={i} style={{ flex: 1, background: r.color, opacity: current.label === r.label ? 1 : 0.3 }} />)}
       </div>
       <div style={{ position: 'relative', marginBottom: '16px' }}>
         <div style={{
@@ -43,8 +43,8 @@ function BMIScale({ bmi }) {
       </div>
       <div style={{
         marginTop: '14px', textAlign: 'center',
-        background: current.color + '15', borderRadius: 'var(--radius)',
-        padding: '12px', border: `1.5px solid ${current.color}40`,
+        background: current.color + '15', borderRadius: 'var(--radius)', padding: '12px',
+        border: `1.5px solid ${current.color}40`,
       }}>
         <span style={{ fontSize: '13px', fontWeight: 600, color: current.color }}>
           {current.label} — Your BMI is {bmi}
@@ -79,27 +79,62 @@ function WeeklyBar({ data }) {
   );
 }
 
+function RelativeDate(dateStr) {
+  if (!dateStr) return 'Unknown';
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffDays = Math.floor(diffMs / 86400000);
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays < 7) return `${diffDays} days ago`;
+  return date.toLocaleDateString();
+}
+
 export default function Report() {
   const [stats, setStats] = useState(null);
-  const [weight, setWeight] = useState('');
-  const [height, setHeight] = useState('');
+  const [sessionStats, setSessionStats] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(true);
   const [weightHistory, setWeightHistory] = useState([
     { weight: 78.5, label: 'Jan' }, { weight: 77.2, label: 'Feb' },
     { weight: 76.8, label: 'Mar' }, { weight: 75.9, label: 'Apr' },
     { weight: 74.5, label: 'May' }, { weight: 73.8, label: 'Jun' },
   ]);
   const [newWeight, setNewWeight] = useState('');
+  const [weight, setWeight] = useState('');
+  const [height, setHeight] = useState('');
   const [bmi, setBmi] = useState(null);
-  const [streak, setStreak] = useState(12);
+  const [weeklyData, setWeeklyData] = useState(
+    DAYS.map(d => ({ label: d, value: 0 }))
+  );
 
   useEffect(() => {
     fetch('/api/workout/stats').then(r => r.json()).then(setStats).catch(() => {});
-  }, []);
 
-  const weeklyData = DAYS.map((d, i) => ({
-    label: d,
-    value: [45, 0, 62, 38, 0, 80, 55][i],
-  }));
+    fetch('/api/sessions?type=stats').then(r => r.json()).then(setSessionStats).catch(() => {});
+
+    setHistoryLoading(true);
+    fetch('/api/sessions?limit=20')
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setHistory(data);
+          const weekly = DAYS.map((d, i) => ({ label: d, value: 0 }));
+          data.forEach(s => {
+            if (!s.date) return;
+            const d = new Date(s.date);
+            const day = d.getDay();
+            const idx = day === 0 ? 6 : day - 1;
+            const daysDiff = Math.floor((Date.now() - d.getTime()) / 86400000);
+            if (daysDiff < 7) weekly[idx].value += Math.round(s.calories || 0);
+          });
+          setWeeklyData(weekly);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setHistoryLoading(false));
+  }, []);
 
   const calcBmi = () => {
     const w = parseFloat(weight);
@@ -110,9 +145,8 @@ export default function Report() {
   const logWeight = () => {
     const w = parseFloat(newWeight);
     if (!w) return;
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const now = new Date();
-    setWeightHistory(prev => [...prev, { weight: w, label: months[now.getMonth()] }]);
+    setWeightHistory(prev => [...prev, { weight: w, label: MONTH_NAMES[now.getMonth()] }]);
     setNewWeight('');
     if (height) {
       const h = parseFloat(height) / 100;
@@ -120,25 +154,42 @@ export default function Report() {
     }
   };
 
+  const totalSessions = sessionStats?.total_sessions ?? 0;
+  const totalCalories = Math.round(sessionStats?.total_calories ?? stats?.calories_burned ?? 0);
+  const totalMinutes = sessionStats?.total_minutes ?? (stats?.total_workouts ? stats.total_workouts * 28 : 0);
+
   return (
     <div style={{ padding: '24px 28px', maxWidth: '960px', animation: 'fadeIn 0.4s ease' }}>
       <div style={{ marginBottom: '28px' }}>
         <div style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500, marginBottom: '4px' }}>
           Your progress
         </div>
-        <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.03em' }}>
-          Report
-        </h1>
+        <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.03em' }}>Report</h1>
       </div>
 
-      {/* Stats Cards */}
       <div style={{ display: 'flex', gap: '14px', marginBottom: '28px', flexWrap: 'wrap' }}>
-        <StatCard icon="✅" label="Workouts" value={stats?.total_workouts ?? 0} sub="This month" variant="blue" change={12} />
-        <StatCard icon="🔥" label="Calories" value={stats?.calories_burned ? Math.round(stats.calories_burned) : 0} sub="Total burned" variant="orange" change={8} />
-        <StatCard icon="⏱" label="Minutes" value={stats?.total_workouts ? stats.total_workouts * 28 : 0} sub="Training time" variant="green" change={5} />
+        {[
+          { icon: '✅', label: 'Sessions', value: totalSessions, sub: 'Completed', variant: '#2563EB' },
+          { icon: '🔥', label: 'Calories', value: totalCalories, sub: 'Total burned', variant: '#F97316' },
+          { icon: '⏱', label: 'Minutes', value: totalMinutes, sub: 'Training time', variant: '#10B981' },
+        ].map((s, i) => (
+          <div key={i} style={{
+            flex: '1 1 160px', background: 'var(--surface)', borderRadius: 'var(--radius-md)',
+            padding: '20px', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--border-light)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+              <div style={{
+                width: '40px', height: '40px', borderRadius: 'var(--radius)',
+                background: s.variant + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px',
+              }}>{s.icon}</div>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)' }}>{s.label}</div>
+            </div>
+            <div style={{ fontSize: '28px', fontWeight: 900, color: 'var(--text)', lineHeight: 1 }}>{s.value}</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '4px' }}>{s.sub}</div>
+          </div>
+        ))}
       </div>
 
-      {/* Weekly Chart */}
       <div style={{
         background: 'var(--surface)', borderRadius: 'var(--radius-xl)',
         padding: '24px', marginBottom: '20px', border: '1px solid var(--border-light)',
@@ -147,47 +198,108 @@ export default function Report() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <div>
             <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginBottom: '2px' }}>Weekly Activity</h3>
-            <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Reps per day this week</p>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Calories burned per day this week</p>
           </div>
           <div style={{
-            background: 'var(--primary-50)', borderRadius: 'var(--radius)',
-            padding: '8px 14px', textAlign: 'right',
+            background: 'var(--primary-50)', borderRadius: 'var(--radius)', padding: '8px 14px', textAlign: 'right',
           }}>
             <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--primary)' }}>
               {weeklyData.reduce((a, b) => a + b.value, 0)}
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: 500 }}>Total Reps</div>
+            <div style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: 500 }}>Total kcal</div>
           </div>
         </div>
         <WeeklyBar data={weeklyData} />
       </div>
 
-      {/* Streak & Personal Best */}
       <div style={{ display: 'flex', gap: '14px', marginBottom: '20px' }}>
         <div style={{
           flex: 1, background: 'linear-gradient(135deg, #F59E0B, #F97316)',
           borderRadius: 'var(--radius-md)', padding: '20px', color: '#fff',
           boxShadow: '0 8px 24px rgba(249,115,22,0.25)',
         }}>
-          <div style={{ fontSize: '36px', marginBottom: '6px' }}>🔥</div>
-          <div style={{ fontSize: '32px', fontWeight: 800, lineHeight: 1 }}>{streak}</div>
-          <div style={{ fontSize: '13px', fontWeight: 600, opacity: 0.85, marginTop: '4px' }}>Day Streak</div>
+          <div style={{ fontSize: '36px', marginBottom: '6px' }}>🏆</div>
+          <div style={{ fontSize: '32px', fontWeight: 800, lineHeight: 1 }}>{totalSessions}</div>
+          <div style={{ fontSize: '13px', fontWeight: 600, opacity: 0.85, marginTop: '4px' }}>Total Sessions</div>
           <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '2px' }}>Keep going!</div>
         </div>
         <div style={{
           flex: 1, background: 'var(--surface)', borderRadius: 'var(--radius-md)',
           padding: '20px', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)',
         }}>
-          <div style={{ fontSize: '28px', marginBottom: '6px' }}>🏆</div>
+          <div style={{ fontSize: '28px', marginBottom: '6px' }}>💪</div>
           <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text)', lineHeight: 1 }}>
-            {stats?.total_reps ?? 0}
+            {sessionStats?.total_exercises ?? stats?.total_reps ?? 0}
           </div>
-          <div style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 600, marginTop: '4px' }}>Personal Best</div>
-          <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '2px' }}>Total reps ever</div>
+          <div style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 600, marginTop: '4px' }}>Exercises Done</div>
+          <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '2px' }}>Total completed</div>
         </div>
       </div>
 
-      {/* Weight Tracking */}
+      <div style={{
+        background: 'var(--surface)', borderRadius: 'var(--radius-xl)',
+        padding: '24px', marginBottom: '20px', border: '1px solid var(--border-light)',
+        boxShadow: 'var(--shadow-sm)',
+      }}>
+        <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginBottom: '16px' }}>
+          Recent Sessions
+        </h3>
+
+        {historyLoading ? (
+          <div style={{ textAlign: 'center', padding: '32px', color: 'var(--text-secondary)', fontSize: '14px' }}>
+            Loading sessions…
+          </div>
+        ) : history.length === 0 ? (
+          <div style={{
+            textAlign: 'center', padding: '40px', background: 'var(--surface-2)',
+            borderRadius: 'var(--radius-md)', border: '1px dashed var(--border)',
+          }}>
+            <div style={{ fontSize: '40px', marginBottom: '12px' }}>🏋️</div>
+            <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)', marginBottom: '6px' }}>No sessions yet</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+              Complete a workout in the Training tab to see your history here
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            {history.map((s, i) => {
+              const icon = BODY_PART_ICONS[s.body_part] || BODY_PART_ICONS.default;
+              const durationMin = Math.round((s.duration || 0) / 60);
+              return (
+                <div key={s.id} style={{
+                  display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 0',
+                  borderBottom: i < history.length - 1 ? '1px solid var(--border-light)' : 'none',
+                }}>
+                  <div style={{
+                    width: '44px', height: '44px', borderRadius: 'var(--radius)',
+                    background: 'var(--primary-50)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '20px', flexShrink: 0,
+                  }}>{icon}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: '14px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {s.title}
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                      {RelativeDate(s.date)} · {durationMin > 0 ? `${durationMin} min` : 'Quick session'} · {Math.round(s.calories)} cal · {s.exercises_completed} exercises
+                    </div>
+                  </div>
+                  <div style={{
+                    fontSize: '11px', fontWeight: 700,
+                    padding: '4px 10px', borderRadius: '99px',
+                    background: s.level === 'advanced' ? '#FEF2F2' : s.level === 'intermediate' ? '#FFFBEB' : '#F0FDF4',
+                    color: s.level === 'advanced' ? '#EF4444' : s.level === 'intermediate' ? '#F59E0B' : '#10B981',
+                    flexShrink: 0,
+                  }}>
+                    {s.level}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       <div style={{
         background: 'var(--surface)', borderRadius: 'var(--radius-xl)',
         padding: '24px', marginBottom: '20px', border: '1px solid var(--border-light)',
@@ -222,18 +334,16 @@ export default function Report() {
             style={{
               flex: 1, padding: '10px 14px', border: '1.5px solid var(--border)',
               borderRadius: 'var(--radius)', fontSize: '14px', color: 'var(--text)',
-              background: 'var(--surface-2)',
+              background: 'var(--surface-2)', outline: 'none',
             }}
           />
           <Button variant="primary" size="md" onClick={logWeight}>Log</Button>
         </div>
       </div>
 
-      {/* BMI Calculator */}
       <div style={{
         background: 'var(--surface)', borderRadius: 'var(--radius-xl)',
-        padding: '24px', marginBottom: '20px', border: '1px solid var(--border-light)',
-        boxShadow: 'var(--shadow-sm)',
+        padding: '24px', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)',
       }}>
         <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginBottom: '6px' }}>BMI Calculator</h3>
         <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '20px' }}>Body Mass Index</p>
@@ -243,7 +353,7 @@ export default function Report() {
             <input value={weight} onChange={e => setWeight(e.target.value)} placeholder="e.g. 70"
               type="number" style={{
                 width: '100%', padding: '10px 14px', border: '1.5px solid var(--border)',
-                borderRadius: 'var(--radius)', fontSize: '14px', color: 'var(--text)', background: 'var(--surface-2)',
+                borderRadius: 'var(--radius)', fontSize: '14px', color: 'var(--text)', background: 'var(--surface-2)', outline: 'none',
               }} />
           </div>
           <div style={{ flex: 1 }}>
@@ -251,7 +361,7 @@ export default function Report() {
             <input value={height} onChange={e => setHeight(e.target.value)} placeholder="e.g. 175"
               type="number" style={{
                 width: '100%', padding: '10px 14px', border: '1.5px solid var(--border)',
-                borderRadius: 'var(--radius)', fontSize: '14px', color: 'var(--text)', background: 'var(--surface-2)',
+                borderRadius: 'var(--radius)', fontSize: '14px', color: 'var(--text)', background: 'var(--surface-2)', outline: 'none',
               }} />
           </div>
         </div>
@@ -265,45 +375,6 @@ export default function Report() {
             <BMIScale bmi={parseFloat(bmi)} />
           </div>
         )}
-      </div>
-
-      {/* Workout History Placeholder */}
-      <div style={{
-        background: 'var(--surface)', borderRadius: 'var(--radius-xl)',
-        padding: '24px', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)',
-      }}>
-        <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginBottom: '16px' }}>Recent Sessions</h3>
-        {[
-          { date: 'Today', workout: 'HIIT Cardio', duration: 25, calories: 280, score: 92 },
-          { date: 'Yesterday', workout: 'Push Day', duration: 45, calories: 340, score: 88 },
-          { date: '2 days ago', workout: 'Yoga Flow', duration: 30, calories: 140, score: 95 },
-        ].map((s, i) => (
-          <div key={i} style={{
-            display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 0',
-            borderBottom: i < 2 ? '1px solid var(--border-light)' : 'none',
-          }}>
-            <div style={{
-              width: '44px', height: '44px', borderRadius: 'var(--radius)',
-              background: ['var(--primary-50)', 'var(--success-light)', 'var(--purple-light)'][i],
-              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0,
-            }}>
-              {['🏃', '🏋️', '🧘'][i]}
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700, fontSize: '14px', color: 'var(--text)' }}>{s.workout}</div>
-              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                {s.date} · {s.duration} min · {s.calories} cal
-              </div>
-            </div>
-            <div style={{
-              fontSize: '13px', fontWeight: 700, color: s.score >= 90 ? 'var(--success)' : s.score >= 75 ? 'var(--warning)' : 'var(--danger)',
-              background: s.score >= 90 ? 'var(--success-light)' : s.score >= 75 ? 'var(--warning-light)' : 'var(--danger-light)',
-              padding: '5px 12px', borderRadius: '99px',
-            }}>
-              {s.score}%
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   );
