@@ -12,14 +12,19 @@ const CATEGORIES = [
   { id: 'bodyweight', label: 'Bodyweight', icon: '💪', color: '#1E40AF' },
 ];
 
-const CAT_GRADIENTS = {
-  gym: 'linear-gradient(135deg, #1D4ED8, #7C3AED)',
-  cardio: 'linear-gradient(135deg, #DC2626, #F97316)',
-  yoga: 'linear-gradient(135deg, #0891B2, #06B6D4)',
-  calisthenics: 'linear-gradient(135deg, #065F46, #10B981)',
-  'martial arts': 'linear-gradient(135deg, #92400E, #F59E0B)',
-  rehab: 'linear-gradient(135deg, #5B21B6, #8B5CF6)',
-  bodyweight: 'linear-gradient(135deg, #1E40AF, #3B82F6)',
+const CAT_COLORS = {
+  gym: '#1D4ED8', cardio: '#DC2626', yoga: '#0891B2',
+  calisthenics: '#065F46', 'martial arts': '#92400E', rehab: '#5B21B6', bodyweight: '#1E40AF',
+};
+
+const CAT_IMAGES = {
+  gym: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=500&fit=crop&auto=format',
+  cardio: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&h=500&fit=crop&auto=format',
+  yoga: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&h=500&fit=crop&auto=format',
+  calisthenics: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=800&h=500&fit=crop&auto=format',
+  'martial arts': 'https://images.unsplash.com/photo-1555597673-b21d5c935865?w=800&h=500&fit=crop&auto=format',
+  rehab: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=500&fit=crop&auto=format',
+  bodyweight: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800&h=500&fit=crop&auto=format',
 };
 
 const LEVEL_COLORS = { Beginner: '#10B981', Intermediate: '#F59E0B', Advanced: '#EF4444' };
@@ -27,6 +32,7 @@ const LEVEL_COLORS = { Beginner: '#10B981', Intermediate: '#F59E0B', Advanced: '
 const WORKOUT_CATALOG = [
   {
     id: 1, title: 'Full Body Blast', category: 'gym', duration: 40, level: 'Intermediate',
+    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=700&h=420&fit=crop&auto=format',
     desc: 'Complete full-body strength circuit combining compound movements for maximum muscle activation and calorie burn.',
     exercises: [
       { name: 'Barbell Squat', reps: 10, duration: 30, type: 'legs', cals: 13 },
@@ -41,6 +47,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 2, title: 'HIIT Cardio Burn', category: 'cardio', duration: 25, level: 'Intermediate',
+    image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=700&h=420&fit=crop&auto=format',
     desc: 'High-intensity intervals that torch calories fast and keep your metabolism elevated for hours afterward.',
     exercises: [
       { name: 'Jumping Jacks', reps: 30, duration: 30, type: 'cardio', cals: 8 },
@@ -57,9 +64,10 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 3, title: 'Morning Yoga Flow', category: 'yoga', duration: 30, level: 'Beginner',
+    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=700&h=420&fit=crop&auto=format',
     desc: 'Energizing yoga sequence to wake your body, improve mobility, and set a calm, focused tone for your day.',
     exercises: [
-      { name: 'Child\'s Pose', reps: 1, duration: 30, type: 'flexibility', cals: 3 },
+      { name: "Child's Pose", reps: 1, duration: 30, type: 'flexibility', cals: 3 },
       { name: 'Cat-Cow Stretch', reps: 10, duration: 30, type: 'mobility', cals: 4 },
       { name: 'Downward Dog', reps: 1, duration: 30, type: 'strength', cals: 5 },
       { name: 'Sun Salutation A', reps: 3, duration: 30, type: 'flow', cals: 6 },
@@ -75,6 +83,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 4, title: 'Calisthenics Power', category: 'calisthenics', duration: 45, level: 'Advanced',
+    image: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=700&h=420&fit=crop&auto=format',
     desc: 'Bodyweight mastery session focusing on pushing, pulling, and core strength for elite bodyweight control.',
     exercises: [
       { name: 'Muscle-Up Progressions', reps: 5, duration: 30, type: 'upper body', cals: 14 },
@@ -91,6 +100,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 5, title: '7-Minute Abs', category: 'cardio', duration: 7, level: 'Intermediate',
+    image: 'https://images.unsplash.com/photo-1521804906057-1df8fdb718b7?w=700&h=420&fit=crop&auto=format',
     desc: 'Science-backed 7-minute core circuit targeting every abdominal muscle for definition and functional strength.',
     exercises: [
       { name: 'Crunches', reps: 20, duration: 30, type: 'upper abs', cals: 7 },
@@ -104,6 +114,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 6, title: 'Strength Builder', category: 'gym', duration: 55, level: 'Advanced',
+    image: 'https://images.unsplash.com/photo-1581009137042-c552e485697a?w=700&h=420&fit=crop&auto=format',
     desc: 'Progressive overload program with compound and isolation movements designed for maximum hypertrophy and strength gains.',
     exercises: [
       { name: 'Barbell Back Squat', reps: 5, duration: 30, type: 'legs', cals: 14 },
@@ -122,6 +133,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 7, title: 'Gentle Morning Stretch', category: 'yoga', duration: 15, level: 'Beginner',
+    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=700&h=420&fit=crop&auto=format',
     desc: 'Easy flexibility and mobility work suitable for all ages and fitness levels. Perfect to start any morning.',
     exercises: [
       { name: 'Neck Rolls', reps: 5, duration: 30, type: 'mobility', cals: 2 },
@@ -136,6 +148,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 8, title: 'Push Day Classic', category: 'gym', duration: 50, level: 'Intermediate',
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=700&h=420&fit=crop&auto=format',
     desc: 'Complete chest, shoulders, and triceps session with progressive sets and optimal rep ranges for growth.',
     exercises: [
       { name: 'Flat Bench Press', reps: 10, duration: 30, type: 'chest', cals: 12 },
@@ -151,6 +164,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 9, title: 'Bodyweight Only', category: 'bodyweight', duration: 30, level: 'Beginner',
+    image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=700&h=420&fit=crop&auto=format',
     desc: 'No equipment needed. A complete total-body session you can do anywhere — hotel room, park, or living room.',
     exercises: [
       { name: 'Warm-Up Jog in Place', reps: 1, duration: 30, type: 'cardio', cals: 5 },
@@ -165,6 +179,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 10, title: 'Sprint Intervals', category: 'cardio', duration: 20, level: 'Advanced',
+    image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=700&h=420&fit=crop&auto=format',
     desc: 'Explosive sprint protocol for peak cardiovascular performance and fat burning in minimal time.',
     exercises: [
       { name: 'Dynamic Warm-Up', reps: 1, duration: 30, type: 'mobility', cals: 5 },
@@ -177,6 +192,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 11, title: 'Pull Day Classic', category: 'gym', duration: 45, level: 'Intermediate',
+    image: 'https://images.unsplash.com/photo-1574680178050-55c6a6a96e0a?w=700&h=420&fit=crop&auto=format',
     desc: 'Back and bicep focused mass builder using vertical and horizontal pulling patterns.',
     exercises: [
       { name: 'Weighted Pull-Ups', reps: 8, duration: 30, type: 'back', cals: 13 },
@@ -194,6 +210,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 12, title: 'First Push-Up', category: 'bodyweight', duration: 20, level: 'Beginner',
+    image: 'https://images.unsplash.com/photo-1486218119243-13301543a822?w=700&h=420&fit=crop&auto=format',
     desc: 'Learn the correct push-up form from zero, progressing through the movement pattern safely.',
     exercises: [
       { name: 'Wall Push-Ups', reps: 15, duration: 30, type: 'chest', cals: 5 },
@@ -206,6 +223,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 15, title: '100 Burpee Challenge', category: 'cardio', duration: 30, level: 'Advanced',
+    image: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=700&h=420&fit=crop&auto=format',
     desc: 'The ultimate mental and physical toughness test. 100 burpees — track your time and beat it next session.',
     exercises: [
       { name: 'Burpee Block 1 (×25)', reps: 25, duration: 30, type: 'full body', cals: 35 },
@@ -219,6 +237,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 16, title: 'Muscle-Up Mastery', category: 'calisthenics', duration: 40, level: 'Advanced',
+    image: 'https://images.unsplash.com/photo-1598971639058-fab3c3109a3?w=700&h=420&fit=crop&auto=format',
     desc: 'Structured progression to achieve your first muscle-up, combining pull and push strength patterns.',
     exercises: [
       { name: 'Scapular Pull-Ups', reps: 10, duration: 30, type: 'back', cals: 8 },
@@ -232,6 +251,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 17, title: 'Rehab Shoulder', category: 'rehab', duration: 20, level: 'Beginner',
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=700&h=420&fit=crop&auto=format',
     desc: 'Evidence-based shoulder rehabilitation protocol to restore strength, mobility, and pain-free movement.',
     exercises: [
       { name: 'Pendulum Swings', reps: 20, duration: 30, type: 'mobility', cals: 3 },
@@ -246,6 +266,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 18, title: 'Muay Thai Basics', category: 'martial arts', duration: 30, level: 'Beginner',
+    image: 'https://images.unsplash.com/photo-1555597673-b21d5c935865?w=700&h=420&fit=crop&auto=format',
     desc: 'Fundamental Muay Thai strikes, footwork, and conditioning. Build power and technique from the ground up.',
     exercises: [
       { name: 'Shadow Boxing Warm-Up', reps: 1, duration: 30, type: 'cardio', cals: 8 },
@@ -262,6 +283,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 20, title: 'Core Stability', category: 'bodyweight', duration: 20, level: 'Beginner',
+    image: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=700&h=420&fit=crop&auto=format',
     desc: 'Foundation core work combining anti-rotation, stability, and endurance for injury prevention and performance.',
     exercises: [
       { name: 'Dead Bug', reps: 10, duration: 30, type: 'core', cals: 5 },
@@ -276,6 +298,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 22, title: 'Knee Rehab', category: 'rehab', duration: 25, level: 'Beginner',
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=700&h=420&fit=crop&auto=format',
     desc: 'Evidence-based knee injury recovery protocol strengthening the quad, hamstring, and glute chain safely.',
     exercises: [
       { name: 'Quad Sets', reps: 15, duration: 30, type: 'quads', cals: 3 },
@@ -289,6 +312,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 23, title: 'MMA Conditioning', category: 'martial arts', duration: 45, level: 'Intermediate',
+    image: 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=700&h=420&fit=crop&auto=format',
     desc: 'Fight-ready cardio and strength conditioning circuit used by MMA athletes for peak performance.',
     exercises: [
       { name: 'Shadow Boxing', reps: 1, duration: 30, type: 'cardio', cals: 10 },
@@ -307,6 +331,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 24, title: 'Dumbbell Full Body', category: 'gym', duration: 35, level: 'Beginner',
+    image: 'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=700&h=420&fit=crop&auto=format',
     desc: 'Versatile dumbbell program hitting every major muscle group. Works equally well at home or in the gym.',
     exercises: [
       { name: 'DB Goblet Squat', reps: 15, duration: 30, type: 'legs', cals: 9 },
@@ -325,17 +350,15 @@ const WORKOUT_CATALOG = [
   },
 ];
 
-function ExerciseIcon({ type }) {
-  const map = {
-    chest: '💪', legs: '🦵', back: '🎯', core: '🔥', cardio: '❤️',
-    shoulders: '🙆', biceps: '💪', triceps: '💪', 'full body': '⚡',
-    flexibility: '🧘', mobility: '🔄', balance: '⚖️', recovery: '😤',
-    flow: '🌊', 'rotator cuff': '🩺', 'upper abs': '🔥', 'lower abs': '🔥',
-    obliques: '🔥', punching: '🥊', kicking: '🦵', knees: '🦵', elbows: '💥',
-    wrestling: '🤼', strength: '💪', grip: '✊', stability: '⚖️',
-  };
-  return <span style={{ fontSize: '18px' }}>{map[type] || '🏋️'}</span>;
-}
+const EXERCISE_ICONS = {
+  chest: '💪', legs: '🦵', back: '🎯', core: '🔥', cardio: '❤️',
+  shoulders: '🙆', biceps: '💪', triceps: '💪', 'full body': '⚡',
+  flexibility: '🧘', mobility: '🔄', balance: '⚖️', recovery: '😤',
+  flow: '🌊', 'rotator cuff': '🩺', 'upper abs': '🔥', 'lower abs': '🔥',
+  obliques: '🔥', punching: '🥊', kicking: '🦵', knees: '🦵',
+  wrestling: '🤼', strength: '💪', grip: '✊', stability: '⚖️',
+  'upper body': '💪', 'full abs': '🔥', quads: '🦵', hips: '🦵', glutes: '🍑',
+};
 
 function PulsingBall({ category, isActive }) {
   const [pulse, setPulse] = useState(false);
@@ -344,14 +367,15 @@ function PulsingBall({ category, isActive }) {
     const t = setInterval(() => setPulse(p => !p), 800);
     return () => clearInterval(t);
   }, [isActive]);
-  const grad = CAT_GRADIENTS[category] || 'linear-gradient(135deg,#2563EB,#7C3AED)';
+  const color = CAT_COLORS[category] || '#2563EB';
   return (
     <div style={{
-      width: 128, height: 128, borderRadius: '50%', background: grad,
-      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '56px',
+      width: 128, height: 128, borderRadius: '50%',
+      background: `linear-gradient(135deg, ${color}, #7C3AED)`,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 56,
       boxShadow: pulse && isActive
-        ? '0 0 0 20px rgba(37,99,235,0.15),0 0 0 40px rgba(37,99,235,0.07)'
-        : '0 8px 32px rgba(37,99,235,0.35)',
+        ? `0 0 0 20px ${color}22, 0 0 0 40px ${color}0f`
+        : `0 8px 32px ${color}55`,
       transition: 'all 0.4s ease',
     }}>
       {CATEGORIES.find(c => c.id === category)?.icon || '🏋️'}
@@ -370,10 +394,109 @@ function CountdownRing({ value, max, color = '#2563EB' }) {
           strokeLinecap="round" style={{ transition: 'stroke-dashoffset 1s linear' }} />
       </svg>
       <div style={{ textAlign: 'center', zIndex: 1 }}>
-        <div style={{ fontSize: '32px', fontWeight: 900, color, lineHeight: 1 }}>{value}</div>
-        <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600 }}>sec</div>
+        <div style={{ fontSize: 32, fontWeight: 900, color, lineHeight: 1 }}>{value}</div>
+        <div style={{ fontSize: 11, color: '#64748B', fontWeight: 600 }}>sec</div>
       </div>
     </div>
+  );
+}
+
+function WorkoutCard({ workout, onOpen, hovered, setHovered }) {
+  const catColor = CAT_COLORS[workout.category] || '#2563EB';
+  const levelColor = LEVEL_COLORS[workout.level] || '#10B981';
+  const totalCals = workout.exercises.reduce((s, e) => s + (e.cals || 0), 0);
+  const isHovered = hovered === workout.id;
+
+  return (
+    <button
+      onClick={() => onOpen(workout)}
+      onMouseEnter={() => setHovered(workout.id)}
+      onMouseLeave={() => setHovered(null)}
+      style={{
+        position: 'relative', overflow: 'hidden', borderRadius: '18px',
+        border: `2px solid ${isHovered ? catColor : 'var(--border)'}`,
+        cursor: 'pointer', padding: 0, textAlign: 'left',
+        background: 'var(--surface)',
+        transform: isHovered ? 'translateY(-5px)' : 'translateY(0)',
+        boxShadow: isHovered ? `0 20px 48px rgba(0,0,0,0.14), 0 0 0 1px ${catColor}30` : '0 2px 12px rgba(0,0,0,0.07)',
+        transition: 'all 0.22s ease', outline: 'none',
+      }}
+    >
+      <div style={{ position: 'relative', height: '150px', overflow: 'hidden' }}>
+        <img
+          src={workout.image}
+          alt={workout.title}
+          style={{
+            width: '100%', height: '100%', objectFit: 'cover',
+            filter: isHovered ? 'brightness(0.6)' : 'brightness(0.5)',
+            transition: 'filter 0.3s ease',
+          }}
+        />
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: `linear-gradient(160deg, transparent 30%, ${catColor}bb)`,
+        }} />
+        <div style={{
+          position: 'absolute', top: 10, left: 10,
+          background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(6px)',
+          borderRadius: '99px', padding: '4px 11px', fontSize: 11, fontWeight: 700, color: '#fff',
+        }}>
+          {workout.duration} min
+        </div>
+        <div style={{
+          position: 'absolute', top: 10, right: 10,
+          background: `${levelColor}dd`, borderRadius: '99px',
+          padding: '4px 10px', fontSize: 10, fontWeight: 800, color: '#fff',
+        }}>
+          {workout.level}
+        </div>
+        {isHovered && (
+          <div style={{
+            position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <div style={{
+              background: 'rgba(255,255,255,0.95)', borderRadius: '50px',
+              padding: '10px 22px', fontSize: 14, fontWeight: 800, color: catColor,
+              boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+            }}>
+              ▶ Start
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div style={{ padding: '14px 16px 16px' }}>
+        <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)', marginBottom: 5, lineHeight: 1.3 }}>
+          {workout.title}
+        </div>
+        <div style={{
+          fontSize: 11, color: 'var(--text-secondary)', marginBottom: 10, lineHeight: 1.5,
+          overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+        }}>
+          {workout.desc}
+        </div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          <span style={{
+            fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 99,
+            background: `${catColor}15`, color: catColor,
+          }}>
+            {CATEGORIES.find(c => c.id === workout.category)?.icon} {workout.category}
+          </span>
+          <span style={{
+            fontSize: 10, fontWeight: 600, padding: '3px 9px', borderRadius: 99,
+            background: 'var(--primary-50)', color: 'var(--primary)',
+          }}>
+            {workout.exercises.length} exercises
+          </span>
+          <span style={{
+            fontSize: 10, fontWeight: 600, padding: '3px 9px', borderRadius: 99,
+            background: 'var(--surface-2)', color: 'var(--text-secondary)',
+          }}>
+            🔥 ~{totalCals} cal
+          </span>
+        </div>
+      </div>
+    </button>
   );
 }
 
@@ -381,8 +504,8 @@ export default function Discover() {
   const [view, setView] = useState('browse');
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
-  const [apiExercises, setApiExercises] = useState([]);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
+  const [hoveredCard, setHoveredCard] = useState(null);
 
   const [phase, setPhase] = useState('countdown');
   const [countdown, setCountdown] = useState(5);
@@ -397,11 +520,6 @@ export default function Discover() {
   const [saving, setSaving] = useState(false);
 
   const timerRef = useRef(null);
-
-  useEffect(() => {
-    fetch('/api/recommendations').then(r => r.json())
-      .then(d => { if (Array.isArray(d)) setApiExercises(d); }).catch(() => {});
-  }, []);
 
   const filtered = useMemo(() => {
     let r = WORKOUT_CATALOG;
@@ -439,12 +557,8 @@ export default function Discover() {
 
   const goBack = () => {
     clearInterval(timerRef.current);
-    if (view === 'session') {
-      setView('detail');
-    } else {
-      setSelectedWorkout(null);
-      setView('browse');
-    }
+    if (view === 'session') setView('detail');
+    else { setSelectedWorkout(null); setView('browse'); }
   };
 
   const exercises = selectedWorkout?.exercises || [];
@@ -453,29 +567,15 @@ export default function Discover() {
   const markDone = useCallback(() => {
     clearInterval(timerRef.current);
     const ex = exercises[exIdx];
-    if (ex) {
-      setTotalCals(c => c + (ex.cals || 8));
-      setTotalReps(r => r + (ex.reps || 10));
-      setCompletedCount(c => c + 1);
-    }
-    if (exIdx < exercises.length - 1) {
-      setExIdx(i => i + 1);
-      setPhase('rest');
-      setRestTimer(15);
-    } else {
-      setPhase('done');
-    }
+    if (ex) { setTotalCals(c => c + (ex.cals || 8)); setTotalReps(r => r + (ex.reps || 10)); setCompletedCount(c => c + 1); }
+    if (exIdx < exercises.length - 1) { setExIdx(i => i + 1); setPhase('rest'); setRestTimer(15); }
+    else { setPhase('done'); }
   }, [exIdx, exercises]);
 
   const skipExercise = useCallback(() => {
     clearInterval(timerRef.current);
-    if (exIdx < exercises.length - 1) {
-      setExIdx(i => i + 1);
-      setPhase('rest');
-      setRestTimer(15);
-    } else {
-      setPhase('done');
-    }
+    if (exIdx < exercises.length - 1) { setExIdx(i => i + 1); setPhase('rest'); setRestTimer(15); }
+    else { setPhase('done'); }
   }, [exIdx, exercises]);
 
   useEffect(() => {
@@ -496,11 +596,7 @@ export default function Discover() {
           if (t <= 1) {
             clearInterval(timerRef.current);
             const ex = exercises[exIdx];
-            if (ex) {
-              setTotalCals(c => c + (ex.cals || 8));
-              setTotalReps(r => r + (ex.reps || 10));
-              setCompletedCount(c => c + 1);
-            }
+            if (ex) { setTotalCals(c => c + (ex.cals || 8)); setTotalReps(r => r + (ex.reps || 10)); setCompletedCount(c => c + 1); }
             if (exIdx < exercises.length - 1) { setPhase('rest'); setRestTimer(15); }
             else { setPhase('done'); }
             return 0;
@@ -511,13 +607,7 @@ export default function Discover() {
     } else if (phase === 'rest') {
       timerRef.current = setInterval(() => {
         setRestTimer(t => {
-          if (t <= 1) {
-            clearInterval(timerRef.current);
-            setExIdx(i => i + 1);
-            setPhase('exercise');
-            setExerciseTimer(30);
-            return 0;
-          }
+          if (t <= 1) { clearInterval(timerRef.current); setExIdx(i => i + 1); setPhase('exercise'); setExerciseTimer(30); return 0; }
           return t - 1;
         });
       }, 1000);
@@ -551,11 +641,9 @@ export default function Discover() {
     const totalDuration = sessionStart ? Math.round((Date.now() - sessionStart) / 1000) : 0;
     const totalMin = Math.floor(totalDuration / 60);
     const totalSec = totalDuration % 60;
-    const grad = CAT_GRADIENTS[selectedWorkout.category] || 'linear-gradient(135deg,#2563EB,#7C3AED)';
 
     return (
       <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg, #0F172A 0%, #1E293B 100%)', color: '#fff' }}>
-
         {phase === 'countdown' && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: 24, animation: 'fadeIn 0.4s ease' }}>
             <div style={{ fontSize: 52 }}>🏁</div>
@@ -567,9 +655,9 @@ export default function Discover() {
               marginTop: 8, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
               color: '#94A3B8', padding: '10px 24px', borderRadius: 12, fontSize: 14, cursor: 'pointer',
             }}>Skip Countdown</button>
-            <button onClick={goBack} style={{
-              background: 'transparent', border: 'none', color: '#475569', fontSize: 13, cursor: 'pointer',
-            }}>← Back to details</button>
+            <button onClick={goBack} style={{ background: 'transparent', border: 'none', color: '#475569', fontSize: 13, cursor: 'pointer' }}>
+              ← Back to details
+            </button>
           </div>
         )}
 
@@ -690,31 +778,43 @@ export default function Discover() {
               <button onClick={saveSession} disabled={saving} style={{
                 flex: 2, padding: 16, borderRadius: 16,
                 background: saving ? 'rgba(37,99,235,0.4)' : 'linear-gradient(135deg, #2563EB, #7C3AED)',
-                border: 'none', color: '#fff', fontSize: 15, fontWeight: 700, cursor: saving ? 'wait' : 'pointer',
-                boxShadow: '0 8px 24px rgba(37,99,235,0.4)',
+                border: 'none', color: '#fff', fontSize: 15, fontWeight: 700,
+                cursor: saving ? 'wait' : 'pointer', boxShadow: '0 8px 24px rgba(37,99,235,0.4)',
               }}>{saving ? 'Saving…' : '💾 Save Session'}</button>
             </div>
           </div>
         )}
+
+        <style>{`@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }`}</style>
       </div>
     );
   }
 
   if (view === 'detail' && selectedWorkout) {
-    const grad = CAT_GRADIENTS[selectedWorkout.category] || 'linear-gradient(135deg,#2563EB,#7C3AED)';
+    const catColor = CAT_COLORS[selectedWorkout.category] || '#2563EB';
+    const levelColor = LEVEL_COLORS[selectedWorkout.level] || '#10B981';
     const cat = CATEGORIES.find(c => c.id === selectedWorkout.category);
     const totalCalsPreview = selectedWorkout.exercises.reduce((sum, ex) => sum + (ex.cals || 0), 0);
     const totalRepsPreview = selectedWorkout.exercises.reduce((sum, ex) => sum + (ex.reps || 0), 0);
 
     return (
       <div style={{ animation: 'fadeIn 0.3s ease', background: 'var(--bg)', minHeight: '100vh' }}>
-        <div style={{ height: 220, background: grad, position: 'relative', display: 'flex', alignItems: 'flex-end' }}>
+        <div style={{ position: 'relative', height: 260, overflow: 'hidden' }}>
+          <img
+            src={selectedWorkout.image}
+            alt={selectedWorkout.title}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.45)' }}
+          />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: `linear-gradient(160deg, transparent 20%, ${catColor}99 100%)`,
+          }} />
           <button onClick={() => { setSelectedWorkout(null); setView('browse'); }} style={{
-            position: 'absolute', top: 20, left: 20, background: 'rgba(0,0,0,0.3)',
-            backdropFilter: 'blur(6px)', border: 'none', color: '#fff',
-            width: 40, height: 40, borderRadius: 12, fontSize: 18, cursor: 'pointer',
+            position: 'absolute', top: 20, left: 20, background: 'rgba(0,0,0,0.4)',
+            backdropFilter: 'blur(8px)', border: 'none', color: '#fff',
+            width: 42, height: 42, borderRadius: 12, fontSize: 18, cursor: 'pointer',
           }}>←</button>
-          <div style={{ padding: '0 28px 28px', width: '100%' }}>
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 28px 28px' }}>
             <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
               <span style={{
                 background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(6px)',
@@ -722,17 +822,16 @@ export default function Discover() {
               }}>{cat?.icon} {selectedWorkout.category}</span>
               <span style={{
                 padding: '4px 12px', borderRadius: 99, fontSize: 12, fontWeight: 700,
-                background: `${LEVEL_COLORS[selectedWorkout.level]}30`, color: '#fff',
-                backdropFilter: 'blur(6px)',
+                background: `${levelColor}cc`, color: '#fff', backdropFilter: 'blur(6px)',
               }}>{selectedWorkout.level}</span>
             </div>
-            <div style={{ fontSize: 28, fontWeight: 900, color: '#fff', lineHeight: 1.2 }}>
+            <div style={{ fontSize: 30, fontWeight: 900, color: '#fff', lineHeight: 1.2 }}>
               {selectedWorkout.title}
             </div>
           </div>
         </div>
 
-        <div style={{ padding: '24px 28px', maxWidth: 760 }}>
+        <div style={{ padding: '24px 28px', maxWidth: 800 }}>
           <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 24 }}>
             {selectedWorkout.desc}
           </p>
@@ -755,78 +854,90 @@ export default function Discover() {
             ))}
           </div>
 
-          <div style={{ marginBottom: 28 }}>
-            <h3 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 14 }}>
-              Exercise List
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {selectedWorkout.exercises.map((ex, i) => (
-                <div key={i} style={{
-                  display: 'flex', alignItems: 'center', gap: 14,
-                  background: 'var(--surface)', borderRadius: 'var(--radius-md)', padding: '14px 16px',
-                  border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)',
-                }}>
-                  <div style={{
-                    width: 36, height: 36, borderRadius: 10, background: 'var(--primary-50)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 14, fontWeight: 800, color: 'var(--primary)', flexShrink: 0,
-                  }}>{i + 1}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{ex.name}</div>
-                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>
-                      {ex.reps} reps · 30 sec · ~{ex.cals} cal
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-                    <ExerciseIcon type={ex.type} />
-                    <span style={{
-                      fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)',
-                      background: 'var(--surface-2)', padding: '3px 8px', borderRadius: 6,
-                    }}>{ex.type}</span>
+          <h3 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 14 }}>
+            Exercise List
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 28 }}>
+            {selectedWorkout.exercises.map((ex, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', gap: 14,
+                background: 'var(--surface)', borderRadius: 'var(--radius-md)', padding: '14px 16px',
+                border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)',
+              }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: 10,
+                  background: `${catColor}15`, border: `1.5px solid ${catColor}30`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 13, fontWeight: 800, color: catColor, flexShrink: 0,
+                }}>{i + 1}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{ex.name}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>
+                    {ex.reps} reps · {ex.duration}s · ~{ex.cals} cal
                   </div>
                 </div>
-              ))}
-            </div>
+                <span style={{
+                  fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)',
+                  background: 'var(--surface-2)', padding: '3px 10px', borderRadius: 8,
+                }}>
+                  {EXERCISE_ICONS[ex.type] || '🏋️'} {ex.type}
+                </span>
+              </div>
+            ))}
           </div>
 
-          <button onClick={startWorkout} style={{
-            width: '100%', padding: 18, borderRadius: 'var(--radius-md)',
-            background: grad, border: 'none', color: '#fff',
-            fontSize: 18, fontWeight: 800, cursor: 'pointer',
-            boxShadow: '0 12px 36px rgba(37,99,235,0.3)',
-            letterSpacing: '-0.01em',
-          }}>
+          <button
+            onClick={startWorkout}
+            style={{
+              width: '100%', padding: 18, borderRadius: 'var(--radius-md)',
+              background: `linear-gradient(135deg, ${catColor}, #7C3AED)`,
+              border: 'none', color: '#fff', fontSize: 18, fontWeight: 800, cursor: 'pointer',
+              boxShadow: `0 12px 36px ${catColor}40`, letterSpacing: '-0.01em',
+              transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+          >
             ▶ Start Workout
           </button>
         </div>
+
+        <style>{`@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }`}</style>
       </div>
     );
   }
 
   const sections = [
     { key: 'picks', label: "Editor's Picks ⭐", items: WORKOUT_CATALOG.slice(0, 4) },
-    { key: 'fast', label: 'Quick Workouts ⚡ (< 15 min)', items: WORKOUT_CATALOG.filter(w => w.duration <= 15) },
+    { key: 'fast', label: 'Quick Workouts ⚡', items: WORKOUT_CATALOG.filter(w => w.duration <= 20) },
     { key: 'beginner', label: 'Great for Beginners 🌱', items: WORKOUT_CATALOG.filter(w => w.level === 'Beginner') },
-    { key: 'advanced', label: 'Advanced Challenges 🔥', items: WORKOUT_CATALOG.filter(w => w.level === 'Advanced').slice(0, 4) },
+    { key: 'advanced', label: 'Advanced Challenges 🔥', items: WORKOUT_CATALOG.filter(w => w.level === 'Advanced') },
   ];
 
+  const isFiltering = search.trim() || category !== 'all';
+
   return (
-    <div style={{ padding: '24px 28px', maxWidth: 960, animation: 'fadeIn 0.4s ease' }}>
+    <div style={{ padding: '28px 32px', maxWidth: 1100, animation: 'fadeIn 0.35s ease' }}>
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500, marginBottom: 4 }}>Explore workouts</div>
-        <h1 style={{ fontSize: 28, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.03em' }}>Discover</h1>
+        <h1 style={{ fontSize: 30, fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.03em', marginBottom: 6 }}>Discover</h1>
+        <p style={{ fontSize: 15, color: 'var(--text-secondary)' }}>
+          {WORKOUT_CATALOG.length} workouts across {CATEGORIES.length - 1} categories
+        </p>
       </div>
 
-      <div style={{ position: 'relative', marginBottom: 20 }}>
+      <div style={{ position: 'relative', marginBottom: 16 }}>
         <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 16, pointerEvents: 'none' }}>🔍</span>
         <input
-          value={search} onChange={e => setSearch(e.target.value)}
-          placeholder="Search workouts by name, category, or level…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search by name, category, or level…"
           style={{
-            width: '100%', padding: '14px 14px 14px 42px',
-            border: '1.5px solid var(--border)', borderRadius: 'var(--radius-md)',
+            width: '100%', padding: '13px 44px 13px 44px',
+            border: '1.5px solid var(--border)', borderRadius: '14px',
             fontSize: 14, color: 'var(--text)', background: 'var(--surface)',
             boxShadow: 'var(--shadow-sm)', outline: 'none', boxSizing: 'border-box',
+            transition: 'border-color 0.15s ease',
           }}
           onFocus={e => e.target.style.borderColor = 'var(--primary)'}
           onBlur={e => e.target.style.borderColor = 'var(--border)'}
@@ -840,7 +951,7 @@ export default function Discover() {
         )}
       </div>
 
-      <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4, marginBottom: 24 }} className="hide-scroll">
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 28 }}>
         {CATEGORIES.map(c => (
           <button key={c.id} onClick={() => setCategory(c.id)} style={{
             padding: '8px 16px', borderRadius: 99, fontSize: 13, fontWeight: 600,
@@ -848,33 +959,38 @@ export default function Discover() {
             background: category === c.id ? `${c.color}15` : 'var(--surface)',
             color: category === c.id ? c.color : 'var(--text-secondary)',
             cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, transition: 'all 0.15s ease',
+            outline: 'none',
           }}>
             {c.icon} {c.label}
           </button>
         ))}
+        {isFiltering && (
+          <button onClick={() => { setSearch(''); setCategory('all'); }} style={{
+            padding: '8px 14px', borderRadius: 99, fontSize: 13, fontWeight: 600,
+            border: '1.5px solid var(--border)', background: 'transparent',
+            color: 'var(--text-secondary)', cursor: 'pointer', outline: 'none',
+          }}>✕ Clear</button>
+        )}
       </div>
 
-      {(search || category !== 'all') ? (
+      {isFiltering ? (
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>
-              {filtered.length} result{filtered.length !== 1 ? 's' : ''}
-              {search ? ` for "${search}"` : ''}
-              {category !== 'all' ? ` in ${CATEGORIES.find(c => c.id === category)?.label}` : ''}
-            </h3>
-            <button onClick={() => { setSearch(''); setCategory('all'); }} style={{
-              background: 'none', border: 'none', color: 'var(--primary)', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-            }}>Clear ✕</button>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 18 }}>
+            {filtered.length} result{filtered.length !== 1 ? 's' : ''}
+            {search ? ` for "${search}"` : ''}
+            {category !== 'all' ? ` in ${CATEGORIES.find(c => c.id === category)?.label}` : ''}
           </div>
           {filtered.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '60px 20px', background: 'var(--surface)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border-light)' }}>
+            <div style={{ textAlign: 'center', padding: '60px 20px', background: 'var(--surface)', borderRadius: 20, border: '1px solid var(--border-light)' }}>
               <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
               <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>No workouts found</div>
               <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Try a different search or category</div>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 14 }}>
-              {filtered.map(w => <WorkoutCard key={w.id} workout={w} onOpen={openDetail} />)}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 18 }}>
+              {filtered.map(w => (
+                <WorkoutCard key={w.id} workout={w} onOpen={openDetail} hovered={hoveredCard} setHovered={setHoveredCard} />
+              ))}
             </div>
           )}
         </div>
@@ -883,57 +999,23 @@ export default function Discover() {
           {sections.map(sec => {
             if (!sec.items.length) return null;
             return (
-              <div key={sec.key} style={{ marginBottom: 28 }}>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', marginBottom: 14 }}>{sec.label}</h3>
-                <div style={{ display: 'flex', gap: 14, overflowX: 'auto', paddingBottom: 6 }} className="hide-scroll">
-                  {sec.items.map(w => <WorkoutCard key={w.id} workout={w} onOpen={openDetail} />)}
+              <div key={sec.key} style={{ marginBottom: 36 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                  <h3 style={{ fontSize: 17, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.01em' }}>{sec.label}</h3>
+                  <span style={{ fontSize: 12, color: 'var(--text-tertiary)', fontWeight: 500 }}>{sec.items.length} workouts</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 18 }}>
+                  {sec.items.map(w => (
+                    <WorkoutCard key={w.id} workout={w} onOpen={openDetail} hovered={hoveredCard} setHovered={setHoveredCard} />
+                  ))}
                 </div>
               </div>
             );
           })}
         </div>
       )}
-    </div>
-  );
-}
 
-function WorkoutCard({ workout, onOpen }) {
-  const grad = CAT_GRADIENTS[workout.category] || 'linear-gradient(135deg,#2563EB,#7C3AED)';
-  const cat = CATEGORIES.find(c => c.id === workout.category);
-  return (
-    <div onClick={() => onOpen(workout)} style={{
-      background: 'var(--surface)', borderRadius: 'var(--radius-md)',
-      border: '1px solid var(--border-light)', overflow: 'hidden',
-      boxShadow: 'var(--shadow-sm)', cursor: 'pointer', minWidth: 200, maxWidth: 240, flexShrink: 0,
-      transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-    }}
-      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.1)'; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; }}
-    >
-      <div style={{
-        height: 90, background: grad, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 36, position: 'relative',
-      }}>
-        {cat?.icon}
-        <div style={{
-          position: 'absolute', top: 8, right: 8,
-          background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(6px)',
-          borderRadius: 99, padding: '3px 10px', fontSize: 11, fontWeight: 700, color: '#fff',
-        }}>{workout.duration} min</div>
-      </div>
-      <div style={{ padding: 12 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', marginBottom: 4, lineHeight: 1.3 }}>{workout.title}</div>
-        <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 8, lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{workout.desc}</div>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 99, background: `${LEVEL_COLORS[workout.level]}15`, color: LEVEL_COLORS[workout.level] }}>{workout.level}</span>
-          <span style={{ fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 99, background: 'var(--primary-50)', color: 'var(--primary)' }}>{workout.exercises.length} exercises</span>
-        </div>
-        <div style={{
-          width: '100%', padding: '8px 12px', borderRadius: 8, textAlign: 'center',
-          background: grad, color: '#fff', fontSize: 12, fontWeight: 700,
-          border: 'none', cursor: 'pointer',
-        }}>View & Start →</div>
-      </div>
+      <style>{`@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }`}</style>
     </div>
   );
 }
