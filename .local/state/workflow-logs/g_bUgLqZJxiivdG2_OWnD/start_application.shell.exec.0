@@ -1,0 +1,22 @@
+
+> ai-fitness-frontend@1.0.0 dev
+> next dev -p 5000 -H 0.0.0.0
+
+[1G[0K  [1m[38;2;173;127;168m▲ Next.js 14.2.35[39m[22m
+  - Local:        http://localhost:5000
+  - Network:      http://0.0.0.0:5000
+
+ [32m[1m✓[22m[39m Starting...
+ [32m[1m✓[22m[39m Ready in 1196ms
+ [37m[1m○[22m[39m Compiling / ...
+ [32m[1m✓[22m[39m Compiled / in 1506ms (481 modules)
+ GET / [32m200[39m in 1675ms
+ [32m[1m✓[22m[39m Compiled /api/sessions in 154ms (236 modules)
+ [32m[1m✓[22m[39m Compiled (238 modules)
+ GET /api/workout/stats [32m200[39m in 296ms
+ GET /api/sessions?type=stats [32m200[39m in 299ms
+ GET /api/workout/stats [32m200[39m in 9ms
+ GET /api/sessions?type=stats [32m200[39m in 11ms
+ [33m[1m⚠[22m[39m Blocked cross-origin request from 9c78a9ec-96a6-4bd8-bc3a-0cce9b4fe429-00-27uqe1bz4eqz2.picard.replit.dev to /_next/* resource. To allow this, configure "allowedDevOrigins" in next.config
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ [32m[1m✓[22m[39m Compiled in 502ms (234 modules)
