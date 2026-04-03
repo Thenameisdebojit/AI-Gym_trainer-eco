@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import WeightChart from '../components/charts/WeightChart';
 import Button from '../components/ui/Button';
 
+const RISK_COLORS = { low: '#10B981', medium: '#F59E0B', high: '#EF4444', unknown: '#64748B' };
+
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const TODAY = new Date().getDay();
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -96,6 +98,10 @@ export default function Report() {
   const [sessionStats, setSessionStats] = useState(null);
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(true);
+  const [daysM, setDaysM] = useState('2');
+  const [consistency, setConsistency] = useState('70');
+  const [behavior, setBehavior] = useState(null);
+  const [behaviorLoading, setBehaviorLoading] = useState(false);
   const [weightHistory, setWeightHistory] = useState([
     { weight: 78.5, label: 'Jan' }, { weight: 77.2, label: 'Feb' },
     { weight: 76.8, label: 'Mar' }, { weight: 75.9, label: 'Apr' },
@@ -135,6 +141,18 @@ export default function Report() {
       .catch(() => {})
       .finally(() => setHistoryLoading(false));
   }, []);
+
+  const analyzeBehavior = async () => {
+    setBehaviorLoading(true);
+    try {
+      const res = await fetch(`/api/behavior?days_missed=${daysM}&consistency=${consistency}`);
+      const data = await res.json();
+      setBehavior(data);
+    } catch {
+      setBehavior({ risk: 'unknown', message: 'Could not analyze at this time.' });
+    }
+    setBehaviorLoading(false);
+  };
 
   const calcBmi = () => {
     const w = parseFloat(weight);
@@ -373,6 +391,57 @@ export default function Report() {
               <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>Your BMI Score</div>
             </div>
             <BMIScale bmi={parseFloat(bmi)} />
+          </div>
+        )}
+      </div>
+
+      <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-xl)', padding: '24px', marginTop: '20px', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
+          <div style={{ width: 40, height: 40, borderRadius: 'var(--radius)', background: 'linear-gradient(135deg,#2563EB15,#7C3AED15)', border: '1px solid #7C3AED20', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🧠</div>
+          <div>
+            <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginBottom: '2px' }}>Consistency Analyzer</h3>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Check your dropout risk and get motivational insights</p>
+          </div>
+        </div>
+
+        <div style={{ background: 'linear-gradient(135deg,#2563EB08,#7C3AED08)', borderRadius: 12, padding: '14px 16px', border: '1px solid #7C3AED15', marginBottom: 18, marginTop: 16 }}>
+          <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+            Enter how many days you missed this week and your estimated consistency score (0–100) to get a personalized dropout risk assessment and motivational advice.
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: '14px', marginBottom: '16px' }}>
+          <div style={{ flex: 1 }}>
+            <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>DAYS MISSED (this week)</label>
+            <input value={daysM} onChange={e => setDaysM(e.target.value)} type="number" min="0" max="7"
+              style={{ width: '100%', padding: '10px 14px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius)', fontSize: '14px', color: 'var(--text)', background: 'var(--surface-2)', outline: 'none', boxSizing: 'border-box' }} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>CONSISTENCY SCORE (0–100)</label>
+            <input value={consistency} onChange={e => setConsistency(e.target.value)} type="number" min="0" max="100"
+              style={{ width: '100%', padding: '10px 14px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius)', fontSize: '14px', color: 'var(--text)', background: 'var(--surface-2)', outline: 'none', boxSizing: 'border-box' }} />
+          </div>
+        </div>
+
+        <Button variant="primary" size="md" loading={behaviorLoading} onClick={analyzeBehavior} fullWidth icon="🧠">
+          Analyze My Consistency
+        </Button>
+
+        {behavior && (
+          <div style={{ marginTop: '20px', padding: '18px', animation: 'fadeIn 0.3s ease', background: RISK_COLORS[behavior.risk?.toLowerCase()] + '12', borderRadius: 'var(--radius-md)', border: `1.5px solid ${RISK_COLORS[behavior.risk?.toLowerCase()]}30` }}>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+              <span style={{ fontSize: '28px' }}>
+                {behavior.risk?.toLowerCase() === 'low' ? '✅' : behavior.risk?.toLowerCase() === 'high' ? '⚠️' : '💛'}
+              </span>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '14px', marginBottom: '4px', color: RISK_COLORS[behavior.risk?.toLowerCase()] }}>
+                  {behavior.risk?.toUpperCase() || 'UNKNOWN'} DROPOUT RISK
+                </div>
+                <div style={{ fontSize: '13px', color: 'var(--text)', lineHeight: 1.6 }}>
+                  {behavior.message || behavior.recommendation || 'Keep tracking your progress!'}
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
