@@ -525,10 +525,12 @@ export default function Training() {
   const [sessionHistory, setSessionHistory] = useState([]);
   const [recommendation, setRecommendation] = useState(null);
   const [generatedWorkout, setGeneratedWorkout] = useState(null);
+  const [mounted, setMounted] = useState(false);
 
   const timerRef = useRef(null);
 
   useEffect(() => {
+    setMounted(true);
     fetch('/api/workout/stats').then(r => r.json()).then(setStats).catch(() => {});
     fetch('/api/sessions?type=stats').then(r => r.json()).then(setSessionStats).catch(() => {});
     fetch('/api/sessions').then(r => r.json()).then(data => {
@@ -980,7 +982,7 @@ export default function Training() {
         const weekDays = Array.from({ length: 7 }, (_, i) => {
           const d = new Date(today);
           d.setDate(today.getDate() - todayDay + i);
-          return { label: days[d.getDay()], date: d.getDate(), isToday: d.toDateString() === today.toDateString() };
+          return { label: days[d.getDay()], date: d.getDate(), isToday: mounted && d.toDateString() === today.toDateString() };
         });
         const weeklyDone = sessionStats?.this_week ?? Math.min(sessionStats?.total_sessions ?? 0, 3);
         const filtered = BODY_PARTS.filter(bp =>
