@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { generateWorkout, getWorkoutOptions, DURATION_TARGETS } from '../services/workoutGenerator.js';
 import { getRecommendation, getPersonalizedGreeting } from '../services/recommendation.js';
+import ExerciseAnimation from '../components/ExerciseAnimation.js';
 
 const BODY_PARTS = [
   {
@@ -837,19 +838,34 @@ export default function Training() {
                 }}>Skip Rest →</button>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
-                <PulsingExercise exercise={currentExercise} isActive={!paused} />
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '18px' }}>
+                <div style={{ position: 'relative' }}>
+                  <ExerciseAnimation
+                    animationKey={currentExercise.animationKey || 'default'}
+                    size={220}
+                    paused={paused}
+                    bg="rgba(255,255,255,0.06)"
+                  />
+                  {paused && (
+                    <div style={{
+                      position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: 'rgba(0,0,0,0.45)', borderRadius: '28px',
+                      fontSize: '40px',
+                    }}>⏸</div>
+                  )}
+                </div>
+
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '28px', fontWeight: 900, marginBottom: '6px' }}>{currentExercise.name}</div>
-                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                    <span style={{ background: 'rgba(255,255,255,0.1)', padding: '4px 12px', borderRadius: '99px', fontSize: '13px' }}>
+                  <div style={{ fontSize: '26px', fontWeight: 900, marginBottom: '6px', letterSpacing: '-0.02em' }}>{currentExercise.name}</div>
+                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <span style={{ background: 'rgba(255,255,255,0.1)', padding: '4px 12px', borderRadius: '99px', fontSize: '12px', fontWeight: 600 }}>
                       🎯 {currentExercise.reps} reps
                     </span>
-                    <span style={{ background: 'rgba(255,255,255,0.1)', padding: '4px 12px', borderRadius: '99px', fontSize: '13px' }}>
+                    <span style={{ background: 'rgba(255,255,255,0.1)', padding: '4px 12px', borderRadius: '99px', fontSize: '12px', fontWeight: 600 }}>
                       🔥 ~{currentExercise.cals} cal
                     </span>
                     <span style={{
-                      padding: '4px 12px', borderRadius: '99px', fontSize: '13px',
+                      padding: '4px 12px', borderRadius: '99px', fontSize: '12px', fontWeight: 600,
                       background: `${LEVEL_COLORS[selectedLevel?.id]}25`,
                       color: LEVEL_COLORS[selectedLevel?.id],
                     }}>
@@ -857,19 +873,40 @@ export default function Training() {
                     </span>
                   </div>
                 </div>
-                <CountdownRing value={exerciseTimer} max={30} color="#2563EB" />
-                <div style={{ display: 'flex', gap: '12px', width: '100%' }}>
-                  <button onClick={skipExercise} style={{
-                    flex: 1, padding: '14px', borderRadius: '16px',
+
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: '52px', fontWeight: 900, lineHeight: 1, color: '#fff', letterSpacing: '-0.03em' }}>
+                    {String(Math.floor(exerciseTimer / 60)).padStart(2, '0')}:{String(exerciseTimer % 60).padStart(2, '0')}
+                  </div>
+                  <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', fontWeight: 600, marginTop: '4px' }}>TIME LEFT</div>
+                </div>
+
+                {currentExercise.instructions?.length > 0 && (
+                  <div style={{
+                    background: 'rgba(255,255,255,0.06)', borderRadius: '14px', padding: '12px 16px',
+                    fontSize: '12px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, width: '100%',
+                  }}>
+                    💡 {currentExercise.instructions[0]}
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
+                  <button onClick={() => { if (exIdx > 0) { setExIdx(i => i - 1); setExerciseTimer(exercises[exIdx - 1]?.duration || 30); } }} style={{
+                    width: '52px', height: '52px', borderRadius: '16px', flexShrink: 0,
                     background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
-                    color: '#94A3B8', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
-                  }}>Skip ›</button>
+                    color: exIdx === 0 ? 'rgba(255,255,255,0.2)' : '#94A3B8', fontSize: '20px', cursor: exIdx === 0 ? 'not-allowed' : 'pointer',
+                  }}>⏮</button>
                   <button onClick={markDone} style={{
-                    flex: 2, padding: '14px', borderRadius: '16px',
+                    flex: 1, padding: '14px', borderRadius: '16px',
                     background: 'linear-gradient(135deg, #2563EB, #7C3AED)',
                     border: 'none', color: '#fff', fontSize: '16px', fontWeight: 700, cursor: 'pointer',
                     boxShadow: '0 8px 24px rgba(37,99,235,0.4)',
                   }}>✓ Done</button>
+                  <button onClick={skipExercise} style={{
+                    width: '52px', height: '52px', borderRadius: '16px', flexShrink: 0,
+                    background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
+                    color: '#94A3B8', fontSize: '20px', cursor: 'pointer',
+                  }}>⏭</button>
                 </div>
               </div>
             )}
@@ -1596,25 +1633,23 @@ export default function Training() {
                         transition: 'all 0.15s ease', cursor: 'default',
                       }}
                     >
-                      <div style={{
-                        width: '40px', height: '40px', borderRadius: '12px', flexShrink: 0,
-                        background: `${selectedBody.color}15`, border: `1.5px solid ${selectedBody.color}30`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '16px', fontWeight: 800, color: selectedBody.color,
-                      }}>
-                        {i + 1}
-                      </div>
+                      <ExerciseAnimation
+                        animationKey={ex.animationKey || 'default'}
+                        size={54}
+                        paused={false}
+                        bg={`${selectedBody.color}12`}
+                      />
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)', marginBottom: '3px' }}>{ex.name}</div>
                         <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                          {ex.reps} reps · {ex.duration}s · ~{ex.cals} cal
+                          {ex.reps ? `x${ex.reps}` : `${ex.duration}s`} · ~{ex.cals} cal
                         </div>
                       </div>
                       <span style={{
                         padding: '4px 10px', borderRadius: '99px', fontSize: '11px', fontWeight: 600,
                         background: 'var(--primary-50)', color: 'var(--primary)',
                       }}>
-                        {ex.category}
+                        {ex.duration}s
                       </span>
                     </div>
                   ))}

@@ -5,6 +5,7 @@ A production-grade AI-powered fitness ecosystem with a **Next.js web dashboard**
 ## Frontend Architecture (Reconstructed)
 
 ### Component System (`/frontend/components/`)
+- **`ExerciseAnimation.js`** — CSS-animated SVG stick figure with 12 exercise-specific animations (push_up, squat, jumping_jacks, plank, crunch, run, lunge, dip, curl, row, pull_up, jump). Used in both the session player (220px) and exercise list thumbnails (54px).
 - **`cards/WorkoutCard.js`** — Reusable workout card (compact + full variants, gradient domain icons)
 - **`cards/StatCard.js`** — Stats card with 8 color variants (blue, green, orange, purple, light variants)
 - **`cards/BannerCard.js`** — Hero banner with gradient, badge, icon, CTA
@@ -12,6 +13,11 @@ A production-grade AI-powered fitness ecosystem with a **Next.js web dashboard**
 - **`ui/ProgressBar.js`** — Animated progress bar with label and percentage
 - **`ui/Tabs.js`** — Pill and underline tab variants
 - **`charts/WeightChart.js`** — Canvas-based smooth bezier weight chart
+
+### Data & Services (`/frontend/data/`, `/frontend/services/`)
+- **`data/exerciseLibrary.js`** — Structured library of 180 named exercises (6 muscles × 3 levels × 10 exercises each), each with animationKey, duration, reps, cals, rest time, mode (home/gym), and form instructions
+- **`services/workoutGenerator.js`** — Generates workouts from exerciseLibrary; 3 durations (Quick/Standard/Intense = 4/6/10 exercises); exports `generateWorkout()`, `getWorkoutOptions()`, `DURATION_TARGETS`
+- **`services/recommendation.js`** — AI recommendation engine: analyzes session history, suggests next muscle group (rotation), level progression, and duration key; exports `getRecommendation()`, `getPersonalizedGreeting()`
 
 ### Screens (`/frontend/screens/`)
 - **`Training.js`** — Home: current plan card, stats, body-focus tabs, workout generator, recent + equipment sections
