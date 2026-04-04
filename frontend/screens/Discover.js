@@ -181,7 +181,7 @@ const WORKOUT_CATALOG = [
   },
   {
     id: 12, title: 'First Push-Up', category: 'bodyweight', duration: 20, level: 'Beginner',
-    image: 'https://images.unsplash.com/photo-1486218119243-13301543a822?w=900&h=500&fit=crop&auto=format',
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=900&h=500&fit=crop&auto=format',
     desc: 'Learn the correct push-up form from zero, progressing through the movement pattern safely.',
     exercises: [
       { name: 'Wall Push-Ups', reps: 15, duration: 30, type: 'chest', cals: 5 },
@@ -275,7 +275,7 @@ const BODY_FOCUS = [
   { label: 'Abs', icon: '🔥', color: '#F97316', image: 'https://images.unsplash.com/photo-1521804906057-1df8fdb718b7?w=400&h=280&fit=crop&auto=format', workoutId: 5 },
   { label: 'Arms', icon: '💪', color: '#7C3AED', image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=280&fit=crop&auto=format', workoutId: 9 },
   { label: 'Back', icon: '🎯', color: '#0891B2', image: 'https://images.unsplash.com/photo-1574680178050-55c6a6a96e0a?w=400&h=280&fit=crop&auto=format', workoutId: 11 },
-  { label: 'Legs', icon: '🦵', color: '#065F46', image: 'https://images.unsplash.com/photo-1434608519344-49d77a124f18?w=400&h=280&fit=crop&auto=format', workoutId: 1 },
+  { label: 'Legs', icon: '🦵', color: '#065F46', image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=280&fit=crop&auto=format', workoutId: 1 },
   { label: 'Cardio', icon: '❤️', color: '#EF4444', image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=280&fit=crop&auto=format', workoutId: 2 },
 ];
 
@@ -732,10 +732,10 @@ function PickRow({ workout, onOpen, hovered, setHovered }) {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)', marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{workout.title}</div>
         <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 8 }}>{workout.desc.slice(0, 60)}…</div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 99, background: `${catColor}15`, color: catColor }}>{workout.category}</span>
-          <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 99, background: 'var(--surface-2)', color: 'var(--text-secondary)' }}>⏱ {workout.duration} min</span>
-          <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 99, background: `${LEVEL_COLORS[workout.level]}15`, color: LEVEL_COLORS[workout.level] }}>{workout.level}</span>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'nowrap', overflow: 'hidden' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 99, background: `${catColor}15`, color: catColor, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 120, flexShrink: 1 }}>{workout.category}</span>
+          <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 99, background: 'var(--surface-2)', color: 'var(--text-secondary)', whiteSpace: 'nowrap', flexShrink: 0 }}>⏱ {workout.duration} min</span>
+          <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 99, background: `${LEVEL_COLORS[workout.level]}15`, color: LEVEL_COLORS[workout.level], whiteSpace: 'nowrap', flexShrink: 0 }}>{workout.level}</span>
         </div>
       </div>
       <span style={{ fontSize: 20, color: isHovered ? catColor : 'var(--text-tertiary)', fontWeight: 700, transition: 'all 0.15s ease' }}>›</span>
