@@ -1,5 +1,7 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { generateWorkout, getWorkoutOptions, DURATION_TARGETS } from '../services/workoutGenerator.js';
+import { getRecommendation, getPersonalizedGreeting } from '../services/recommendation.js';
 
 const BODY_PARTS = [
   {
@@ -518,12 +520,23 @@ export default function Training() {
   const [searchQuery, setSearchQuery] = useState('');
   const [weeklyGoal, setWeeklyGoal] = useState(5);
   const [editingGoal, setEditingGoal] = useState(false);
+  const [selectedDuration, setSelectedDuration] = useState(null);
+  const [sessionHistory, setSessionHistory] = useState([]);
+  const [recommendation, setRecommendation] = useState(null);
+  const [generatedWorkout, setGeneratedWorkout] = useState(null);
 
   const timerRef = useRef(null);
 
   useEffect(() => {
     fetch('/api/workout/stats').then(r => r.json()).then(setStats).catch(() => {});
     fetch('/api/sessions?type=stats').then(r => r.json()).then(setSessionStats).catch(() => {});
+    fetch('/api/sessions').then(r => r.json()).then(data => {
+      const hist = Array.isArray(data) ? data : (data.sessions || []);
+      setSessionHistory(hist);
+      setRecommendation(getRecommendation(hist));
+    }).catch(() => {
+      setRecommendation(getRecommendation([]));
+    });
     try {
       const saved = JSON.parse(localStorage.getItem('fitai_workout_progress'));
       if (saved && saved.exercises?.length > 0) setSavedProgress(saved);
@@ -545,8 +558,15 @@ export default function Training() {
 
   const getExercises = useCallback(() => {
     if (!selectedBody || !selectedMode || !selectedLevel) return [];
-    return EXERCISE_DB[selectedBody?.id]?.[selectedMode?.id]?.[selectedLevel?.id] || [];
-  }, [selectedBody, selectedMode, selectedLevel]);
+    if (generatedWorkout) return generatedWorkout.exercises;
+    const workout = generateWorkout({
+      muscle: selectedBody.id,
+      level: selectedLevel.id,
+      equipment: selectedMode.id,
+      durationKey: selectedDuration?.key || 'standard',
+    });
+    return workout.exercises;
+  }, [selectedBody, selectedMode, selectedLevel, selectedDuration, generatedWorkout]);
 
   const startWorkout = (challengeId = null) => {
     const exs = getExercises();
@@ -726,7 +746,8 @@ export default function Training() {
   const goBack = () => {
     if (navStep === 'levels') { setNavStep('home'); setSelectedBody(null); }
     else if (navStep === 'modes') { setNavStep('levels'); setSelectedLevel(null); }
-    else if (navStep === 'workoutList') { setNavStep('modes'); setSelectedMode(null); }
+    else if (navStep === 'duration') { setNavStep('modes'); setSelectedMode(null); }
+    else if (navStep === 'workoutList') { setNavStep('duration'); setSelectedDuration(null); setGeneratedWorkout(null); }
     else { setNavStep('home'); }
   };
 
@@ -734,7 +755,8 @@ export default function Training() {
     const crumbs = [];
     if (navStep === 'levels' && selectedBody) crumbs.push(selectedBody.label);
     if (navStep === 'modes') { crumbs.push(selectedBody?.label); crumbs.push(selectedLevel?.label); }
-    if (navStep === 'workoutList') { crumbs.push(selectedBody?.label); crumbs.push(selectedLevel?.label); crumbs.push(selectedMode?.label); }
+    if (navStep === 'duration') { crumbs.push(selectedBody?.label); crumbs.push(selectedLevel?.label); crumbs.push(selectedMode?.label); }
+    if (navStep === 'workoutList') { crumbs.push(selectedBody?.label); crumbs.push(selectedLevel?.label); crumbs.push(selectedMode?.label); crumbs.push(selectedDuration?.label); }
     return crumbs.filter(Boolean);
   };
 
@@ -1056,6 +1078,56 @@ export default function Training() {
               </div>
             )}
 
+            {recommendation && (
+              <div style={{
+                background: 'linear-gradient(135deg, #1E40AF 0%, #2563EB 60%, #7C3AED 100%)',
+                borderRadius: '18px', padding: '18px 20px', marginBottom: '20px',
+                boxShadow: '0 10px 36px rgba(37,99,235,0.22)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>AI Recommendation ✨</div>
+                    <div style={{ fontSize: '17px', fontWeight: 800, color: '#fff', marginBottom: '4px' }}>
+                      {recommendation.muscleLabel} · {recommendation.level?.charAt(0).toUpperCase() + recommendation.level?.slice(1)}
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.4, marginBottom: '12px' }}>{recommendation.reason}</div>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      {[
+                        { label: DURATION_TARGETS[recommendation.durationKey]?.label || 'Standard', icon: DURATION_TARGETS[recommendation.durationKey]?.icon || '🏋️' },
+                        { label: `${recommendation.weekCount || 0} this week`, icon: '📊' },
+                      ].map((tag, i) => (
+                        <span key={i} style={{
+                          background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(4px)',
+                          borderRadius: '99px', padding: '4px 12px', fontSize: '11px', fontWeight: 600, color: '#fff',
+                        }}>{tag.icon} {tag.label}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const bodyPart = BODY_PARTS.find(b => b.id === recommendation.muscle) || BODY_PARTS[0];
+                      const level = LEVELS.find(l => l.id === recommendation.level) || LEVELS[0];
+                      const mode = MODES[0];
+                      setSelectedBody(bodyPart);
+                      setSelectedLevel(level);
+                      setSelectedMode(mode);
+                      const workout = generateWorkout({ muscle: recommendation.muscle, level: recommendation.level, equipment: mode.id, durationKey: recommendation.durationKey });
+                      setGeneratedWorkout(workout);
+                      setSelectedDuration({ ...DURATION_TARGETS[recommendation.durationKey], key: recommendation.durationKey });
+                      setNavStep('workoutList');
+                    }}
+                    style={{
+                      flexShrink: 0, background: '#fff', border: 'none',
+                      color: '#2563EB', padding: '10px 18px', borderRadius: '12px',
+                      fontSize: '13px', fontWeight: 800, cursor: 'pointer',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                      whiteSpace: 'nowrap', alignSelf: 'flex-start',
+                    }}
+                  >Start →</button>
+                </div>
+              </div>
+            )}
+
             <div style={{ marginBottom: '24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
                 <div style={{ fontSize: '17px', fontWeight: 800, color: 'var(--text)' }}>Challenge 🔥</div>
@@ -1324,7 +1396,7 @@ export default function Training() {
               return (
                 <button
                   key={mode.id}
-                  onClick={() => { setSelectedMode(mode); setNavStep('workoutList'); }}
+                  onClick={() => { setSelectedMode(mode); setNavStep('duration'); }}
                   onMouseEnter={() => setHoveredCard(mode.id)}
                   onMouseLeave={() => setHoveredCard(null)}
                   style={{
@@ -1377,6 +1449,64 @@ export default function Training() {
         </>
       )}
 
+      {navStep === 'duration' && selectedBody && selectedLevel && selectedMode && (
+        <>
+          <Breadcrumb steps={getBreadcrumbs()} onBack={goBack} />
+          <div style={{ marginBottom: '28px' }}>
+            <h2 style={{ fontSize: '26px', fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.02em', marginBottom: '6px' }}>
+              How long?
+            </h2>
+            <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
+              {selectedBody.label} · <span style={{ color: selectedLevel.color, fontWeight: 600 }}>{selectedLevel.label}</span> · {selectedMode.label}
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {getWorkoutOptions({ level: selectedLevel.id, equipment: selectedMode.id, muscle: selectedBody.id }).map(opt => (
+              <button
+                key={opt.key}
+                onClick={() => {
+                  setSelectedDuration(opt);
+                  setGeneratedWorkout(opt.workout);
+                  setNavStep('workoutList');
+                }}
+                onMouseEnter={() => setHoveredCard(opt.key)}
+                onMouseLeave={() => setHoveredCard(null)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '20px',
+                  borderRadius: '18px', border: `2px solid ${hoveredCard === opt.key ? opt.color : 'var(--border)'}`,
+                  cursor: 'pointer', padding: '20px 24px', textAlign: 'left',
+                  transform: hoveredCard === opt.key ? 'translateX(5px)' : 'translateX(0)',
+                  boxShadow: hoveredCard === opt.key ? `0 8px 32px ${opt.color}25` : '0 2px 12px rgba(0,0,0,0.06)',
+                  transition: 'all 0.2s ease', outline: 'none', background: 'var(--surface)',
+                }}
+              >
+                <div style={{
+                  width: '60px', height: '60px', borderRadius: '16px', flexShrink: 0,
+                  background: `${opt.color}18`, border: `2px solid ${opt.color}40`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px',
+                }}>{opt.icon}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+                    <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text)' }}>{opt.label}</div>
+                    <span style={{ padding: '3px 10px', borderRadius: '99px', fontSize: '11px', fontWeight: 700, background: `${opt.color}18`, color: opt.color }}>~{opt.minutes} min</span>
+                  </div>
+                  <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '8px' }}>{opt.desc}</div>
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', fontWeight: 500 }}>💪 {opt.workout.exercises.length} exercises</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', fontWeight: 500 }}>🔥 ~{opt.workout.estimated_calories} cal</span>
+                  </div>
+                </div>
+                <div style={{
+                  fontSize: '22px', color: hoveredCard === opt.key ? opt.color : 'var(--text-tertiary)',
+                  transition: 'all 0.2s ease', fontWeight: 700,
+                }}>›</div>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+
       {navStep === 'workoutList' && selectedBody && selectedLevel && selectedMode && (
         <>
           <Breadcrumb steps={getBreadcrumbs()} onBack={goBack} />
@@ -1401,6 +1531,7 @@ export default function Training() {
                   { label: selectedBody.label, color: '#fff' },
                   { label: selectedLevel.label, color: selectedLevel.color },
                   { label: selectedMode.label, color: '#fff' },
+                  ...(selectedDuration ? [{ label: selectedDuration.label, color: '#FCD34D' }] : []),
                 ].map((tag, i) => (
                   <span key={i} style={{
                     padding: '4px 12px', borderRadius: '99px', fontSize: '12px', fontWeight: 700,
@@ -1415,10 +1546,15 @@ export default function Training() {
           </div>
 
           {(() => {
-            const exList = EXERCISE_DB[selectedBody.id]?.[selectedMode.id]?.[selectedLevel.id] || [];
-            const totalCalsEst = exList.reduce((sum, e) => sum + (e.cals || 0), 0);
-            const totalTime = exList.reduce((sum, e) => sum + (e.duration || 30) + 15, 0);
-            const totalMin = Math.ceil(totalTime / 60);
+            const exList = generatedWorkout
+              ? generatedWorkout.exercises
+              : (EXERCISE_DB[selectedBody.id]?.[selectedMode.id]?.[selectedLevel.id] || []);
+            const totalCalsEst = generatedWorkout
+              ? generatedWorkout.estimated_calories
+              : exList.reduce((sum, e) => sum + (e.cals || 0), 0);
+            const totalMin = generatedWorkout
+              ? generatedWorkout.total_duration
+              : Math.ceil(exList.reduce((sum, e) => sum + (e.duration || 30) + 15, 0) / 60);
 
             return (
               <>
