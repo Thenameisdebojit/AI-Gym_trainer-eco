@@ -979,11 +979,13 @@ export default function Training() {
         const today = new Date();
         const todayDay = today.getDay();
         const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-        const weekDays = Array.from({ length: 7 }, (_, i) => {
-          const d = new Date(today);
-          d.setDate(today.getDate() - todayDay + i);
-          return { label: days[d.getDay()], date: d.getDate(), isToday: mounted && d.toDateString() === today.toDateString() };
-        });
+        const weekDays = mounted
+          ? Array.from({ length: 7 }, (_, i) => {
+              const d = new Date(today);
+              d.setDate(today.getDate() - todayDay + i);
+              return { label: days[d.getDay()], date: d.getDate(), isToday: d.toDateString() === today.toDateString() };
+            })
+          : Array.from({ length: 7 }, (_, i) => ({ label: days[i], date: null, isToday: false }));
         const weeklyDone = sessionStats?.this_week ?? Math.min(sessionStats?.total_sessions ?? 0, 3);
         const filtered = BODY_PARTS.filter(bp =>
           !searchQuery || bp.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
