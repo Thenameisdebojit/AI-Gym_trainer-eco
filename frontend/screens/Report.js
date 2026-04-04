@@ -6,7 +6,6 @@ import Button from '../components/ui/Button';
 const RISK_COLORS = { low: '#10B981', medium: '#F59E0B', high: '#EF4444', unknown: '#64748B' };
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const TODAY = new Date().getDay();
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const BODY_PART_ICONS = {
   chest: '💪', abs: '🔥', arms: '💪', legs: '🦵', back: '🎯',
@@ -56,12 +55,12 @@ function BMIScale({ bmi }) {
   );
 }
 
-function WeeklyBar({ data }) {
+function WeeklyBar({ data, today = 0 }) {
   const max = Math.max(...data.map(d => d.value), 1);
   return (
     <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end', height: '100px' }}>
       {data.map((d, i) => {
-        const active = i === (TODAY === 0 ? 6 : TODAY - 1);
+        const active = i === (today === 0 ? 6 : today - 1);
         return (
           <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
             <div style={{
@@ -94,6 +93,7 @@ function RelativeDate(dateStr) {
 }
 
 export default function Report() {
+  const [today, setToday] = useState(0);
   const [stats, setStats] = useState(null);
   const [sessionStats, setSessionStats] = useState(null);
   const [history, setHistory] = useState([]);
@@ -116,6 +116,7 @@ export default function Report() {
   );
 
   useEffect(() => {
+    setToday(new Date().getDay());
     fetch('/api/workout/stats').then(r => r.json()).then(setStats).catch(() => {});
 
     fetch('/api/sessions?type=stats').then(r => r.json()).then(setSessionStats).catch(() => {});
@@ -227,7 +228,7 @@ export default function Report() {
             <div style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: 500 }}>Total kcal</div>
           </div>
         </div>
-        <WeeklyBar data={weeklyData} />
+        <WeeklyBar data={weeklyData} today={today} />
       </div>
 
       <div style={{ display: 'flex', gap: '14px', marginBottom: '20px' }}>
