@@ -1,0 +1,42 @@
+
+> ai-fitness-frontend@1.0.0 dev
+> next dev -p 5000 -H 0.0.0.0
+
+[1G[0K  [1m[38;2;173;127;168m▲ Next.js 14.2.35[39m[22m
+  - Local:        http://localhost:5000
+  - Network:      http://0.0.0.0:5000
+
+ [32m[1m✓[22m[39m Starting...
+ [32m[1m✓[22m[39m Ready in 1435ms
+ [37m[1m○[22m[39m Compiling / ...
+ [32m[1m✓[22m[39m Compiled / in 1078ms (463 modules)
+ GET / [32m200[39m in 1266ms
+ [32m[1m✓[22m[39m Compiled /api/sessions in 138ms (234 modules)
+ [32m[1m✓[22m[39m Compiled (236 modules)
+ GET /api/workout/stats [32m200[39m in 265ms
+ GET /api/sessions?type=stats [32m200[39m in 267ms
+ GET /api/workout/stats [32m200[39m in 9ms
+ GET /api/sessions?type=stats [32m200[39m in 8ms
+ [33m[1m⚠[22m[39m Blocked cross-origin request from 2403b41f-7c0c-4a8e-98d6-49b56f3ba169-00-otg6svj8nee8.janeway.replit.dev to /_next/* resource. To allow this, configure "allowedDevOrigins" in next.config
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ GET / [32m200[39m in 114ms
+ GET /api/workout/stats [32m200[39m in 13ms
+ GET /api/sessions?type=stats [32m200[39m in 21ms
+ GET /api/workout/stats [32m200[39m in 10ms
+ GET /api/sessions?type=stats [32m200[39m in 56ms
+ GET /api/workout/stats [32m200[39m in 15ms
+ GET /api/sessions?limit=20 [32m200[39m in 18ms
+ GET /api/sessions?type=stats [32m200[39m in 62ms
+ GET /api/workout/stats [32m200[39m in 10ms
+ GET /api/sessions?limit=20 [32m200[39m in 13ms
+ GET /api/sessions?type=stats [32m200[39m in 10ms
+ GET /api/workout/stats [32m200[39m in 13ms
+ GET /api/sessions?type=stats [32m200[39m in 17ms
+ GET /api/sessions?limit=20 [32m200[39m in 58ms
+ GET /api/sessions?type=stats [32m200[39m in 9ms
+ GET /api/workout/stats [32m200[39m in 8ms
+ GET /api/sessions?limit=20 [32m200[39m in 9ms
+ GET /api/workout/stats [32m200[39m in 8ms
+ GET /api/sessions?type=stats [32m200[39m in 12ms
+ GET /api/workout/stats [32m200[39m in 6ms
+ GET /api/sessions?type=stats [32m200[39m in 8ms

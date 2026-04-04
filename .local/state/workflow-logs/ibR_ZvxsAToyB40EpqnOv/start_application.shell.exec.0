@@ -1,0 +1,42 @@
+
+> ai-fitness-frontend@1.0.0 dev
+> next dev -p 5000 -H 0.0.0.0
+
+[1G[0K  [1m[38;2;173;127;168m▲ Next.js 14.2.35[39m[22m
+  - Local:        http://localhost:5000
+  - Network:      http://0.0.0.0:5000
+
+ [32m[1m✓[22m[39m Starting...
+ [32m[1m✓[22m[39m Ready in 1174ms
+ [37m[1m○[22m[39m Compiling / ...
+ [32m[1m✓[22m[39m Compiled / in 1096ms (469 modules)
+ GET / [32m200[39m in 1284ms
+ [32m[1m✓[22m[39m Compiled /api/sessions in 134ms (237 modules)
+ [32m[1m✓[22m[39m Compiled (239 modules)
+ GET /api/workout/stats [32m200[39m in 260ms
+ GET /api/sessions [32m200[39m in 261ms
+ GET /api/sessions?type=stats [32m200[39m in 248ms
+ GET /api/workout/stats [32m200[39m in 13ms
+ GET /api/sessions?type=stats [32m200[39m in 16ms
+ GET /api/sessions [32m200[39m in 60ms
+ [33m[1m⚠[22m[39m Blocked cross-origin request from 2403b41f-7c0c-4a8e-98d6-49b56f3ba169-00-otg6svj8nee8.janeway.replit.dev to /_next/* resource. To allow this, configure "allowedDevOrigins" in next.config
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ GET / [32m200[39m in 112ms
+ GET /api/workout/stats [32m200[39m in 33ms
+ GET /api/workout/stats [32m200[39m in 7ms
+ GET /api/sessions?type=stats [32m200[39m in 44ms
+ GET /api/sessions [32m200[39m in 45ms
+ GET /api/sessions?type=stats [32m200[39m in 52ms
+ GET /api/sessions [32m200[39m in 53ms
+ GET /api/workout/stats [32m200[39m in 13ms
+ GET /api/sessions?type=stats [32m200[39m in 20ms
+ GET /api/sessions [32m200[39m in 20ms
+ GET /api/workout/stats [32m200[39m in 13ms
+ GET /api/sessions [32m200[39m in 16ms
+ GET /api/sessions?type=stats [32m200[39m in 58ms
+ [32m[1m✓[22m[39m Compiled in 185ms (236 modules)
+ [32m[1m✓[22m[39m Compiled in 209ms (237 modules)
+ [32m[1m✓[22m[39m Compiled in 185ms (237 modules)
+ [32m[1m✓[22m[39m Compiled in 203ms (237 modules)
+ [32m[1m✓[22m[39m Compiled in 139ms (237 modules)
+ [32m[1m✓[22m[39m Compiled in 84ms (237 modules)
