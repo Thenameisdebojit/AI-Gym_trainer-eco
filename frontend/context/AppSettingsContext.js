@@ -1167,6 +1167,13 @@ export function AppSettingsProvider({ children }) {
   const [notifications, setNotificationsState] = useState(false);
   const [healthSync, setHealthSyncState] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [navTarget, setNavTarget] = useState(null);
+
+  const navigateTo = useCallback((tab, subView = null) => {
+    setNavTarget({ tab, subView });
+  }, []);
+
+  const clearNavTarget = useCallback(() => setNavTarget(null), []);
 
   useEffect(() => {
     try {
@@ -1234,6 +1241,7 @@ export function AppSettingsProvider({ children }) {
       notifications, setNotifications,
       healthSync, setHealthSync,
       t,
+      navTarget, navigateTo, clearNavTarget,
     }}>
       {children}
     </AppSettingsContext.Provider>

@@ -371,8 +371,9 @@ function SearchView({ onBack, onOpenWorkout }) {
 
 /* ─── MAIN DISCOVER COMPONENT ───────────────────────────────────────── */
 export default function Discover() {
-  const { t } = useAppSettings();
-  const [view, setView] = useState('browse');
+  const { t, navTarget, clearNavTarget } = useAppSettings();
+  const initialView = (navTarget?.tab === 'discover' && navTarget?.subView) ? navTarget.subView : 'browse';
+  const [view, setView] = useState(initialView);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [hoveredCard, setHoveredCard] = useState(null);
 
@@ -388,6 +389,12 @@ export default function Discover() {
   const [sessionStart, setSessionStart] = useState(null);
   const [saving, setSaving] = useState(false);
   const timerRef = useRef(null);
+
+  useEffect(() => {
+    if (navTarget?.tab === 'discover') {
+      clearNavTarget();
+    }
+  }, []);
 
   const openDetail = useCallback((workout) => { setSelectedWorkout(workout); setView('detail'); }, []);
   const openById = useCallback((id) => { const w = WORKOUT_CATALOG.find(x => x.id === id); if (w) openDetail(w); }, [openDetail]);

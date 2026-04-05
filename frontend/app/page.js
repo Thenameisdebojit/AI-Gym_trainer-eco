@@ -167,7 +167,7 @@ function FloatingChatbot() {
 }
 
 function AppInner() {
-  const { t } = useAppSettings();
+  const { t, navTarget, clearNavTarget } = useAppSettings();
   const [active, setActive] = useState('training');
   const [collapsed, setCollapsed] = useState(false);
   const [user, setUser] = useState(null);
@@ -182,6 +182,12 @@ function AppInner() {
     } catch {}
     setAuthChecked(true);
   }, []);
+
+  useEffect(() => {
+    if (navTarget?.tab) {
+      setActive(navTarget.tab);
+    }
+  }, [navTarget]);
 
   const handleLogout = () => {
     const token = localStorage.getItem('fitai_token');

@@ -78,21 +78,67 @@ function BMIScale({ bmi }) {
 }
 
 function WeeklyBar({ data, today = 0 }) {
+  const [hovered, setHovered] = useState(null);
   const max = Math.max(...data.map(d => d.value), 1);
   return (
-    <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end', height: '100px' }}>
+    <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end', height: '120px', position: 'relative' }}>
       {data.map((d, i) => {
         const active = i === (today === 0 ? 6 : today - 1);
+        const isHovered = hovered === i;
+        const barColor = isHovered
+          ? '#1D4ED8'
+          : active ? 'var(--primary)' : d.value > 0 ? 'var(--primary-light)' : 'var(--border)';
         return (
-          <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+          <div
+            key={i}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', position: 'relative' }}
+            onMouseEnter={() => setHovered(i)}
+            onMouseLeave={() => setHovered(null)}
+          >
+            {isHovered && (
+              <div style={{
+                position: 'absolute',
+                bottom: '100%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                marginBottom: '6px',
+                background: 'var(--text)',
+                color: 'var(--bg)',
+                fontSize: '11px',
+                fontWeight: 700,
+                padding: '4px 8px',
+                borderRadius: '6px',
+                whiteSpace: 'nowrap',
+                pointerEvents: 'none',
+                zIndex: 10,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+              }}>
+                {d.value > 0 ? `${d.value} kcal` : '—'}
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: 0,
+                  height: 0,
+                  borderLeft: '5px solid transparent',
+                  borderRight: '5px solid transparent',
+                  borderTop: '5px solid var(--text)',
+                }} />
+              </div>
+            )}
             <div style={{
-              width: '100%', borderRadius: '6px 6px 0 0',
+              width: '100%',
+              borderRadius: '6px 6px 0 0',
               height: `${Math.max(8, (d.value / max) * 88)}px`,
-              background: active ? 'var(--primary)' : d.value > 0 ? 'var(--primary-light)' : 'var(--border)',
-              transition: 'height 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-              boxShadow: active ? '0 4px 12px rgba(37,99,235,0.3)' : 'none',
+              background: barColor,
+              transition: 'height 0.6s cubic-bezier(0.4, 0, 0.2, 1), background 0.15s',
+              boxShadow: isHovered ? '0 4px 16px rgba(29,78,216,0.45)' : active ? '0 4px 12px rgba(37,99,235,0.3)' : 'none',
+              transform: isHovered ? 'scaleY(1.04)' : 'scaleY(1)',
+              transformOrigin: 'bottom',
+              cursor: 'default',
             }} />
-            <span style={{ fontSize: '11px', fontWeight: active ? 700 : 500, color: active ? 'var(--primary)' : 'var(--text-tertiary)' }}>
+            <span style={{ fontSize: '11px', fontWeight: (active || isHovered) ? 700 : 500, color: (active || isHovered) ? 'var(--primary)' : 'var(--text-tertiary)' }}>
               {d.label}
             </span>
           </div>
@@ -244,13 +290,12 @@ function InlineHistoryView({ onClose }) {
 }
 
 export default function Report() {
-  const { t } = useAppSettings();
+  const { t, navigateTo } = useAppSettings();
   const [today, setToday] = useState(0);
   const [stats, setStats] = useState(null);
   const [sessionStats, setSessionStats] = useState(null);
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(true);
-  const [showFullHistory, setShowFullHistory] = useState(false);
   const [daysM, setDaysM] = useState('2');
   const [consistency, setConsistency] = useState('70');
   const [behavior, setBehavior] = useState(null);
@@ -364,15 +409,12 @@ export default function Report() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
         <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text)' }}>{t.history}</h2>
         <button
-          onClick={() => setShowFullHistory(v => !v)}
+          onClick={() => navigateTo('discover', 'history')}
           style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: 700, color: 'var(--primary)', padding: 0 }}
         >
-          {showFullHistory ? `${t.close} ✕` : t.allRecords}
+          {t.allRecords}
         </button>
       </div>
-
-      {/* Full History (inline, toggled by "All records") */}
-      {showFullHistory && <InlineHistoryView onClose={() => setShowFullHistory(false)} />}
 
       {/* Weekly Activity */}
       <div style={{
