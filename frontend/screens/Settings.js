@@ -167,8 +167,8 @@ export default function Settings({ onNavigate }) {
               }
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text)' }}>{getUserDisplayName()}</div>
-              <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Free Plan · Edit Profile</div>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '2px' }}>Account & Profile</div>
+              <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)' }}>{getUserDisplayName()}</div>
             </div>
             <span style={{ color: 'var(--text-tertiary)', fontSize: '20px' }}>›</span>
           </div>

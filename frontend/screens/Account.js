@@ -186,7 +186,7 @@ export default function Account({ onBack, onProfileUpdated }) {
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '32px' }}>
         <div style={{
-          width: '120px', height: '120px', borderRadius: '50%',
+          width: '128px', height: '128px', borderRadius: '50%',
           background: 'var(--surface-2)', border: '3px solid var(--primary)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           overflow: 'hidden', marginBottom: '16px',

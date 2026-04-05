@@ -268,13 +268,14 @@ function AppInner() {
 
   useEffect(() => {
     if (navTarget?.tab) {
-      if (navTarget.tab !== 'account') setPrevActive(active);
+      if (navTarget.tab === 'account' && active !== 'account') setPrevActive(active);
+      else if (navTarget.tab !== 'account') setPrevActive(active);
       setActive(navTarget.tab);
     }
   }, [navTarget]);
 
   const navigateTo = (screen) => {
-    if (screen === 'account') setPrevActive(active);
+    if (screen === 'account' && active !== 'account') setPrevActive(active);
     setActive(screen);
   };
 
