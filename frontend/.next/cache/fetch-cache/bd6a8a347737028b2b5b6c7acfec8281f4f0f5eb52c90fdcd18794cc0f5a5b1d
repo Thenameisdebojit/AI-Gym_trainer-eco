@@ -1,1 +1,0 @@
-{"kind":"FETCH","data":{"headers":{"content-length":"69","content-type":"application/json","date":"Sun, 22 Mar 2026 09:46:04 GMT","server":"uvicorn"},"body":"eyJ0b3RhbF9yZXBzIjowLCJhdmdfc2NvcmUiOjAsInRvdGFsX3dvcmtvdXRzIjowLCJjYWxvcmllc19idXJuZWQiOjB9","status":200,"url":"http://localhost:8000/workout/stats"},"revalidate":31536000,"tags":[]}

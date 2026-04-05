@@ -1,20 +1,4 @@
 REPLIES = {
-    "sad": {
-        "en": "You've come this far. Don't stop now 💪",
-        "es": "Has llegado hasta aquí. ¡No te detengas ahora! 💪",
-        "fr": "Tu es allé si loin. Ne t'arrête pas maintenant 💪",
-        "de": "Du hast es bis hierher geschafft. Hör jetzt nicht auf 💪",
-        "hi": "आप इतनी दूर आए हैं। अब मत रुकिए 💪",
-        "pt": "Você chegou até aqui. Não pare agora 💪",
-    },
-    "motivat": {
-        "en": "Discipline > Motivation. Keep going!",
-        "es": "Disciplina > Motivación. ¡Sigue adelante!",
-        "fr": "Discipline > Motivation. Continue !",
-        "de": "Disziplin > Motivation. Weiter so!",
-        "hi": "अनुशासन > प्रेरणा। चलते रहो!",
-        "pt": "Disciplina > Motivação. Continue!",
-    },
     "muscle": {
         "en": "Focus on progressive overload and adequate protein — aim for 1.6–2.2 g per kg of body weight daily 🥩",
         "es": "Enfócate en la sobrecarga progresiva y proteína adecuada — apunta a 1,6–2,2 g por kg de peso corporal diariamente 🥩",
@@ -63,6 +47,22 @@ REPLIES = {
         "hi": "एक ठोस साप्ताहिक योजना: 3 शक्ति दिन, 2 कार्डियो दिन, 1 सक्रिय रिकवरी, 1 पूर्ण आराम। अपने लक्ष्य के अनुसार समायोजित करें! 📅",
         "pt": "Um plano semanal sólido: 3 dias de força, 2 de cardio, 1 de recuperação ativa, 1 de descanso total. Ajuste conforme seu objetivo! 📅",
     },
+    "sad": {
+        "en": "You've come this far. Don't stop now 💪",
+        "es": "Has llegado hasta aquí. ¡No te detengas ahora! 💪",
+        "fr": "Tu es allé si loin. Ne t'arrête pas maintenant 💪",
+        "de": "Du hast es bis hierher geschafft. Hör jetzt nicht auf 💪",
+        "hi": "आप इतनी दूर आए हैं। अब मत रुकिए 💪",
+        "pt": "Você chegou até aqui. Não pare agora 💪",
+    },
+    "motivat": {
+        "en": "Discipline > Motivation. Keep going!",
+        "es": "Disciplina > Motivación. ¡Sigue adelante!",
+        "fr": "Discipline > Motivation. Continue !",
+        "de": "Disziplin > Motivation. Weiter so!",
+        "hi": "अनुशासन > प्रेरणा। चलते रहो!",
+        "pt": "Disciplina > Motivação. Continue!",
+    },
 }
 
 DEFAULT_REPLY = {
@@ -74,11 +74,62 @@ DEFAULT_REPLY = {
     "pt": "Seja consistente e confie no processo! Cada repetição conta 💪",
 }
 
+# Multilingual keyword aliases → internal topic key
+KEYWORD_MAP = [
+    # muscle
+    ("muscle",   "muscle"),
+    ("músculo",  "muscle"),  # ES/PT
+    ("muskeln",  "muscle"),  # DE
+    ("मांसपेशी", "muscle"),  # HI
+    # fat / grasa / graisse / fett / vasa
+    ("fat",         "fat"),
+    ("grasa",       "fat"),   # ES
+    ("graisse",     "fat"),   # FR
+    ("fett",        "fat"),   # DE
+    ("gordura",     "fat"),   # PT
+    ("वसा",         "fat"),   # HI
+    ("फैट",         "fat"),   # HI (loanword)
+    # rest
+    ("rest",        "rest"),
+    ("descanso",    "rest"),  # ES/PT
+    ("repos",       "rest"),  # FR
+    ("ruhe",        "rest"),  # DE
+    ("आराम",        "rest"),  # HI
+    # nutrition / pre-workout
+    ("nutri",       "nutri"),
+    ("nutrición",   "nutri"),  # ES
+    ("nutrição",    "nutri"),  # PT
+    ("nutrition",   "nutri"),  # FR
+    ("ernährung",   "nutri"),  # DE
+    ("पोषण",        "nutri"),  # HI
+    # flexibility
+    ("flex",           "flex"),
+    ("flexibilidad",   "flex"),  # ES
+    ("flexibilité",    "flex"),  # FR
+    ("flexibilität",   "flex"),  # DE
+    ("flexibilidade",  "flex"),  # PT
+    ("लचीलापन",        "flex"),  # HI
+    # plan / weekly
+    ("plan",    "plan"),
+    ("plano",   "plan"),  # PT
+    ("प्लान",   "plan"),  # HI
+    ("साप्ताहिक", "plan"),  # HI (weekly)
+    # sad / discouraged
+    ("sad",     "sad"),
+    ("triste",  "sad"),  # ES/PT
+    # motivat
+    ("motivat", "motivat"),
+    ("motivaci", "motivat"),  # ES
+    ("motivation", "motivat"),  # FR/DE
+    ("प्रेरणा",  "motivat"),  # HI
+]
+
 
 def reply(msg: str, language: str = "en") -> str:
     lang = language if language in ("en", "es", "fr", "de", "hi", "pt") else "en"
     msg_lower = msg.lower()
-    for keyword, translations in REPLIES.items():
-        if keyword in msg_lower:
+    for keyword, topic in KEYWORD_MAP:
+        if keyword.lower() in msg_lower:
+            translations = REPLIES[topic]
             return translations.get(lang, translations["en"])
     return DEFAULT_REPLY.get(lang, DEFAULT_REPLY["en"])
