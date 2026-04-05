@@ -8,7 +8,6 @@ const RISK_COLORS = { low: '#10B981', medium: '#F59E0B', high: '#EF4444', unknow
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const WEEKDAYS_SHORT = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const BODY_PART_ICONS = {
   chest: '💪', abs: '🔥', arms: '💪', legs: '🦵', back: '🎯',
   full_body: '⚡', default: '🏋️',
@@ -94,6 +93,7 @@ function WeeklyBar({ data, today = 0 }) {
             style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', position: 'relative' }}
             onMouseEnter={() => setHovered(i)}
             onMouseLeave={() => setHovered(null)}
+            onPointerDown={(e) => { e.preventDefault(); setHovered(prev => prev === i ? null : i); }}
           >
             {isHovered && (
               <div style={{
@@ -113,7 +113,7 @@ function WeeklyBar({ data, today = 0 }) {
                 zIndex: 10,
                 boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
               }}>
-                {d.value > 0 ? `${d.value} kcal` : '—'}
+                {d.value > 0 ? `${d.label} · ${d.value} kcal` : `${d.label} · —`}
                 <div style={{
                   position: 'absolute',
                   top: '100%',
@@ -157,136 +157,6 @@ function RelativeDate(dateStr) {
   if (diffDays === 1) return 'Yesterday';
   if (diffDays < 7) return `${diffDays} days ago`;
   return date.toLocaleDateString();
-}
-
-function InlineHistoryView({ onClose }) {
-  const { t } = useAppSettings();
-  const [sessions, setSessions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const today = new Date();
-  const [calYear, setCalYear] = useState(today.getFullYear());
-  const [calMonth, setCalMonth] = useState(today.getMonth());
-
-  useEffect(() => {
-    fetch('/api/sessions').then(r => r.json()).then(d => {
-      setSessions(Array.isArray(d) ? d : (d.sessions || []));
-    }).catch(() => setSessions([])).finally(() => setLoading(false));
-  }, []);
-
-  const workoutDays = new Set(
-    sessions.filter(s => {
-      const d = new Date(s.date || s.created_at || 0);
-      return d.getFullYear() === calYear && d.getMonth() === calMonth;
-    }).map(s => new Date(s.date || s.created_at || 0).getDate())
-  );
-
-  const firstDay = new Date(calYear, calMonth, 1).getDay();
-  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-  const monthName = new Date(calYear, calMonth, 1).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-  const isCurrentMonth = calMonth === today.getMonth() && calYear === today.getFullYear();
-  const cells = [...Array(firstDay).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)];
-  while (cells.length % 7 !== 0) cells.push(null);
-
-  const weekMap = {};
-  sessions.forEach(s => {
-    const d = new Date(s.date || s.created_at || 0);
-    const key = getWeekKey(d);
-    if (!weekMap[key]) weekMap[key] = { key, range: getWeekRange(d), items: [], cals: 0, secs: 0 };
-    weekMap[key].items.push(s);
-    weekMap[key].cals += s.calories || 0;
-    weekMap[key].secs += s.duration || 0;
-  });
-  const weeks = Object.values(weekMap).sort((a, b) => b.key.localeCompare(a.key));
-
-  const prevMonth = () => { if (calMonth === 0) { setCalYear(y => y - 1); setCalMonth(11); } else setCalMonth(m => m - 1); };
-  const nextMonth = () => { if (calMonth === 11) { setCalYear(y => y + 1); setCalMonth(0); } else setCalMonth(m => m + 1); };
-
-  return (
-    <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)', marginBottom: 20, animation: 'fadeIn 0.3s ease' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--border-light)' }}>
-        <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--text)' }}>{t.history}</div>
-        <button onClick={onClose} style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, width: 32, height: 32, cursor: 'pointer', fontSize: 14, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
-      </div>
-
-      <div style={{ padding: '20px' }}>
-        <div style={{ background: 'var(--surface-2)', borderRadius: 16, padding: '16px', border: '1px solid var(--border-light)', marginBottom: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <button onClick={prevMonth} style={{ width: 30, height: 30, borderRadius: 8, background: 'var(--surface)', border: '1px solid var(--border)', cursor: 'pointer', fontSize: 15 }}>‹</button>
-            <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--text)' }}>{monthName}</div>
-            <button onClick={nextMonth} style={{ width: 30, height: 30, borderRadius: 8, background: 'var(--surface)', border: '1px solid var(--border)', cursor: 'pointer', fontSize: 15 }}>›</button>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 2, marginBottom: 4 }}>
-            {WEEKDAYS_SHORT.map((d, i) => <div key={i} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', padding: '4px 0' }}>{d}</div>)}
-          </div>
-          {Array.from({ length: cells.length / 7 }, (_, row) => (
-            <div key={row} style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 2 }}>
-              {cells.slice(row * 7, row * 7 + 7).map((day, col) => {
-                if (!day) return <div key={col} style={{ height: 34 }} />;
-                const isToday = isCurrentMonth && day === today.getDate();
-                const hasW = workoutDays.has(day);
-                return (
-                  <div key={col} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 34 }}>
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isToday ? 'var(--text)' : hasW ? 'var(--primary-50)' : 'transparent' }}>
-                      <span style={{ fontSize: 12, fontWeight: isToday || hasW ? 700 : 400, color: isToday ? 'var(--bg)' : hasW ? 'var(--primary)' : 'var(--text-secondary)' }}>{day}</span>
-                    </div>
-                    {hasW && !isToday && <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--primary)', marginTop: 1 }} />}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: 32, color: 'var(--text-tertiary)' }}>Loading…</div>
-        ) : sessions.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '32px 20px', background: 'var(--surface-2)', borderRadius: 16, border: '1px dashed var(--border)' }}>
-            <div style={{ fontSize: 40, marginBottom: 10 }}>🏋️</div>
-            <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>{t.noWorkoutsYet}</div>
-            <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{t.noWorkoutsDesc}</div>
-          </div>
-        ) : (
-          <>
-            <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--text)', marginBottom: 14 }}>{t.weeklySummary}</div>
-            {weeks.map(group => (
-              <div key={group.key} style={{ marginBottom: 20 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid var(--border-light)' }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>{group.range}</div>
-                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{group.items.length} Workout{group.items.length !== 1 ? 's' : ''}</div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', gap: 10 }}>
-                      <span>⏱ {fmtDuration(group.secs)}</span>
-                      <span>🔥 {group.cals.toFixed(1)} Kcal</span>
-                    </div>
-                  </div>
-                </div>
-                {group.items.map((s, idx) => {
-                  const icon = BODY_PART_ICONS[s.body_part] || BODY_PART_ICONS.default;
-                  const d = new Date(s.date || s.created_at || 0);
-                  const timeStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-                  return (
-                    <div key={idx} style={{ display: 'flex', gap: 12, padding: '10px 0', borderBottom: idx < group.items.length - 1 ? '1px solid var(--border-light)' : 'none', alignItems: 'center' }}>
-                      <div style={{ width: 44, height: 44, borderRadius: 10, background: 'var(--primary-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>{icon}</div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text)', marginBottom: 3 }}>{s.title}</div>
-                        <div style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', gap: 10 }}>
-                          <span>⏱ {fmtDuration(s.duration || 0)}</span>
-                          <span>🔥 {(s.calories || 0).toFixed(1)} Kcal</span>
-                        </div>
-                        <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 2 }}>{timeStr}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
-          </>
-        )}
-      </div>
-    </div>
-  );
 }
 
 export default function Report() {
