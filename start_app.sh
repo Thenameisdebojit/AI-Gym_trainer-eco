@@ -39,7 +39,7 @@ SMTP_FROM=
 ELEVENLABS_API_KEY=
 OLLAMA_BASE_URL=http://localhost:11434
 SECRET_KEY=change_me_in_production
-GOOGLE_VERIFY_TOKENS=false
+GOOGLE_VERIFY_TOKENS=true
 ENVEOF
     warn "Backend/.env created. Fill in secrets (see .env.production_example)."
 fi

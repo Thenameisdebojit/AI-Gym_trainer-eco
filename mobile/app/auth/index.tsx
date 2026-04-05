@@ -26,6 +26,23 @@ WebBrowser.maybeCompleteAuthSession();
 
 type Mode = "login" | "register" | "verify";
 
+function decodeGoogleJwt(token: string): {
+  email?: string;
+  given_name?: string;
+  family_name?: string;
+  name?: string;
+  picture?: string;
+} {
+  try {
+    const payload = token.split(".")[1];
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+    return JSON.parse(atob(padded));
+  } catch {
+    return {};
+  }
+}
+
 const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || "";
 const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID || "";
 const GOOGLE_ANDROID_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID || "";
@@ -60,29 +77,36 @@ export default function AuthScreen() {
     if (nativeGoogleResponse?.type === "success") {
       const idToken =
         nativeGoogleResponse.params?.id_token ||
-        (nativeGoogleResponse.authentication as any)?.idToken ||
+        nativeGoogleResponse.authentication?.idToken ||
         "";
 
       if (idToken) {
         handleNativeGoogleToken(idToken);
       } else {
-        Alert.alert(
-          "Google Sign-In",
-          "Could not retrieve Google ID token. Please try again."
-        );
+        Alert.alert("Google Sign-In", "Could not retrieve Google ID token. Please try again.");
         setLoading(false);
       }
     } else if (nativeGoogleResponse?.type === "error") {
       Alert.alert("Google Sign-In Failed", nativeGoogleResponse.error?.message || "An error occurred.");
       setLoading(false);
-    } else if (nativeGoogleResponse?.type === "dismiss") {
+    } else if (
+      nativeGoogleResponse?.type === "dismiss" ||
+      nativeGoogleResponse?.type === "cancel"
+    ) {
       setLoading(false);
     }
   }, [nativeGoogleResponse]);
 
   const handleNativeGoogleToken = async (idToken: string) => {
+    const claims = decodeGoogleJwt(idToken);
+    const gEmail = claims.email || "";
+    const nameParts = (claims.name || "").split(" ");
+    const gFirst = claims.given_name || nameParts[0] || "";
+    const gLast = claims.family_name || nameParts.slice(1).join(" ") || "";
+    const gPhoto = claims.picture || "";
+
     try {
-      await googleLogin(idToken, "", "", "");
+      await googleLogin(idToken, gEmail, gFirst, gLast, gPhoto);
       router.replace("/(tabs)");
     } catch (e: any) {
       Alert.alert("Google Sign-In Failed", e.message || "Sign-in failed. Please try again.");

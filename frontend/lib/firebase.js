@@ -41,15 +41,20 @@ export async function signInWithGoogle() {
   }
 
   const result = await signInWithPopup(auth, googleProvider);
-  const firebaseUser = result.user;
-  const idToken = await firebaseUser.getIdToken();
 
+  const credential = GoogleAuthProvider.credentialFromResult(result);
+  const googleIdToken = credential?.idToken;
+  if (!googleIdToken) {
+    throw new Error('Could not retrieve Google OAuth ID token from sign-in result.');
+  }
+
+  const firebaseUser = result.user;
   const nameParts = (firebaseUser.displayName || '').split(' ');
   const firstName = nameParts[0] || '';
   const lastName = nameParts.slice(1).join(' ') || '';
 
   return {
-    idToken,
+    idToken: googleIdToken,
     email: firebaseUser.email,
     firstName,
     lastName,

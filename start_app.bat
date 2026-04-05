@@ -21,7 +21,7 @@ if not exist "Backend\.env" (
     echo ELEVENLABS_API_KEY= >> Backend\.env
     echo OLLAMA_BASE_URL=http://localhost:11434 >> Backend\.env
     echo SECRET_KEY=change_me_in_production >> Backend\.env
-    echo GOOGLE_VERIFY_TOKENS=false >> Backend\.env
+    echo GOOGLE_VERIFY_TOKENS=true >> Backend\.env
     echo  [INFO] Backend\.env created. Fill in secrets before first run.
 )
 

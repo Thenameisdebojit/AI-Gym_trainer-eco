@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, limit, Timestamp } from 'firebase/firestore';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, UserCredential } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY || '',
@@ -113,16 +113,21 @@ export async function signInWithGoogle(): Promise<{
   provider.addScope('email');
   provider.addScope('profile');
 
-  const result = await signInWithPopup(authInstance, provider);
-  const firebaseUser = result.user;
-  const idToken = await firebaseUser.getIdToken();
+  const result: UserCredential = await signInWithPopup(authInstance, provider);
 
+  const credential = GoogleAuthProvider.credentialFromResult(result);
+  const googleIdToken = credential?.idToken;
+  if (!googleIdToken) {
+    throw new Error('Could not retrieve Google OAuth ID token from sign-in result.');
+  }
+
+  const firebaseUser = result.user;
   const nameParts = (firebaseUser.displayName || '').split(' ');
   const firstName = nameParts[0] || '';
   const lastName = nameParts.slice(1).join(' ') || '';
 
   return {
-    idToken,
+    idToken: googleIdToken,
     email: firebaseUser.email || '',
     firstName,
     lastName,
