@@ -21,19 +21,11 @@ const SCREEN_MAP = {
   settings: Settings,
 };
 
-const QUICK_PROMPTS_EN = [
-  'Build muscle faster?',
-  'Best fat loss exercises?',
-  'How many rest days?',
-  'Pre-workout nutrition?',
-  'Improve flexibility?',
-  'Weekly training plan',
-];
-
 function FloatingChatbot() {
+  const { t, language } = useAppSettings();
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hi! I'm your AI Fitness Coach 💪 Ask me anything about workouts, nutrition, or recovery!" },
+  const [messages, setMessages] = useState(() => [
+    { role: 'assistant', content: t.chatGreeting },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,8 +34,12 @@ function FloatingChatbot() {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    const t = setTimeout(() => setPulse(false), 3000);
-    return () => clearTimeout(t);
+    setMessages([{ role: 'assistant', content: t.chatGreeting }]);
+  }, [language]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setPulse(false), 3000);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -54,6 +50,8 @@ function FloatingChatbot() {
     if (open) setTimeout(() => inputRef.current?.focus(), 100);
   }, [open]);
 
+  const quickPrompts = [t.chatPrompt1, t.chatPrompt2, t.chatPrompt3, t.chatPrompt4, t.chatPrompt5, t.chatPrompt6];
+
   const send = useCallback(async (text) => {
     const q = (text || input).trim();
     if (!q) return;
@@ -61,14 +59,14 @@ function FloatingChatbot() {
     setMessages(prev => [...prev, { role: 'user', content: q }]);
     setLoading(true);
     try {
-      const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: q }) });
+      const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: q, language }) });
       const data = await res.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response || data.message || "Happy to help! Could you rephrase that?" }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.response || data.message || t.chatErrorMsg }]);
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: "Couldn't connect right now. Please try again!" }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: t.chatErrorMsg }]);
     }
     setLoading(false);
-  }, [input]);
+  }, [input, language, t]);
 
   return (
     <>
@@ -80,7 +78,7 @@ function FloatingChatbot() {
               <div style={{ fontSize: 14, fontWeight: 800, color: '#fff' }}>AI Fitness Coach</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 4px #10B981' }} />
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', fontWeight: 500 }}>Online</span>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', fontWeight: 500 }}>{t.chatOnline}</span>
               </div>
             </div>
             <button onClick={() => setOpen(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', width: 28, height: 28, borderRadius: '50%', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
@@ -110,7 +108,7 @@ function FloatingChatbot() {
 
           <div style={{ padding: '6px 12px', borderTop: '1px solid var(--border-light)' }}>
             <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 6 }} className="hide-scroll">
-              {QUICK_PROMPTS_EN.map((q, i) => (
+              {quickPrompts.map((q, i) => (
                 <button key={i} onClick={() => send(q)} style={{ padding: '5px 12px', border: '1.5px solid var(--border)', borderRadius: 99, background: 'var(--surface-2)', color: 'var(--text-secondary)', fontSize: 11, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, transition: 'all 0.12s ease', outline: 'none' }}
                   onMouseEnter={e => { e.target.style.borderColor = '#7C3AED'; e.target.style.color = '#7C3AED'; }}
                   onMouseLeave={e => { e.target.style.borderColor = 'var(--border)'; e.target.style.color = 'var(--text-secondary)'; }}>
@@ -121,7 +119,7 @@ function FloatingChatbot() {
           </div>
 
           <div style={{ padding: '10px 12px 14px', display: 'flex', gap: 8 }}>
-            <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()} placeholder="Ask anything…"
+            <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()} placeholder={t.chatPlaceholder}
               style={{ flex: 1, padding: '10px 14px', border: '1.5px solid var(--border)', borderRadius: 12, fontSize: 13, color: 'var(--text)', background: 'var(--surface-2)', outline: 'none', transition: 'border-color 0.15s' }}
               onFocus={e => e.target.style.borderColor = '#7C3AED'}
               onBlur={e => e.target.style.borderColor = 'var(--border)'}
@@ -252,7 +250,7 @@ function AppInner() {
               <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>AI Coach</span>
               <span style={{ fontSize: '9px', fontWeight: 800, background: 'linear-gradient(135deg,#2563EB,#7C3AED)', color: '#fff', padding: '2px 6px', borderRadius: 99 }}>AI</span>
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.5 }}>Click the 🤖 button anywhere to chat</div>
+            <div style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{t.aiCoachHint}</div>
           </div>
         )}
 
@@ -275,10 +273,6 @@ function AppInner() {
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', background: 'var(--primary-50)', borderRadius: '99px' }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--success)', display: 'inline-block', boxShadow: '0 0 0 2px rgba(16,185,129,0.25)' }} />
-              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary)' }}>Live AI</span>
-            </div>
             {!collapsed && user && <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>{user.first_name}</span>}
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
               <button onClick={handleLogout} title="Sign out"

@@ -1,15 +1,7 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import Button from '../components/ui/Button';
-
-const QUICK_PROMPTS = [
-  'How do I build muscle faster?',
-  'Best exercises for fat loss?',
-  'How many rest days do I need?',
-  'What should I eat before a workout?',
-  'How to improve my flexibility?',
-  'Create a weekly training plan',
-];
+import { useAppSettings } from '../context/AppSettingsContext';
 
 function Message({ msg }) {
   const isUser = msg.role === 'user';
@@ -26,12 +18,19 @@ function Message({ msg }) {
 }
 
 export default function AICoach() {
-  const [messages, setMessages] = useState([{ role: 'assistant', content: "Hi! I'm your AI Fitness Coach 🤖💪 Ask me about workouts, nutrition, recovery, or get a personalized plan!" }]);
+  const { t, language } = useAppSettings();
+  const [messages, setMessages] = useState(() => [{ role: 'assistant', content: t.chatGreeting }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef(null);
 
+  useEffect(() => {
+    setMessages([{ role: 'assistant', content: t.chatGreeting }]);
+  }, [language]);
+
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages, loading]);
+
+  const quickPrompts = [t.chatPrompt1, t.chatPrompt2, t.chatPrompt3, t.chatPrompt4, t.chatPrompt5, t.chatPrompt6];
 
   const send = async (text) => {
     const q = text || input.trim();
@@ -40,11 +39,11 @@ export default function AICoach() {
     setMessages(prev => [...prev, { role: 'user', content: q }]);
     setLoading(true);
     try {
-      const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: q }) });
+      const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: q, language }) });
       const data = await res.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response || data.message || "I'm here to help! Could you clarify?" }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.response || data.message || t.chatErrorMsg }]);
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: "Couldn't connect. Please try again!" }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: t.chatErrorMsg }]);
     }
     setLoading(false);
   };
@@ -65,7 +64,7 @@ export default function AICoach() {
       <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-xl)', marginBottom: '24px', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)', overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--success)', boxShadow: '0 0 6px var(--success)' }} />
-          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text)' }}>AI Coach Online</span>
+          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text)' }}>AI Coach · {t.chatOnline}</span>
         </div>
         <div style={{ height: '380px', overflowY: 'auto', padding: '20px 20px 10px' }} className="hide-scroll">
           {messages.map((m, i) => <Message key={i} msg={m} />)}
@@ -78,7 +77,7 @@ export default function AICoach() {
         </div>
         <div style={{ padding: '10px 16px', borderTop: '1px solid var(--border-light)' }}>
           <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }} className="hide-scroll">
-            {QUICK_PROMPTS.map((q, i) => (
+            {quickPrompts.map((q, i) => (
               <button key={i} onClick={() => send(q)} style={{ padding: '6px 14px', border: '1.5px solid var(--border)', borderRadius: '99px', background: 'var(--surface-2)', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.15s ease', flexShrink: 0 }}
                 onMouseEnter={e => { e.target.style.borderColor = 'var(--primary)'; e.target.style.color = 'var(--primary)'; }}
                 onMouseLeave={e => { e.target.style.borderColor = 'var(--border)'; e.target.style.color = 'var(--text-secondary)'; }}
@@ -87,7 +86,7 @@ export default function AICoach() {
           </div>
         </div>
         <div style={{ padding: '12px 16px', borderTop: '1px solid var(--border-light)', display: 'flex', gap: '10px' }}>
-          <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()} placeholder="Ask your AI coach anything..."
+          <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()} placeholder={t.chatPlaceholder}
             style={{ flex: 1, padding: '12px 16px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius)', fontSize: '14px', color: 'var(--text)', background: 'var(--surface-2)', transition: 'border-color 0.2s', outline: 'none' }}
             onFocus={e => e.target.style.borderColor = 'var(--primary)'}
             onBlur={e => e.target.style.borderColor = 'var(--border)'}

@@ -1,9 +1,9 @@
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { message = '' } = body;
+    const { message = '', language = 'en' } = body;
     const res = await fetch(
-      `http://localhost:8000/chat/?message=${encodeURIComponent(message)}`,
+      `http://localhost:8000/chat/?message=${encodeURIComponent(message)}&language=${encodeURIComponent(language)}`,
       { method: 'POST' }
     );
     const data = await res.json();
