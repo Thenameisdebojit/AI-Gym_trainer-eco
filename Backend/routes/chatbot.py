@@ -19,6 +19,7 @@ class ChatRequest(BaseModel):
     userProfile: Optional[Dict] = None
     workoutHistory: Optional[List[Dict]] = None
     currentExercise: Optional[str] = None
+    conversationHistory: Optional[List[Dict]] = None
 
 
 class WorkoutTipRequest(BaseModel):
@@ -43,6 +44,7 @@ async def chat(req: ChatRequest):
             req.userProfile,
             req.workoutHistory,
             req.currentExercise,
+            req.conversationHistory,
         )
         if response:
             return {"response": response}

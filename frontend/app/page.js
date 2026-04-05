@@ -4,6 +4,7 @@ import Training from '../screens/Training';
 import Discover from '../screens/Discover';
 import Report from '../screens/Report';
 import Settings from '../screens/Settings';
+import Account from '../screens/Account';
 import Auth from '../screens/Auth';
 import { AppSettingsProvider, useAppSettings } from '../context/AppSettingsContext';
 import { speakText } from '../utils/tts';
@@ -22,6 +23,7 @@ const SCREEN_MAP = {
   discover: Discover,
   report: Report,
   settings: Settings,
+  account: Account,
 };
 
 function FloatingChatbot() {
@@ -38,6 +40,9 @@ function FloatingChatbot() {
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
   const recognitionRef = useRef(null);
+  const messagesRef = useRef(messages);
+
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
 
   const hasSpeechRecognition = typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
 
@@ -68,10 +73,18 @@ function FloatingChatbot() {
     const q = (text || input).trim();
     if (!q) return;
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', content: q }]);
+
+    const currentHistory = messagesRef.current;
+    const conversationHistory = currentHistory.filter(m => m.role !== 'system');
+    setMessages([...currentHistory, { role: 'user', content: q }]);
     setLoading(true);
+
     try {
-      const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: q, language, userProfile: getUserProfile() }) });
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: q, language, userProfile: getUserProfile(), conversationHistory }),
+      });
       const data = await res.json();
       const reply = data.response || data.message || t.chatErrorMsg;
       setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
@@ -133,7 +146,7 @@ function FloatingChatbot() {
                 {m.role === 'assistant' && (
                   <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#2563EB,#7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, flexShrink: 0, marginRight: 8, alignSelf: 'flex-end' }}>🤖</div>
                 )}
-                <div style={{ maxWidth: '78%', padding: '10px 14px', borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '4px 16px 16px 16px', background: m.role === 'user' ? 'linear-gradient(135deg,#2563EB,#7C3AED)' : 'var(--surface-2)', color: m.role === 'user' ? '#fff' : 'var(--text)', fontSize: 13, lineHeight: 1.55, border: m.role === 'user' ? 'none' : '1px solid var(--border-light)', boxShadow: m.role === 'user' ? '0 4px 12px rgba(37,99,235,0.25)' : 'var(--shadow-sm)' }}>
+                <div style={{ maxWidth: '78%', padding: '10px 14px', borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '4px 16px 16px 16px', background: m.role === 'user' ? 'linear-gradient(135deg,#2563EB,#7C3AED)' : 'var(--surface-2)', color: m.role === 'user' ? '#fff' : 'var(--text)', fontSize: 13, lineHeight: 1.55, border: m.role === 'user' ? 'none' : '1px solid var(--border-light)', boxShadow: m.role === 'user' ? '0 4px 12px rgba(37,99,235,0.25)' : 'var(--shadow-sm)', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                   {m.content}
                 </div>
               </div>
@@ -229,6 +242,7 @@ function FloatingChatbot() {
 function AppInner() {
   const { t, navTarget, clearNavTarget } = useAppSettings();
   const [active, setActive] = useState('training');
+  const [prevActive, setPrevActive] = useState('settings');
   const [collapsed, setCollapsed] = useState(false);
   const [user, setUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
@@ -245,9 +259,15 @@ function AppInner() {
 
   useEffect(() => {
     if (navTarget?.tab) {
+      if (navTarget.tab !== 'account') setPrevActive(active);
       setActive(navTarget.tab);
     }
   }, [navTarget]);
+
+  const navigateTo = (screen) => {
+    if (screen === 'account') setPrevActive(active);
+    setActive(screen);
+  };
 
   const handleLogout = () => {
     const token = localStorage.getItem('fitai_token');
@@ -257,12 +277,35 @@ function AppInner() {
     setUser(null);
   };
 
+  const getUserAvatar = () => {
+    try {
+      const img = localStorage.getItem('fitai_avatar');
+      if (img) return { type: 'img', src: img };
+      const emoji = localStorage.getItem('fitai_avatar_emoji') || null;
+      return { type: 'emoji', src: emoji };
+    } catch { return { type: 'emoji', src: null }; }
+  };
+
   if (!authChecked) return null;
   if (!user) return <Auth onAuth={(u) => setUser(u)} />;
 
-  const Screen = SCREEN_MAP[active];
-  const activeItem = NAV_ITEMS.find(n => n.id === active);
+  const isAccount = active === 'account';
+  const displayActive = isAccount ? prevActive : active;
+  const activeItem = NAV_ITEMS.find(n => n.id === displayActive) || NAV_ITEMS[0];
   const initials = `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase() || '?';
+  const avatarInfo = getUserAvatar();
+
+  const renderScreen = () => {
+    if (isAccount) {
+      return <Account key="account" onBack={() => setActive(prevActive)} />;
+    }
+    const Screen = SCREEN_MAP[active];
+    if (!Screen) return null;
+    if (active === 'settings') {
+      return <Screen key={active} onNavigate={navigateTo} />;
+    }
+    return <Screen key={active} />;
+  };
 
   return (
     <div style={{ display: 'flex', height: '100vh', background: 'var(--bg)', overflow: 'hidden' }}>
@@ -290,9 +333,9 @@ function AppInner() {
 
         <nav style={{ flex: 1, padding: '12px 8px', display: 'flex', flexDirection: 'column', gap: '2px', overflowY: 'auto' }} className="hide-scroll">
           {NAV_ITEMS.map(item => {
-            const isActive = active === item.id;
+            const isActive = active === item.id || (isAccount && item.id === prevActive);
             return (
-              <button key={item.id} onClick={() => setActive(item.id)} title={collapsed ? item.label : ''}
+              <button key={item.id} onClick={() => { setPrevActive(active); setActive(item.id); }} title={collapsed ? item.label : ''}
                 style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', justifyContent: collapsed ? 'center' : 'flex-start', borderRadius: 'var(--radius)', border: 'none', cursor: 'pointer', background: isActive ? 'var(--primary-50)' : 'transparent', color: isActive ? 'var(--primary)' : 'var(--text-secondary)', fontWeight: isActive ? 600 : 500, fontSize: '14px', transition: 'all 0.15s ease', position: 'relative', width: '100%', textAlign: 'left', whiteSpace: 'nowrap', outline: 'none' }}
                 onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--surface-2)'; }}
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
@@ -328,32 +371,50 @@ function AppInner() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
         <header style={{ height: '64px', background: 'var(--surface)', borderBottom: '1px solid var(--border)', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '22px', lineHeight: 1 }}>{activeItem?.icon}</span>
+            <span style={{ fontSize: '22px', lineHeight: 1 }}>
+              {isAccount ? '👤' : activeItem?.icon}
+            </span>
             <div>
-              <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{activeItem?.label}</div>
-              <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontWeight: 500 }}>{t[activeItem?.subKey] || ''}</div>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>
+                {isAccount ? 'Account' : activeItem?.label}
+              </div>
+              <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontWeight: 500 }}>
+                {isAccount ? 'Profile & preferences' : (t[activeItem?.subKey] || '')}
+              </div>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {!collapsed && user && <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>{user.first_name}</span>}
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <button onClick={handleLogout} title="Sign out"
-                style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#2563EB,#7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 800, color: '#fff', cursor: 'pointer', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.25)', letterSpacing: '-0.02em' }}>
-                {initials}
-              </button>
-            </div>
+            <button
+              onClick={() => navigateTo('account')}
+              title="View account"
+              style={{
+                width: '36px', height: '36px', borderRadius: '50%',
+                background: avatarInfo.type === 'img' ? 'transparent' : 'linear-gradient(135deg,#2563EB,#7C3AED)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: avatarInfo.src && avatarInfo.type === 'emoji' ? '18px' : '13px',
+                fontWeight: 800, color: '#fff', cursor: 'pointer', border: isAccount ? '2px solid var(--primary)' : 'none',
+                boxShadow: '0 2px 8px rgba(37,99,235,0.25)', letterSpacing: '-0.02em',
+                overflow: 'hidden', padding: 0,
+              }}
+            >
+              {avatarInfo.type === 'img'
+                ? <img src={avatarInfo.src} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                : (avatarInfo.src || initials)
+              }
+            </button>
           </div>
         </header>
 
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }} className="hide-scroll">
-          <Screen key={active} />
+          {renderScreen()}
         </div>
       </div>
 
       <div id="fitai-mobile-nav" style={{ display: 'none', position: 'fixed', bottom: 0, left: 0, right: 0, background: 'var(--surface)', borderTop: '1px solid var(--border)', padding: '6px 0 max(6px,env(safe-area-inset-bottom))', boxShadow: '0 -4px 20px rgba(0,0,0,0.07)', zIndex: 100 }}>
         <div style={{ display: 'flex' }}>
           {NAV_ITEMS.map(item => {
-            const isActive = active === item.id;
+            const isActive = active === item.id || (isAccount && item.id === prevActive);
             return (
               <button key={item.id} onClick={() => setActive(item.id)} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', padding: '5px 0', border: 'none', background: 'transparent', cursor: 'pointer', outline: 'none', color: isActive ? 'var(--primary)' : 'var(--text-tertiary)' }}>
                 <span style={{ fontSize: '21px', lineHeight: 1 }}>{item.icon}</span>

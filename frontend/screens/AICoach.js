@@ -13,7 +13,7 @@ function Message({ msg }) {
       {!isUser && (
         <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#2563EB,#7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0, marginRight: '10px', alignSelf: 'flex-end' }}>🤖</div>
       )}
-      <div style={{ maxWidth: '75%', padding: '12px 16px', borderRadius: isUser ? '18px 18px 4px 18px' : '4px 18px 18px 18px', background: isUser ? 'var(--primary)' : 'var(--surface)', color: isUser ? '#fff' : 'var(--text)', fontSize: '14px', lineHeight: 1.6, boxShadow: isUser ? '0 4px 12px rgba(37,99,235,0.25)' : 'var(--shadow-sm)', border: isUser ? 'none' : '1px solid var(--border-light)' }}>
+      <div style={{ maxWidth: '75%', padding: '12px 16px', borderRadius: isUser ? '18px 18px 4px 18px' : '4px 18px 18px 18px', background: isUser ? 'var(--primary)' : 'var(--surface)', color: isUser ? '#fff' : 'var(--text)', fontSize: '14px', lineHeight: 1.6, boxShadow: isUser ? '0 4px 12px rgba(37,99,235,0.25)' : 'var(--shadow-sm)', border: isUser ? 'none' : '1px solid var(--border-light)', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
         {msg.content}
       </div>
     </div>
@@ -30,6 +30,9 @@ export default function AICoach() {
   const bottomRef = useRef(null);
   const recognitionRef = useRef(null);
   const inputRef = useRef(null);
+  const messagesRef = useRef(messages);
+
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
 
   const hasSpeechRecognition = typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
 
@@ -49,13 +52,24 @@ export default function AICoach() {
     const q = (text || input).trim();
     if (!q) return;
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', content: q }]);
+
+    const currentHistory = messagesRef.current;
+    const newMessages = [...currentHistory, { role: 'user', content: q }];
+    setMessages(newMessages);
     setLoading(true);
+
+    const conversationHistory = currentHistory.filter(m => m.role !== 'system');
+
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: q, language, userProfile: getUserProfile() }),
+        body: JSON.stringify({
+          message: q,
+          language,
+          userProfile: getUserProfile(),
+          conversationHistory,
+        }),
       });
       const data = await res.json();
       const reply = data.response || data.message || t.chatErrorMsg;
@@ -94,14 +108,14 @@ export default function AICoach() {
   return (
     <div style={{ padding: '24px 28px', maxWidth: '960px', animation: 'fadeIn 0.4s ease' }}>
       <div style={{ marginBottom: '28px' }}>
-        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500, marginBottom: '4px' }}>Powered by AI</div>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500, marginBottom: '4px' }}>Powered by Mistral-nemo</div>
         <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.03em' }}>AI Coach</h1>
       </div>
       <div style={{ background: 'linear-gradient(135deg,#0F172A,#1E3A8A,#2563EB)', borderRadius: 'var(--radius-xl)', padding: '28px', marginBottom: '28px', display: 'flex', alignItems: 'center', gap: '24px', boxShadow: '0 12px 40px rgba(37,99,235,0.2)' }}>
         <div style={{ fontSize: '56px' }}>🤖</div>
         <div>
           <div style={{ fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '6px' }}>Your Personal AI Coach</div>
-          <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>Ask anything about workouts, nutrition, recovery, or sports. Voice input supported!</div>
+          <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>Powered by Mistral-nemo LLM. Ask anything about workouts, nutrition, recovery, or sports. Voice input supported!</div>
         </div>
       </div>
       <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-xl)', marginBottom: '24px', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)', overflow: 'hidden' }}>
@@ -119,8 +133,11 @@ export default function AICoach() {
         <div style={{ height: '380px', overflowY: 'auto', padding: '20px 20px 10px' }} className="hide-scroll">
           {messages.map((m, i) => <Message key={i} msg={m} />)}
           {loading && (
-            <div style={{ display: 'flex', gap: '5px', padding: '8px 16px', width: 'fit-content' }}>
-              {[0, 1, 2].map(i => <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--text-tertiary)', animation: 'pulse 1s ease infinite', animationDelay: `${i * 0.2}s` }} />)}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg,#2563EB,#7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>🤖</div>
+              <div style={{ background: 'var(--surface-2)', borderRadius: '4px 16px 16px 16px', padding: '10px 16px', border: '1px solid var(--border-light)', display: 'flex', gap: 5 }}>
+                {[0, 1, 2].map(i => <div key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--text-tertiary)', animation: `pulse 1s ${i * 0.2}s ease infinite` }} />)}
+              </div>
             </div>
           )}
           <div ref={bottomRef} />

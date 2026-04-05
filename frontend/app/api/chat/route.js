@@ -7,6 +7,7 @@ export async function POST(request) {
       userProfile = null,
       workoutHistory = null,
       currentExercise = null,
+      conversationHistory = null,
     } = body;
 
     let history = workoutHistory;
@@ -29,6 +30,7 @@ export async function POST(request) {
         userProfile,
         workoutHistory: history,
         currentExercise,
+        conversationHistory,
       }),
     });
     const data = await res.json();

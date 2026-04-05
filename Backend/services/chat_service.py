@@ -4,10 +4,10 @@ import httpx
 logger = logging.getLogger(__name__)
 
 OLLAMA_BASE = "http://localhost:11434"
-OLLAMA_MODEL = "llama3"
+OLLAMA_MODEL = "mistral-nemo"
 
 SYSTEM_PROMPT = (
-    "You are an expert AI fitness coach with deep knowledge in:\n"
+    "You are an expert AI fitness coach named FitAI. You have deep knowledge in:\n"
     "- Strength training, hypertrophy, powerlifting, and functional fitness\n"
     "- Cardio, HIIT, endurance sports, and athletic conditioning\n"
     "- Nutrition, meal planning, macros, and supplementation for athletes\n"
@@ -17,16 +17,19 @@ SYSTEM_PROMPT = (
     "- Flexibility, mobility, and yoga for athletes\n\n"
     "RULES:\n"
     "- Always respond in the same language the user writes in.\n"
-    "- Be concise, practical, and motivating — 2–4 sentences unless a plan is requested.\n"
+    "- Be conversational, warm, and genuinely helpful — like a real personal trainer.\n"
+    "- Give detailed, practical, personalized advice. 2–5 sentences unless the user asks for a plan.\n"
+    "- Remember and reference earlier parts of the conversation when relevant.\n"
     "- Personalize advice using any user profile data provided.\n"
-    "- Never say you are an AI language model — you are a fitness coach.\n"
-    "- If asked about mental health or clinical conditions, encourage seeing a professional."
+    "- Never say you are an AI language model — you are a fitness coach named FitAI.\n"
+    "- If asked about mental health or clinical conditions, encourage seeing a professional.\n"
+    "- Do not repeat the same advice verbatim — vary your language and approach."
 )
 
 WORKOUT_SYSTEM_PROMPT = (
-    "You are a live workout voice coach. Your role is to give brief, energetic coaching cues "
-    "during a live workout session. Keep responses to 1-2 short sentences. Be encouraging and specific. "
-    "Respond in the same language specified. No markdown formatting."
+    "You are a live workout voice coach named FitAI. Give brief, energetic coaching cues "
+    "during a live workout session. 1-2 short sentences only. Be encouraging, specific, and "
+    "motivating. No markdown formatting. No lists."
 )
 
 PHASE_TEMPLATES = {
@@ -47,12 +50,12 @@ PHASE_TEMPLATES = {
         "pt": "A seguir: {exercise}. Mantém essa energia, estás a arrasar!",
     },
     "rest": {
-        "en": "Good work! Take your breath, the next exercise is coming up strong.",
-        "es": "¡Buen trabajo! Recupera el aliento, el próximo ejercicio se acerca.",
-        "fr": "Bon travail ! Reprends ton souffle, le prochain exercice arrive.",
-        "de": "Gute Arbeit! Hol Luft, die nächste Übung kommt gleich.",
-        "hi": "अच्छा काम! सांस लो, अगला व्यायाम आने वाला है।",
-        "pt": "Bom trabalho! Recupera o fôlego, o próximo exercício está chegando.",
+        "en": "Great set! Rest up — the next exercise is coming.",
+        "es": "¡Gran serie! Descansa — el próximo ejercicio se acerca.",
+        "fr": "Excellent ! Repose-toi — le prochain exercice arrive.",
+        "de": "Tolle Serie! Erhole dich — die nächste Übung kommt.",
+        "hi": "बढ़िया सेट! आराम करो — अगला व्यायाम आने वाला है।",
+        "pt": "Ótima série! Descanse — o próximo exercício está chegando.",
     },
     "complete": {
         "en": "Workout complete! You crushed it today — amazing effort!",
@@ -74,7 +77,7 @@ REPLIES = {
         "pt": "Foque na sobrecarga progressiva e proteína adequada — aponte para 1,6–2,2 g por kg de peso corporal diariamente 🥩",
     },
     "fat": {
-        "en": "Combine strength training with a moderate caloric deficit. HIIT 2–3x per week accelerates results 🔥",
+        "en": "Combine strength training with a moderate caloric deficit. HIIT 2–3x per week accelerates fat loss significantly 🔥",
         "es": "Combina entrenamiento de fuerza con un déficit calórico moderado. HIIT 2–3 veces por semana acelera los resultados 🔥",
         "fr": "Combine entraînement de force et déficit calorique modéré. Le HIIT 2–3 fois par semaine accélère les résultats 🔥",
         "de": "Kombiniere Krafttraining mit einem moderaten Kaloriendefizit. HIIT 2–3x pro Woche beschleunigt die Ergebnisse 🔥",
@@ -114,7 +117,7 @@ REPLIES = {
         "pt": "Um plano semanal sólido: 3 dias de força, 2 de cardio, 1 de recuperação ativa, 1 de descanso total. Ajuste conforme seu objetivo! 📅",
     },
     "sad": {
-        "en": "You've come this far. Don't stop now 💪",
+        "en": "You've come this far — don't stop now. Every small step counts 💪",
         "es": "Has llegado hasta aquí. ¡No te detengas ahora! 💪",
         "fr": "Tu es allé si loin. Ne t'arrête pas maintenant 💪",
         "de": "Du hast es bis hierher geschafft. Hör jetzt nicht auf 💪",
@@ -122,22 +125,22 @@ REPLIES = {
         "pt": "Você chegou até aqui. Não pare agora 💪",
     },
     "motivat": {
-        "en": "Discipline > Motivation. Keep going!",
-        "es": "Disciplina > Motivación. ¡Sigue adelante!",
-        "fr": "Discipline > Motivation. Continue !",
-        "de": "Disziplin > Motivation. Weiter so!",
-        "hi": "अनुशासन > प्रेरणा। चलते रहो!",
-        "pt": "Disciplina > Motivação. Continue!",
+        "en": "Discipline beats motivation every time. Show up, do the work, and the results will follow 🏆",
+        "es": "La disciplina supera a la motivación cada vez. ¡Preséntate, haz el trabajo y los resultados seguirán!",
+        "fr": "La discipline bat la motivation à chaque fois. Montre-toi, fais le travail, les résultats suivront.",
+        "de": "Disziplin schlägt Motivation jedes Mal. Erscheine, tue die Arbeit und die Ergebnisse werden folgen.",
+        "hi": "अनुशासन हर बार प्रेरणा को मात देता है। आओ, काम करो, परिणाम आएंगे।",
+        "pt": "Disciplina vence a motivação sempre. Apareça, faça o trabalho e os resultados virão.",
     },
 }
 
 DEFAULT_REPLY = {
-    "en": "Stay consistent and trust the process! Every rep counts 💪",
-    "es": "¡Sé constante y confía en el proceso! Cada repetición cuenta 💪",
-    "fr": "Reste régulier et fais confiance au processus ! Chaque répétition compte 💪",
-    "de": "Bleib konsequent und vertraue dem Prozess! Jede Wiederholung zählt 💪",
-    "hi": "नियमित रहें और प्रक्रिया पर भरोसा रखें! हर दोहराव मायने रखता है 💪",
-    "pt": "Seja consistente e confie no processo! Cada repetição conta 💪",
+    "en": "Great question! Stay consistent and trust the process — every workout brings you closer to your goal 💪",
+    "es": "¡Buena pregunta! Sé constante y confía en el proceso — cada entrenamiento te acerca más a tu objetivo 💪",
+    "fr": "Bonne question ! Reste régulier et fais confiance au processus — chaque séance te rapproche de ton objectif 💪",
+    "de": "Gute Frage! Bleib konsequent und vertraue dem Prozess — jedes Training bringt dich deinem Ziel näher 💪",
+    "hi": "अच्छा सवाल! नियमित रहें और प्रक्रिया पर भरोसा रखें — हर वर्कआउट आपको आपके लक्ष्य के करीब लाता है 💪",
+    "pt": "Ótima pergunta! Seja consistente e confie no processo — cada treino te aproxima do seu objetivo 💪",
 }
 
 KEYWORD_MAP = [
@@ -204,16 +207,28 @@ def _build_profile_context(user_profile: dict) -> str:
     if not user_profile:
         return ""
     parts = []
-    if user_profile.get("name") and user_profile["name"] != "User":
+    if user_profile.get("name") and user_profile["name"] not in ("User", ""):
         parts.append(f"Name: {user_profile['name']}")
+    if user_profile.get("first_name"):
+        name = f"{user_profile.get('first_name', '')} {user_profile.get('last_name', '')}".strip()
+        if name and name not in parts:
+            parts.append(f"Name: {name}")
     if user_profile.get("age"):
         parts.append(f"Age: {user_profile['age']}")
     if user_profile.get("weight"):
-        parts.append(f"Weight: {user_profile['weight']}")
+        parts.append(f"Weight: {user_profile['weight']} kg")
     if user_profile.get("height"):
-        parts.append(f"Height: {user_profile['height']}")
+        parts.append(f"Height: {user_profile['height']} cm")
     if user_profile.get("goal"):
-        parts.append(f"Fitness goal: {user_profile['goal']}")
+        goal_labels = {
+            "muscle_gain": "muscle gain",
+            "fat_loss": "fat loss",
+            "flexibility": "flexibility & mobility",
+            "mma": "martial arts / MMA",
+            "general": "general fitness",
+        }
+        goal = goal_labels.get(user_profile["goal"], user_profile["goal"])
+        parts.append(f"Fitness goal: {goal}")
     if user_profile.get("level"):
         parts.append(f"Fitness level: {user_profile['level']}")
     return f"\n\nUser profile: {', '.join(parts)}" if parts else ""
@@ -222,11 +237,11 @@ def _build_profile_context(user_profile: dict) -> str:
 def _build_history_context(workout_history: list) -> str:
     if not workout_history:
         return ""
-    lines = ["Recent workout history (last sessions):"]
+    lines = ["Recent workout history:"]
     for s in workout_history[:5]:
         title = s.get("title", "Unknown workout")
         date = s.get("date", "")
-        calories = s.get("calories_burned", "")
+        calories = s.get("calories_burned", s.get("calories", ""))
         duration = s.get("duration", "")
         parts = [title]
         if date:
@@ -262,17 +277,42 @@ async def ensure_model_available() -> bool:
             tags = r.json().get("models", [])
             names = [m.get("name", "") for m in tags]
             if any(OLLAMA_MODEL in n for n in names):
+                logger.info("Ollama model '%s' is already available.", OLLAMA_MODEL)
                 return True
-            logger.info("Pulling %s model from Ollama…", OLLAMA_MODEL)
-            await client.post(
+            logger.info("Pulling '%s' model from Ollama — this may take a few minutes…", OLLAMA_MODEL)
+            pull_resp = await client.post(
                 f"{OLLAMA_BASE}/api/pull",
                 json={"name": OLLAMA_MODEL, "stream": False},
-                timeout=300.0,
+                timeout=600.0,
             )
-            return True
+            if pull_resp.status_code == 200:
+                logger.info("Successfully pulled '%s'.", OLLAMA_MODEL)
+                return True
+            logger.warning("Failed to pull '%s': status %s", OLLAMA_MODEL, pull_resp.status_code)
+            return False
     except Exception as exc:
         logger.debug("Ollama not available: %s", exc)
         return False
+
+
+def _build_system_message(
+    language: str,
+    user_profile: dict = None,
+    workout_history: list = None,
+    current_exercise: str = None,
+) -> str:
+    lang = language if language in LANG_NAMES else "en"
+    profile_ctx = _build_profile_context(user_profile or {})
+    history_ctx = _build_history_context(workout_history or [])
+    exercise_ctx = (
+        f"\n\nCurrent workout context: The user is currently doing {current_exercise}."
+        if current_exercise else ""
+    )
+    lang_instruction = LANG_INSTRUCTIONS.get(lang, LANG_INSTRUCTIONS["en"])
+    return (
+        f"{SYSTEM_PROMPT}{profile_ctx}{history_ctx}{exercise_ctx}\n\n"
+        f"Language instruction: {lang_instruction}"
+    )
 
 
 async def ollama_chat(
@@ -281,33 +321,42 @@ async def ollama_chat(
     user_profile: dict = None,
     workout_history: list = None,
     current_exercise: str = None,
+    conversation_history: list = None,
 ) -> str:
-    lang = language if language in LANG_NAMES else "en"
-
-    profile_ctx = _build_profile_context(user_profile)
-    history_ctx = _build_history_context(workout_history or [])
-    exercise_ctx = (
-        f"\n\nCurrent workout context: The user is currently doing {current_exercise}."
-        if current_exercise else ""
+    system_content = _build_system_message(
+        language, user_profile, workout_history, current_exercise
     )
-    lang_instruction = LANG_INSTRUCTIONS.get(lang, LANG_INSTRUCTIONS["en"])
 
-    full_prompt = (
-        f"{SYSTEM_PROMPT}{profile_ctx}{history_ctx}{exercise_ctx}\n\n"
-        f"Instruction: {lang_instruction}\n\n"
-        f"User: {message}\n\nAssistant:"
-    )
+    messages = [{"role": "system", "content": system_content}]
+
+    if conversation_history:
+        for turn in conversation_history:
+            role = turn.get("role", "user")
+            content = turn.get("content", "")
+            if role in ("user", "assistant") and content:
+                messages.append({"role": role, "content": content})
+
+    messages.append({"role": "user", "content": message})
 
     try:
-        async with httpx.AsyncClient(timeout=25.0) as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(
-                f"{OLLAMA_BASE}/api/generate",
-                json={"model": OLLAMA_MODEL, "prompt": full_prompt, "stream": False},
+                f"{OLLAMA_BASE}/api/chat",
+                json={
+                    "model": OLLAMA_MODEL,
+                    "messages": messages,
+                    "stream": False,
+                    "options": {"temperature": 0.7, "top_p": 0.9},
+                },
             )
-            result = response.json()
-            text = result.get("response", "").strip()
-            if text:
-                return text
+            if response.status_code == 200:
+                result = response.json()
+                text = result.get("message", {}).get("content", "").strip()
+                if text:
+                    return text
+                logger.debug("Ollama returned empty content: %s", result)
+            else:
+                logger.debug("Ollama /api/chat returned status %s", response.status_code)
     except Exception as exc:
         logger.debug("Ollama chat failed: %s", exc)
     return ""
@@ -325,7 +374,7 @@ async def get_workout_tip(
 
     fallback = PHASE_TEMPLATES[phase_key].get(lang, PHASE_TEMPLATES[phase_key]["en"]).format(exercise=exercise)
 
-    profile_ctx = _build_profile_context(user_profile).strip()
+    profile_ctx = _build_profile_context(user_profile or {}).strip()
     history_summary = ""
     if workout_history:
         sessions_done = len(workout_history)
@@ -353,18 +402,29 @@ async def get_workout_tip(
         ),
     }
     prompt_text = phase_prompts.get(phase_key, phase_prompts["exercise"])
-    full_prompt = f"{WORKOUT_SYSTEM_PROMPT}\n\nCoach: {prompt_text}\n\nResponse:"
+
+    system_msg = f"{WORKOUT_SYSTEM_PROMPT}\n\nLanguage: {lang_name}."
+    user_msg = prompt_text
 
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        async with httpx.AsyncClient(timeout=20.0) as client:
             response = await client.post(
-                f"{OLLAMA_BASE}/api/generate",
-                json={"model": OLLAMA_MODEL, "prompt": full_prompt, "stream": False},
+                f"{OLLAMA_BASE}/api/chat",
+                json={
+                    "model": OLLAMA_MODEL,
+                    "messages": [
+                        {"role": "system", "content": system_msg},
+                        {"role": "user", "content": user_msg},
+                    ],
+                    "stream": False,
+                    "options": {"temperature": 0.8},
+                },
             )
-            result = response.json()
-            text = result.get("response", "").strip()
-            if text:
-                return text
+            if response.status_code == 200:
+                result = response.json()
+                text = result.get("message", {}).get("content", "").strip()
+                if text:
+                    return text
     except Exception as exc:
         logger.debug("Ollama workout-tip failed: %s", exc)
 

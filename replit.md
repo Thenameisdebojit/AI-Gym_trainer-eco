@@ -24,8 +24,9 @@ A production-grade AI-powered fitness ecosystem with a **Next.js web dashboard**
 - **`Discover.js`** — Redesigned: DISCOVER header + search/history icon buttons (no search bar or filter chips). Browse view shows hero banner, "Picks for you" row-cards, "Stay active" promo banner, horizontally-scrolling beginner/challenges/stretch sections. Search icon → SearchView (body focus circles, workout type grid, level chips, duration cards). History icon → HistoryView (calendar with workout dots, weekly grouped session list).
 - **`Auth.js`** — Login / Sign Up / OTP Verification screen. Supports email+password, OTP email verification, and a Google sign-in button (UI). Session stored in localStorage.
 - **`Report.js`** — Stats cards, weekly bar chart, streak & personal best, weight tracking + chart, BMI calculator
-- **`AICoach.js`** — Chat interface with quick prompts, AI chatbot, consistency analyzer
-- **`Settings.js`** — Profile card, premium banner, toggle switches, language, units, backup
+- **`AICoach.js`** — Chat interface with quick prompts, AI chatbot (Mistral-nemo LLM), multi-turn conversation history, voice input/output
+- **`Account.js`** — Dedicated profile page: 120px circular avatar (upload photo or pick from 12 preset emoji avatars), editable Name/Age/Weight/Height/Goal/Level fields, Save button writes to `fitai_user` localStorage, success toast
+- **`Settings.js`** — Compact Account row with avatar thumbnail + chevron (navigates to Account page), premium banner, toggle switches, language, units, backup, logout row
 
 ### Design System (`/frontend/app/globals.css`)
 - Primary: `#2563EB` (blue), Background: `#F8FAFC`, Cards: `#FFFFFF`, Text: `#0F172A`
@@ -211,20 +212,22 @@ Added complete end-to-end workout execution system:
 - Session screen reads `currentPlan` from store, starts workout, tracks sets
 - `finishSession(duration)` → saves to AsyncStorage and resets active session
 
-## Task #4 — Ollama LLM + ElevenLabs Voice Agent
+## Task #4/#5 — Ollama LLM + ElevenLabs Voice Agent + Mistral-nemo Multi-Turn Chat
 
 ### AI Chat Service (`Backend/services/chat_service.py`)
-- Async Ollama integration (`llama3` model via `http://localhost:11434/api/generate`)
+- **Model:** `mistral-nemo` via Ollama `/api/chat` endpoint (multi-turn messages array)
+- `ollama_chat(message, language, userProfile, workoutHistory, currentExercise, conversation_history)` — builds system message, prepends conversation history turns, appends new user message
+- `get_workout_tip()` — uses `/api/chat` with system + user messages for phase-aware coaching
 - Graceful keyword-based fallback when Ollama is not running
-- Context-aware prompts include user profile (name, level, goal, language)
+- `_build_system_message()` — assembles system prompt with profile, history, exercise context, and language instruction
 
 ### Backend Chat Routes (`Backend/routes/chatbot.py`)
-- `POST /chat/` — Main chatbot (JSON body: `message`, `language`, optional `userProfile`)
+- `POST /chat/` — Main chatbot (JSON body: `message`, `language`, optional `userProfile`, `workoutHistory`, `currentExercise`, `conversationHistory`)
 - `POST /chat/tts` — ElevenLabs TTS proxy (returns `audio/mpeg` stream); 503 when key absent
 - `POST /chat/workout-tip` — Phase-aware workout coaching tips (`exercise`, `phase`, `language`)
 
 ### Frontend API Routes (`frontend/app/api/`)
-- `POST /api/chat` — Proxies to backend `/chat/` with userProfile from localStorage
+- `POST /api/chat` — Proxies to backend `/chat/` with userProfile + conversationHistory from frontend
 - `POST /api/tts` — Proxies to backend `/chat/tts` for ElevenLabs audio
 - `POST /api/chat/workout-tip` — Proxies workout coaching tips
 
@@ -248,8 +251,30 @@ Added complete end-to-end workout execution system:
 - "AI Coach speaking…" overlay indicator while voice plays
 
 ### Ollama Workflow
-- `Ollama LLM` workflow configured (`ollama serve`) — start manually if Ollama is installed
+- `Ollama LLM` workflow configured (`ollama pull mistral-nemo 2>/dev/null || true; ollama serve`)
 - Backend falls back to keyword templates when Ollama is unreachable
+
+## Task #5 — Account/Profile Page
+
+### Account Screen (`frontend/screens/Account.js`)
+- Circular 120px avatar: upload photo (base64 stored in `fitai_avatar` localStorage) or choose from 12 preset emoji avatars (stored in `fitai_avatar_emoji`)
+- Editable fields: Name, Age, Weight (kg), Height (cm), Fitness Goal (dropdown), Fitness Level (dropdown)
+- Save button writes to `fitai_user` localStorage with green success state (2.5s)
+- Back button returns to the previous screen (settings or wherever opened from)
+
+### Settings Page (`frontend/screens/Settings.js`)
+- Large profile card REMOVED
+- Compact "Account" row at top: shows avatar thumbnail + display name + "Free Plan · Edit Profile" + chevron
+- Clicking Account row calls `onNavigate('account')` (passed as prop from AppInner)
+- Logout moved to a dedicated logout section at the bottom
+
+### Navigation Wiring (`frontend/app/page.js`)
+- `Account` imported and added to `SCREEN_MAP`
+- `isAccount` flag used to show Account screen inline with `onBack` prop
+- Header avatar button navigates to Account instead of triggering logout
+- Header shows avatar image (if set) or emoji (if set) or initials
+- Active nav indicator keeps previous tab highlighted while on Account page
+- `navigateTo(screen)` local function in AppInner handles account navigation with `prevActive` tracking
 
 ## Dependencies
 **Backend:** fastapi, uvicorn, numpy, pydantic, sqlalchemy, python-multipart, httpx

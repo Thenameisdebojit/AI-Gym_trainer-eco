@@ -25,12 +25,18 @@ function ToggleSwitch({ value, onChange }) {
   );
 }
 
-function SettingRow({ icon, label, sub, children, danger }) {
+function SettingRow({ icon, label, sub, children, danger, onClick, chevron }) {
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 20px',
-      borderBottom: '1px solid var(--border-light)',
-    }}>
+    <div
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 20px',
+        borderBottom: '1px solid var(--border-light)',
+        cursor: onClick ? 'pointer' : 'default',
+      }}
+      onMouseEnter={e => { if (onClick) e.currentTarget.style.background = 'var(--surface-2)'; }}
+      onMouseLeave={e => { if (onClick) e.currentTarget.style.background = 'transparent'; }}
+    >
       <div style={{
         width: '38px', height: '38px', borderRadius: 'var(--radius)',
         background: danger ? 'var(--danger-light)' : 'var(--surface-2)',
@@ -44,6 +50,7 @@ function SettingRow({ icon, label, sub, children, danger }) {
         {sub && <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '1px' }}>{sub}</div>}
       </div>
       {children}
+      {chevron && <span style={{ color: 'var(--text-tertiary)', fontSize: '16px', flexShrink: 0 }}>›</span>}
     </div>
   );
 }
@@ -54,15 +61,17 @@ function SettingSection({ title, children }) {
       background: 'var(--surface)', borderRadius: 'var(--radius-xl)', marginBottom: '16px',
       border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)', overflow: 'hidden',
     }}>
-      <div style={{ padding: '16px 20px 10px', fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-        {title}
-      </div>
+      {title && (
+        <div style={{ padding: '16px 20px 10px', fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+          {title}
+        </div>
+      )}
       {children}
     </div>
   );
 }
 
-export default function Settings() {
+export default function Settings({ onNavigate }) {
   const { darkMode, setDarkMode, language, setLanguage, notifications, setNotifications, healthSync, setHealthSync, voiceCoach, setVoiceCoach, t } = useAppSettings();
 
   const handleLogout = () => {
@@ -80,14 +89,26 @@ export default function Settings() {
   const [sound, setSound] = useState(true);
   const [restTime, setRestTime] = useState(60);
   const [unit, setUnit] = useState('metric');
-  const [profile, setProfile] = useState({ name: 'User', age: '', weight: '', height: '' });
-  const [saved, setSaved] = useState(false);
   const [healthMsg, setHealthMsg] = useState(false);
   const [notifMsg, setNotifMsg] = useState('');
 
-  const saveProfile = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+  const getUserDisplayName = () => {
+    try {
+      const u = JSON.parse(localStorage.getItem('fitai_user') || '{}');
+      return u.name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || 'User';
+    } catch { return 'User'; }
+  };
+
+  const getUserAvatar = () => {
+    try {
+      const img = localStorage.getItem('fitai_avatar');
+      if (img) return null;
+      return localStorage.getItem('fitai_avatar_emoji') || '🏋️';
+    } catch { return '🏋️'; }
+  };
+
+  const getUserAvatarImg = () => {
+    try { return localStorage.getItem('fitai_avatar') || null; } catch { return null; }
   };
 
   const handleHealthSync = (val) => {
@@ -111,6 +132,9 @@ export default function Settings() {
     }
   };
 
+  const avatarEmoji = getUserAvatar();
+  const avatarImg = getUserAvatarImg();
+
   return (
     <div style={{ padding: '24px 28px', maxWidth: '720px', animation: 'fadeIn 0.4s ease' }}>
       <div style={{ marginBottom: '28px' }}>
@@ -122,52 +146,34 @@ export default function Settings() {
         </h1>
       </div>
 
-      {/* Profile Card */}
-      <div style={{
-        background: 'linear-gradient(135deg, #1E40AF, #2563EB)', borderRadius: 'var(--radius-xl)',
-        padding: '24px', marginBottom: '20px', boxShadow: '0 12px 40px rgba(37,99,235,0.2)',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-          <div style={{
-            width: '64px', height: '64px', borderRadius: '50%',
-            background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px',
-            border: '2px solid rgba(255,255,255,0.3)',
-          }}>👤</div>
-          <div>
-            <div style={{ fontSize: '20px', fontWeight: 700, color: '#fff' }}>{profile.name}</div>
-            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>{t.freePlan}</div>
+      {/* Account Row */}
+      <SettingSection title="">
+        <div style={{ borderBottom: 'none' }}>
+          <div
+            onClick={() => onNavigate?.('account')}
+            style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px 20px', cursor: 'pointer' }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--surface-2)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          >
+            <div style={{
+              width: '48px', height: '48px', borderRadius: '50%', flexShrink: 0,
+              background: 'linear-gradient(135deg,#2563EB,#7C3AED)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              overflow: 'hidden', border: '2px solid var(--border-light)',
+            }}>
+              {avatarImg
+                ? <img src={avatarImg} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : <span style={{ fontSize: '22px' }}>{avatarEmoji}</span>
+              }
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text)' }}>{getUserDisplayName()}</div>
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Free Plan · Edit Profile</div>
+            </div>
+            <span style={{ color: 'var(--text-tertiary)', fontSize: '20px' }}>›</span>
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-          {[
-            { k: 'name', label: t.name, placeholder: t.namePlaceholder },
-            { k: 'age', label: t.age, placeholder: t.agePlaceholder },
-            { k: 'weight', label: t.weightLabel, placeholder: t.weightPlaceholder },
-            { k: 'height', label: t.heightLabel, placeholder: t.heightPlaceholder },
-          ].map(f => (
-            <div key={f.k}>
-              <label style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                {f.label}
-              </label>
-              <input
-                value={profile[f.k]}
-                onChange={e => setProfile(p => ({ ...p, [f.k]: e.target.value }))}
-                placeholder={f.placeholder}
-                style={{
-                  width: '100%', padding: '9px 12px', border: 'none',
-                  borderRadius: 'var(--radius-sm)', fontSize: '14px',
-                  background: 'rgba(255,255,255,0.15)', color: '#fff',
-                  backdropFilter: 'blur(10px)', boxSizing: 'border-box',
-                }}
-              />
-            </div>
-          ))}
-        </div>
-        <Button variant="white" size="sm" onClick={saveProfile}>
-          {saved ? t.saved : t.saveProfile}
-        </Button>
-      </div>
+      </SettingSection>
 
       {/* Premium Banner */}
       <div style={{
@@ -306,7 +312,6 @@ export default function Settings() {
         </div>
       </SettingSection>
 
-      {/* App Info */}
       <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-tertiary)', fontSize: '12px' }}>
         <div style={{ fontWeight: 600, marginBottom: '4px' }}>FitAI — Universal AI Fitness Trainer</div>
         <div>{t.appVersion}</div>
