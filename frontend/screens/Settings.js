@@ -64,6 +64,17 @@ function SettingSection({ title, children }) {
 
 export default function Settings() {
   const { darkMode, setDarkMode, language, setLanguage, notifications, setNotifications, healthSync, setHealthSync, t } = useAppSettings();
+
+  const handleLogout = () => {
+    try {
+      const token = localStorage.getItem('fitai_token');
+      if (token) fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+      localStorage.removeItem('fitai_token');
+      localStorage.removeItem('fitai_user');
+    } catch {}
+    window.location.reload();
+  };
+
   const [voice, setVoice] = useState(true);
   const [sound, setSound] = useState(true);
   const [restTime, setRestTime] = useState(60);
@@ -266,6 +277,29 @@ export default function Settings() {
           <SettingRow icon="🗑️" label={t.clearData} sub={t.clearDataSub} danger>
             <button style={{ padding: '7px 14px', border: '1.5px solid var(--danger)', borderRadius: 'var(--radius-sm)', background: 'var(--danger-light)', color: 'var(--danger)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
               {t.clearBtn}
+            </button>
+          </SettingRow>
+        </div>
+      </SettingSection>
+
+      {/* Logout */}
+      <SettingSection title="">
+        <div style={{ borderBottom: 'none' }}>
+          <SettingRow icon="🚪" label={t.logoutBtn} sub={t.logoutSub} danger>
+            <button
+              onClick={handleLogout}
+              style={{
+                padding: '8px 16px',
+                border: '1.5px solid var(--danger)',
+                borderRadius: 'var(--radius-sm)',
+                background: 'var(--danger-light)',
+                color: 'var(--danger)',
+                fontSize: '13px', fontWeight: 700,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {t.logoutBtn}
             </button>
           </SettingRow>
         </div>

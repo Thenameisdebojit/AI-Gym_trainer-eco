@@ -373,42 +373,42 @@ const LEVEL_COLORS = { beginner: '#10B981', intermediate: '#F59E0B', advanced: '
 const CHALLENGES = [
   {
     id: 'abs28',
-    name: '28 Day Abs Challenge',
-    shortLabel: '28 DAYS',
+    nameKey: 'abs28Name',
+    shortKey: 'abs28Short',
+    descKey: 'abs28Desc',
     icon: '🔥',
     color: '#F97316',
     bgGradient: 'linear-gradient(135deg, #F97316 0%, #EF4444 100%)',
     bgImage: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=900&q=80&fit=crop&auto=format',
     totalDays: 28,
-    desc: 'Daily core work to build visible abs in 4 weeks',
     bodyPart: { id: 'abs', label: 'Abs', icon: '🔥', color: '#F97316', subtitle: 'Core strength & definition', image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80&fit=crop&auto=format' },
     mode: { id: 'home', label: 'Home' },
     levelSchedule: ['beginner', 'beginner', 'intermediate', 'intermediate', 'intermediate', 'advanced', 'advanced'],
   },
   {
     id: 'fullbody30',
-    name: '30 Day Full Body',
-    shortLabel: '30 DAYS',
+    nameKey: 'fullbody30Name',
+    shortKey: 'fullbody30Short',
+    descKey: 'fullbody30Desc',
     icon: '⚡',
     color: '#2563EB',
     bgGradient: 'linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%)',
     bgImage: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=900&q=80&fit=crop&auto=format',
     totalDays: 30,
-    desc: 'Progressive full-body program from foundation to elite',
     bodyPart: { id: 'full_body', label: 'Full Body', icon: '⚡', color: '#2563EB', subtitle: 'Total body strength & cardio', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80&fit=crop&auto=format' },
     mode: { id: 'home', label: 'Home' },
     levelSchedule: ['beginner', 'beginner', 'beginner', 'intermediate', 'intermediate', 'intermediate', 'advanced'],
   },
   {
     id: 'fatburn14',
-    name: '14 Day Fat Burn',
-    shortLabel: '14 DAYS',
+    nameKey: 'fatburn14Name',
+    shortKey: 'fatburn14Short',
+    descKey: 'fatburn14Desc',
     icon: '🔥',
     color: '#EF4444',
     bgGradient: 'linear-gradient(135deg, #DC2626 0%, #9333EA 100%)',
     bgImage: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=900&q=80&fit=crop&auto=format',
     totalDays: 14,
-    desc: 'Intense 2-week protocol for rapid fat loss',
     bodyPart: { id: 'full_body', label: 'Full Body', icon: '⚡', color: '#EF4444', subtitle: 'Total body strength & cardio', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80&fit=crop&auto=format' },
     mode: { id: 'gym', label: 'Gym' },
     levelSchedule: ['intermediate', 'intermediate', 'advanced', 'advanced', 'advanced', 'advanced', 'advanced'],
@@ -808,7 +808,7 @@ export default function Training() {
         {(phase === 'exercise' || phase === 'rest') && !currentExercise && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '16px' }}>
             <div style={{ fontSize: '48px' }}>⚠️</div>
-            <div style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>No exercises found</div>
+            <div style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>{t.noExercisesFound}</div>
             <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}>Please go back and select a workout.</div>
             <button onClick={exitSession} style={{ marginTop: '12px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '12px 28px', borderRadius: '14px', fontSize: '15px', cursor: 'pointer' }}>Go Back</button>
           </div>
@@ -823,7 +823,7 @@ export default function Training() {
               }}>✕</button>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                  {phase === 'rest' ? 'Rest' : `Exercise ${exIdx + 1} of ${exercises.length}`}
+                  {phase === 'rest' ? t.rest : `${t.exerciseOfLabel} ${exIdx + 1} ${t.ofLabel} ${exercises.length}`}
                 </div>
               </div>
               <button onClick={() => setPaused(p => !p)} style={{
@@ -851,13 +851,13 @@ export default function Training() {
                 <div style={{ fontSize: '24px', fontWeight: 800 }}>{t.rest}</div>
                 <CountdownRing value={restTimer} max={15} color="#10B981" />
                 <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}>
-                  Next: {exercises[exIdx + 1]?.name || 'Finish'}
+                  {t.nextLabel}: {exercises[exIdx + 1]?.name || t.finishLabel}
                 </div>
                 <button onClick={() => { clearInterval(timerRef.current); setExIdx(i => i + 1); setPhase('exercise'); setExerciseTimer(30); }} style={{
                   background: 'rgba(16,185,129,0.2)', border: '1px solid rgba(16,185,129,0.4)',
                   color: '#10B981', padding: '12px 28px', borderRadius: '14px',
                   fontSize: '15px', fontWeight: 600, cursor: 'pointer',
-                }}>Skip Rest →</button>
+                }}>{t.skipRest}</button>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '18px' }}>
@@ -935,9 +935,9 @@ export default function Training() {
 
             <div style={{ display: 'flex', gap: '14px', marginTop: '28px', background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '16px' }}>
               {[
-                { label: 'Calories', value: `${Math.round(totalCals)} kcal`, icon: '🔥' },
-                { label: 'Completed', value: `${completedCount}/${exercises.length}`, icon: '✅' },
-                { label: 'Time', value: `${totalMin}:${String(totalSec).padStart(2, '0')}`, icon: '⏱' },
+                { label: t.calories, value: `${Math.round(totalCals)} kcal`, icon: '🔥' },
+                { label: t.completedLabel, value: `${completedCount}/${exercises.length}`, icon: '✅' },
+                { label: t.timeLabel, value: `${totalMin}:${String(totalSec).padStart(2, '0')}`, icon: '⏱' },
               ].map((s, i) => (
                 <div key={i} style={{ flex: 1, textAlign: 'center' }}>
                   <div style={{ fontSize: '18px', marginBottom: '4px' }}>{s.icon}</div>
@@ -1116,12 +1116,12 @@ export default function Training() {
               }}>
                 <div style={{ fontSize: '28px', lineHeight: 1 }}>▶️</div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '2px' }}>Continue Workout</div>
+                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '2px' }}>{t.continueWorkout}</div>
                   <div style={{ fontSize: '14px', fontWeight: 800, color: '#fff' }}>
                     {savedProgress.selectedBody?.label} · {savedProgress.selectedLevel?.label}
                   </div>
                   <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>
-                    Exercise {(savedProgress.exIdx || 0) + 1}/{savedProgress.exercises.length} · {Math.round(savedProgress.totalCals || 0)} cal
+                    {t.exerciseOfLabel} {(savedProgress.exIdx || 0) + 1}/{savedProgress.exercises.length} · {Math.round(savedProgress.totalCals || 0)} cal
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
@@ -1129,12 +1129,12 @@ export default function Training() {
                     background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)',
                     color: 'rgba(255,255,255,0.5)', padding: '8px 12px', borderRadius: '10px',
                     fontSize: '11px', cursor: 'pointer', fontWeight: 600,
-                  }}>Discard</button>
+                  }}>{t.discard}</button>
                   <button onClick={resumeWorkout} style={{
                     background: 'linear-gradient(135deg, #2563EB, #7C3AED)', border: 'none',
                     color: '#fff', padding: '8px 16px', borderRadius: '10px',
                     fontSize: '12px', cursor: 'pointer', fontWeight: 700,
-                  }}>Resume →</button>
+                  }}>{t.resumeBtn} →</button>
                 </div>
               </div>
             )}
@@ -1147,7 +1147,7 @@ export default function Training() {
               }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>AI Recommendation ✨</div>
+                    <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>{t.aiRecommendation}</div>
                     <div style={{ fontSize: '17px', fontWeight: 800, color: '#fff', marginBottom: '4px' }}>
                       {recommendation.muscleLabel} · {recommendation.level?.charAt(0).toUpperCase() + recommendation.level?.slice(1)}
                     </div>
@@ -1155,7 +1155,7 @@ export default function Training() {
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                       {[
                         { label: DURATION_TARGETS[recommendation.durationKey]?.label || 'Standard', icon: DURATION_TARGETS[recommendation.durationKey]?.icon || '🏋️' },
-                        { label: `${recommendation.weekCount || 0} this week`, icon: '📊' },
+                        { label: `${recommendation.weekCount || 0} ${t.thisWeek}`, icon: '📊' },
                       ].map((tag, i) => (
                         <span key={i} style={{
                           background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(4px)',
@@ -1191,8 +1191,8 @@ export default function Training() {
 
             <div style={{ marginBottom: '24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-                <div style={{ fontSize: '17px', fontWeight: 800, color: 'var(--text)' }}>Challenge 🔥</div>
-                <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>For the brave</span>
+                <div style={{ fontSize: '17px', fontWeight: 800, color: 'var(--text)' }}>{t.challengesLabel} 🔥</div>
+                <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{t.forTheBrave}</span>
               </div>
               <div style={{ display: 'flex', gap: '16px', overflowX: 'auto', paddingBottom: '8px', scrollbarWidth: 'none' }}>
                 {CHALLENGES.map(challenge => {
@@ -1226,18 +1226,18 @@ export default function Training() {
                             backdropFilter: 'blur(8px)', borderRadius: '8px',
                             padding: '3px 10px', fontSize: '10px', fontWeight: 800,
                             color: '#fff', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px',
-                          }}>{challenge.shortLabel}</div>
+                          }}>{t[challenge.shortKey]}</div>
                           <div style={{ fontSize: '20px', fontWeight: 900, color: '#fff', lineHeight: 1.2, marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '-0.01em' }}>
-                            {challenge.name.replace(/\d+ Day /i, '')}
+                            {t[challenge.nameKey]}
                           </div>
-                          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.4 }}>{challenge.desc}</div>
+                          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.4 }}>{t[challenge.descKey]}</div>
                         </div>
                         <div>
                           {started && (
                             <div style={{ marginBottom: '10px' }}>
                               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                                <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>DAY {cp.currentDay}</span>
-                                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>{pct}% Finished</span>
+                                <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>{t.dayLabel} {cp.currentDay}</span>
+                                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>{pct}{t.pctFinished}</span>
                               </div>
                               <div style={{ height: '4px', background: 'rgba(255,255,255,0.2)', borderRadius: '99px', overflow: 'hidden' }}>
                                 <div style={{ width: `${pct}%`, height: '100%', background: '#fff', borderRadius: '99px', transition: 'width 0.6s ease' }} />
@@ -1254,7 +1254,7 @@ export default function Training() {
                               boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
                             }}
                           >
-                            {started ? `▶ DAY ${cp.currentDay + 1}` : 'START'}
+                            {started ? `▶ ${t.dayLabel} ${cp.currentDay + 1}` : t.startBtn}
                           </button>
                         </div>
                       </div>
@@ -1336,7 +1336,7 @@ export default function Training() {
                         const modes = EXERCISE_DB[bp.id] || {};
                         const total = Object.values(modes).reduce((mSum, levels) =>
                           mSum + Object.values(levels).reduce((lSum, exs) => lSum + exs.length, 0), 0);
-                        return `${total} exercises`;
+                        return `${total} ${t.exercises}`;
                       })()}
                     </div>
                   </button>
@@ -1423,7 +1423,7 @@ export default function Training() {
                       <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '8px' }}>{level.tagline}</div>
                       <div style={{ display: 'flex', gap: '12px' }}>
                         <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', fontWeight: 500 }}>⏱ {level.duration}</span>
-                        <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', fontWeight: 500 }}>💪 {exCount} exercises</span>
+                        <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', fontWeight: 500 }}>💪 {exCount} {t.exercises}</span>
                       </div>
                     </div>
                     <div style={{
@@ -1493,7 +1493,7 @@ export default function Training() {
                         padding: '5px 12px', borderRadius: '99px', fontSize: '12px', fontWeight: 600,
                         background: `${mode.color}15`, color: mode.color,
                       }}>
-                        💪 {exList.length} exercises
+                        💪 {exList.length} {t.exercises}
                       </span>
                       <span style={{
                         padding: '5px 12px', borderRadius: '99px', fontSize: '12px', fontWeight: 600,
@@ -1554,7 +1554,7 @@ export default function Training() {
                   </div>
                   <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '8px' }}>{opt.desc}</div>
                   <div style={{ display: 'flex', gap: '12px' }}>
-                    <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', fontWeight: 500 }}>💪 {opt.workout.exercises.length} exercises</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', fontWeight: 500 }}>💪 {opt.workout.exercises.length} {t.exercises}</span>
                     <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', fontWeight: 500 }}>🔥 ~{opt.workout.estimated_calories} cal</span>
                   </div>
                 </div>
@@ -1621,7 +1621,7 @@ export default function Training() {
               <>
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
                   {[
-                    { icon: '💪', label: `${exList.length} exercises` },
+                    { icon: '💪', label: `${exList.length} ${t.exercises}` },
                     { icon: '⏱', label: `~${totalMin} min` },
                     { icon: '🔥', label: `~${totalCalsEst} cal` },
                     { icon: '📍', label: selectedMode.subtitle },

@@ -2,6 +2,10 @@ import random
 import string
 import hashlib
 import time
+import smtplib
+import os
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 from typing import Optional
@@ -25,6 +29,66 @@ def generate_otp() -> str:
 def generate_token(email: str) -> str:
     rand = ''.join(random.choices(string.ascii_letters + string.digits, k=32))
     return hashlib.sha256(f"{email}{rand}{time.time()}".encode()).hexdigest()[:40]
+
+
+def send_otp_email(to_email: str, otp: str, first_name: str = "") -> bool:
+    smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
+    smtp_port = int(os.environ.get("SMTP_PORT", "587"))
+    smtp_user = os.environ.get("SMTP_USER", "")
+    smtp_pass = os.environ.get("SMTP_PASS", "")
+
+    if not smtp_user or not smtp_pass:
+        print(f"[FitAI] OTP for {to_email}: {otp}  (set SMTP_USER & SMTP_PASS to send real emails)")
+        return False
+
+    from_email = os.environ.get("SMTP_FROM", smtp_user)
+    name = first_name or "there"
+
+    html_body = f"""
+    <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;background:#f9fafb;border-radius:12px;">
+      <div style="text-align:center;margin-bottom:24px;">
+        <span style="font-size:32px;">⚡</span>
+        <h1 style="margin:8px 0 4px;font-size:22px;color:#111;">FitAI</h1>
+        <p style="margin:0;color:#6b7280;font-size:14px;">AI Fitness Trainer</p>
+      </div>
+      <h2 style="font-size:18px;color:#111;margin-bottom:8px;">Hi {name} 👋</h2>
+      <p style="color:#374151;font-size:15px;line-height:1.6;">
+        Your verification code for FitAI is:
+      </p>
+      <div style="text-align:center;margin:24px 0;">
+        <span style="display:inline-block;background:linear-gradient(135deg,#2563EB,#7C3AED);color:#fff;
+          font-size:36px;font-weight:900;letter-spacing:10px;padding:16px 32px;border-radius:12px;">
+          {otp}
+        </span>
+      </div>
+      <p style="color:#6b7280;font-size:13px;text-align:center;">
+        This code expires in <strong>5 minutes</strong>. Do not share it with anyone.
+      </p>
+      <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;">
+      <p style="color:#9ca3af;font-size:12px;text-align:center;">
+        If you didn't create a FitAI account, you can safely ignore this email.
+      </p>
+    </div>
+    """
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = f"Your FitAI verification code: {otp}"
+    msg["From"] = f"FitAI <{from_email}>"
+    msg["To"] = to_email
+    msg.attach(MIMEText(html_body, "html"))
+
+    try:
+        with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as server:
+            server.ehlo()
+            server.starttls()
+            server.login(smtp_user, smtp_pass)
+            server.sendmail(from_email, to_email, msg.as_string())
+        print(f"[FitAI] OTP email sent to {to_email}")
+        return True
+    except Exception as e:
+        print(f"[FitAI] Failed to send OTP email to {to_email}: {e}")
+        print(f"[FitAI] OTP for {to_email}: {otp}")
+        return False
 
 
 # ── Schemas ────────────────────────────────────────────────────────────
@@ -70,12 +134,16 @@ def register(body: RegisterRequest):
     }
     otp_store[email] = {"otp": otp, "expires_at": time.time() + 300}  # 5 min expiry
 
-    # In production, send email via SMTP. Here we return OTP in response for demo.
-    return {
+    email_sent = send_otp_email(email, otp, body.first_name)
+
+    response = {
         "message": "Registration successful. OTP sent to your email.",
-        "otp_preview": otp,   # Remove in production — for demo only
         "email": email,
+        "email_sent": email_sent,
     }
+    if not email_sent:
+        response["otp_preview"] = otp
+    return response
 
 
 @router.post("/verify-otp")
@@ -118,7 +186,12 @@ def resend_otp(body: ResendOTPRequest):
 
     otp = generate_otp()
     otp_store[email] = {"otp": otp, "expires_at": time.time() + 300}
-    return {"message": "New OTP sent.", "otp_preview": otp}
+
+    email_sent = send_otp_email(email, otp, users_db[email].get("first_name", ""))
+    response = {"message": "New OTP sent.", "email_sent": email_sent}
+    if not email_sent:
+        response["otp_preview"] = otp
+    return response
 
 
 @router.post("/login")
