@@ -75,11 +75,30 @@ def generate_token(email: str) -> str:
     return hashlib.sha256(f"{email}{rand}{time.time()}".encode()).hexdigest()[:40]
 
 
+def _allowed_google_client_ids() -> list[str]:
+    """Return list of expected OAuth client IDs from environment."""
+    raw = os.environ.get("GOOGLE_EXPECTED_CLIENT_IDS", "")
+    ids = [c.strip() for c in raw.split(",") if c.strip()]
+    for var in (
+        "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID",
+        "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID",
+        "EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID",
+    ):
+        v = os.environ.get(var, "").strip()
+        if v and v not in ids:
+            ids.append(v)
+    return ids
+
+
 def verify_google_token(id_token: str) -> dict:
     """
-    Verify a Firebase/Google ID token using Google's public tokeninfo endpoint.
+    Verify a Google/Firebase ID token using Google's tokeninfo endpoint.
     Returns verified claims {email, given_name, family_name, ...} or raises HTTPException.
-    Set GOOGLE_VERIFY_TOKENS=false to skip verification in local development.
+
+    - Validates the token signature and expiry via Google's public endpoint.
+    - Validates aud/azp against GOOGLE_EXPECTED_CLIENT_IDS (if set).
+    - Set GOOGLE_VERIFY_TOKENS=false to skip ALL verification (local dev only).
     """
     if os.environ.get("GOOGLE_VERIFY_TOKENS", "true").lower() == "false":
         return {}
@@ -95,14 +114,25 @@ def verify_google_token(id_token: str) -> dict:
         claims = resp.json()
         if "error" in claims:
             raise HTTPException(status_code=401, detail="Google token verification failed.")
+
+        allowed_ids = _allowed_google_client_ids()
+        if allowed_ids:
+            aud = claims.get("aud", "")
+            azp = claims.get("azp", "")
+            if aud not in allowed_ids and azp not in allowed_ids:
+                raise HTTPException(
+                    status_code=401,
+                    detail="Google token audience does not match any configured client ID.",
+                )
+
         return claims
     except HTTPException:
         raise
-    except Exception:
+    except Exception as exc:
         raise HTTPException(
             status_code=503,
             detail="Could not verify Google token. Check your internet connection.",
-        )
+        ) from exc
 
 
 def send_otp_email(to_email: str, otp: str, first_name: str = "") -> bool:

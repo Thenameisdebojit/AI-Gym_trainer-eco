@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -15,11 +15,20 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import { ResponseType } from "expo-auth-session";
 import { useAuth } from "@/context/AuthContext";
 import { signInWithGoogle as firebaseGoogleSignIn } from "@/lib/firebase";
 import { COLORS, FONTS, SIZES, RADIUS, SPACING } from "@/constants/theme";
 
+WebBrowser.maybeCompleteAuthSession();
+
 type Mode = "login" | "register" | "verify";
+
+const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || "";
+const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID || "";
+const GOOGLE_ANDROID_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID || "";
 
 export default function AuthScreen() {
   const [mode, setMode] = useState<Mode>("login");
@@ -39,6 +48,48 @@ export default function AuthScreen() {
 
   const { login, register, verifyOtp, resendOtp, continueAsGuest, googleLogin } = useAuth();
   const insets = useSafeAreaInsets();
+
+  const [request, nativeGoogleResponse, promptNativeGoogle] = Google.useAuthRequest({
+    webClientId: GOOGLE_WEB_CLIENT_ID || undefined,
+    iosClientId: GOOGLE_IOS_CLIENT_ID || undefined,
+    androidClientId: GOOGLE_ANDROID_CLIENT_ID || undefined,
+    responseType: ResponseType.IdToken,
+  });
+
+  useEffect(() => {
+    if (nativeGoogleResponse?.type === "success") {
+      const idToken =
+        nativeGoogleResponse.params?.id_token ||
+        (nativeGoogleResponse.authentication as any)?.idToken ||
+        "";
+
+      if (idToken) {
+        handleNativeGoogleToken(idToken);
+      } else {
+        Alert.alert(
+          "Google Sign-In",
+          "Could not retrieve Google ID token. Please try again."
+        );
+        setLoading(false);
+      }
+    } else if (nativeGoogleResponse?.type === "error") {
+      Alert.alert("Google Sign-In Failed", nativeGoogleResponse.error?.message || "An error occurred.");
+      setLoading(false);
+    } else if (nativeGoogleResponse?.type === "dismiss") {
+      setLoading(false);
+    }
+  }, [nativeGoogleResponse]);
+
+  const handleNativeGoogleToken = async (idToken: string) => {
+    try {
+      await googleLogin(idToken, "", "", "");
+      router.replace("/(tabs)");
+    } catch (e: any) {
+      Alert.alert("Google Sign-In Failed", e.message || "Sign-in failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogin = async () => {
     if (!email.trim() || !password) {
@@ -61,7 +112,13 @@ export default function AuthScreen() {
     }
     setLoading(true);
     try {
-      const result = await register(email.trim(), password, firstName.trim(), lastName.trim(), mobile.trim());
+      const result = await register(
+        email.trim(),
+        password,
+        firstName.trim(),
+        lastName.trim(),
+        mobile.trim()
+      );
       setPendingEmail(email.trim().toLowerCase());
       setOtpPreview(result.otpPreview || "");
       setMode("verify");
@@ -107,19 +164,32 @@ export default function AuthScreen() {
 
   const handleGoogle = async () => {
     setLoading(true);
-    try {
-      const { idToken, email, firstName, lastName, photoUrl } = await firebaseGoogleSignIn();
-      await googleLogin(idToken, email, firstName, lastName, photoUrl);
-      router.replace("/(tabs)");
-    } catch (e: any) {
-      Alert.alert(
-        "Google Sign-In",
-        e.message?.includes("Firebase")
-          ? "Google Sign-In is not yet configured. Add your Firebase credentials to mobile/.env (see .env.production_example for details)."
-          : e.message || "Google Sign-In failed. Please try again."
-      );
-    } finally {
-      setLoading(false);
+
+    if (Platform.OS === "web") {
+      try {
+        const { idToken, email: gEmail, firstName: gFirst, lastName: gLast, photoUrl } =
+          await firebaseGoogleSignIn();
+        await googleLogin(idToken, gEmail, gFirst, gLast, photoUrl);
+        router.replace("/(tabs)");
+      } catch (e: any) {
+        Alert.alert(
+          "Google Sign-In",
+          e.message?.includes("Firebase") || e.message?.includes("configured")
+            ? "Google Sign-In is not yet configured. Add EXPO_PUBLIC_FIREBASE_* credentials to mobile/.env (see .env.production_example)."
+            : e.message || "Google Sign-In failed. Please try again."
+        );
+        setLoading(false);
+      }
+    } else {
+      if (!GOOGLE_WEB_CLIENT_ID) {
+        setLoading(false);
+        Alert.alert(
+          "Google Sign-In",
+          "Google Sign-In requires EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID to be set in mobile/.env. See .env.production_example for setup instructions."
+        );
+        return;
+      }
+      await promptNativeGoogle();
     }
   };
 
@@ -311,7 +381,11 @@ export default function AuthScreen() {
             <View style={styles.dividerLine} />
           </View>
 
-          <TouchableOpacity style={styles.googleBtn} onPress={handleGoogle} disabled={loading}>
+          <TouchableOpacity
+            style={styles.googleBtn}
+            onPress={handleGoogle}
+            disabled={loading || (Platform.OS !== "web" && !request)}
+          >
             <Text style={styles.googleIcon}>G</Text>
             <Text style={styles.googleBtnText}>Continue with Google</Text>
           </TouchableOpacity>
