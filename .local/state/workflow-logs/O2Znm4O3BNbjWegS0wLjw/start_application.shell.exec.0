@@ -1,0 +1,170 @@
+
+> ai-fitness-frontend@1.0.0 dev
+> next dev -p 5000 -H 0.0.0.0
+
+[1G[0K  [1m[38;2;173;127;168m▲ Next.js 14.2.35[39m[22m
+  - Local:        http://localhost:5000
+  - Network:      http://0.0.0.0:5000
+
+ [32m[1m✓[22m[39m Starting...
+ [32m[1m✓[22m[39m Ready in 1277ms
+ [37m[1m○[22m[39m Compiling / ...
+ [32m[1m✓[22m[39m Compiled / in 1115ms (475 modules)
+ GET / [32m200[39m in 1291ms
+ [32m[1m✓[22m[39m Compiled /api/workout/stats in 150ms (240 modules)
+ [32m[1m✓[22m[39m Compiled (242 modules)
+ GET /api/workout/stats [32m200[39m in 293ms
+ GET /api/sessions?type=stats [32m200[39m in 299ms
+ GET /api/sessions [32m200[39m in 303ms
+ GET /api/sessions?type=stats [32m200[39m in 17ms
+ GET /api/sessions [32m200[39m in 17ms
+ GET /api/workout/stats [32m200[39m in 20ms
+ GET / [32m200[39m in 101ms
+ [32m[1m✓[22m[39m Compiled in 340ms (481 modules)
+ GET /api/sessions?type=stats [32m200[39m in 57ms
+ GET /api/workout/stats [32m200[39m in 58ms
+ GET /api/sessions [32m200[39m in 102ms
+ GET /api/sessions?type=stats [32m200[39m in 10ms
+ GET /api/workout/stats [32m200[39m in 9ms
+ GET /api/sessions [32m200[39m in 9ms
+ [32m[1m✓[22m[39m Compiled in 395ms (475 modules)
+ [32m[1m✓[22m[39m Compiled in 236ms (475 modules)
+ [32m[1m✓[22m[39m Compiled in 188ms (475 modules)
+ [32m[1m✓[22m[39m Compiled in 413ms (475 modules)
+ [32m[1m✓[22m[39m Compiled /api/sessions in 159ms (240 modules)
+ [32m[1m✓[22m[39m Compiled (242 modules)
+ GET /api/workout/stats [32m200[39m in 281ms
+ GET /api/sessions?type=stats [32m200[39m in 211ms
+ GET /api/sessions?limit=20 [32m200[39m in 202ms
+ GET /api/sessions [32m200[39m in 8ms
+ GET /api/sessions?type=stats [32m200[39m in 11ms
+ GET /api/sessions?limit=20 [32m200[39m in 13ms
+ GET /api/workout/stats [32m200[39m in 14ms
+ GET /api/sessions [32m200[39m in 12ms
+ [32m[1m✓[22m[39m Compiled in 362ms (475 modules)
+ [32m[1m✓[22m[39m Compiled /api/sessions in 49ms (240 modules)
+ [32m[1m✓[22m[39m Compiled (242 modules)
+ GET /api/workout/stats [32m200[39m in 158ms
+ GET /api/sessions?type=stats [32m200[39m in 162ms
+ GET /api/sessions [32m200[39m in 8ms
+ GET /api/workout/stats [32m200[39m in 4ms
+ GET /api/sessions [32m200[39m in 8ms
+ GET /api/sessions?type=stats [32m200[39m in 48ms
+ [32m[1m✓[22m[39m Compiled in 143ms (481 modules)
+ GET /api/workout/stats [32m200[39m in 37ms
+ GET /api/sessions [32m200[39m in 10ms
+ GET /api/sessions?type=stats [32m200[39m in 12ms
+ GET /api/sessions [32m200[39m in 9ms
+ GET /api/workout/stats [32m200[39m in 9ms
+ GET /api/sessions?type=stats [32m200[39m in 50ms
+ [32m[1m✓[22m[39m Compiled in 203ms (481 modules)
+ GET /api/sessions [32m200[39m in 40ms
+ GET /api/workout/stats [32m200[39m in 42ms
+ GET /api/sessions?type=stats [32m200[39m in 57ms
+ GET /api/sessions?type=stats [32m200[39m in 8ms
+ GET /api/workout/stats [32m200[39m in 8ms
+ GET /api/sessions [32m200[39m in 51ms
+ [32m[1m✓[22m[39m Compiled in 155ms (481 modules)
+ GET /api/sessions?type=stats [32m200[39m in 39ms
+ GET /api/workout/stats [32m200[39m in 11ms
+ GET /api/sessions [32m200[39m in 53ms
+ GET /api/sessions?type=stats [32m200[39m in 8ms
+ GET /api/workout/stats [32m200[39m in 4ms
+ GET /api/sessions [32m200[39m in 8ms
+ [32m[1m✓[22m[39m Compiled in 144ms (481 modules)
+ GET /api/workout/stats [32m200[39m in 47ms
+ GET /api/sessions [32m200[39m in 52ms
+ GET /api/sessions?type=stats [32m200[39m in 95ms
+ GET /api/sessions [32m200[39m in 10ms
+ GET /api/workout/stats [32m200[39m in 9ms
+ GET /api/sessions?type=stats [32m200[39m in 57ms
+ [32m[1m✓[22m[39m Compiled in 137ms (481 modules)
+ GET /api/sessions?type=stats [32m200[39m in 50ms
+ GET /api/workout/stats [32m200[39m in 52ms
+ GET /api/sessions [32m200[39m in 60ms
+ GET /api/sessions [32m200[39m in 9ms
+ GET /api/workout/stats [32m200[39m in 9ms
+ GET /api/sessions?type=stats [32m200[39m in 53ms
+ [32m[1m✓[22m[39m Compiled in 378ms (475 modules)
+ [32m[1m✓[22m[39m Compiled in 143ms (475 modules)
+ [32m[1m✓[22m[39m Compiled in 129ms (475 modules)
+ [32m[1m✓[22m[39m Compiled in 163ms (475 modules)
+ [32m[1m✓[22m[39m Compiled in 234ms (475 modules)
+ [32m[1m✓[22m[39m Compiled in 229ms (475 modules)
+ GET / [32m200[39m in 155ms
+ [32m[1m✓[22m[39m Compiled /api/sessions in 132ms (240 modules)
+ [32m[1m✓[22m[39m Compiled (242 modules)
+ GET /api/workout/stats [32m200[39m in 240ms
+ GET /api/sessions?type=stats [32m200[39m in 231ms
+ GET /api/sessions?limit=20 [32m200[39m in 244ms
+ GET /api/workout/stats [32m200[39m in 9ms
+ GET /api/sessions?limit=20 [32m200[39m in 14ms
+ GET /api/sessions?type=stats [32m200[39m in 12ms
+ [32m[1m✓[22m[39m Compiled /api/behavior in 89ms (244 modules)
+ GET /api/behavior?days_missed=2&consistency=70 [32m200[39m in 139ms
+ GET /api/workout/stats [32m200[39m in 21ms
+ GET /api/sessions?type=stats [32m200[39m in 25ms
+ GET /api/sessions?limit=20 [32m200[39m in 26ms
+ GET /api/workout/stats [32m200[39m in 15ms
+ GET /api/sessions?type=stats [32m200[39m in 19ms
+ GET /api/sessions?limit=20 [32m200[39m in 19ms
+ GET /api/workout/stats [32m200[39m in 11ms
+ GET /api/sessions?type=stats [32m200[39m in 16ms
+ GET /api/sessions [32m200[39m in 16ms
+ GET /api/workout/stats [32m200[39m in 7ms
+ GET /api/sessions?type=stats [32m200[39m in 8ms
+ GET /api/sessions [32m200[39m in 49ms
+ [32m[1m✓[22m[39m Compiled /api/chat in 128ms (240 modules)
+ POST /api/chat [32m200[39m in 174ms
+ POST /api/chat [32m200[39m in 8ms
+ [32m[1m✓[22m[39m Compiled in 55ms (240 modules)
+ [32m[1m✓[22m[39m Compiled in 122ms (479 modules)
+ [32m[1m✓[22m[39m Compiled in 87ms (479 modules)
+ [32m[1m✓[22m[39m Compiled in 265ms (479 modules)
+ [32m[1m✓[22m[39m Compiled in 211ms (479 modules)
+ [32m[1m✓[22m[39m Compiled /api/workout/stats in 69ms (242 modules)
+ [32m[1m✓[22m[39m Compiled (244 modules)
+ GET /api/workout/stats [32m200[39m in 150ms
+ GET /api/workout/stats [32m200[39m in 7ms
+ [32m[1m✓[22m[39m Compiled in 134ms (483 modules)
+ [32m[1m✓[22m[39m Compiled in 122ms (483 modules)
+ [32m[1m✓[22m[39m Compiled in 128ms (483 modules)
+ [32m[1m✓[22m[39m Compiled in 127ms (483 modules)
+ [32m[1m✓[22m[39m Compiled in 139ms (481 modules)
+ [32m[1m✓[22m[39m Compiled in 149ms (481 modules)
+ GET /api/workout/stats [32m200[39m in 33ms
+ GET /api/workout/stats [32m200[39m in 7ms
+ [32m[1m✓[22m[39m Compiled in 128ms (481 modules)
+ [32m[1m✓[22m[39m Compiled in 127ms (481 modules)
+ [32m[1m✓[22m[39m Compiled in 157ms (481 modules)
+ GET /api/workout/stats [32m200[39m in 37ms
+ [32m[1m✓[22m[39m Compiled in 142ms (481 modules)
+ GET /api/workout/stats [32m200[39m in 32ms
+ [32m[1m✓[22m[39m Compiled in 266ms (483 modules)
+ [32m[1m✓[22m[39m Compiled in 182ms (477 modules)
+ [32m[1m✓[22m[39m Compiled in 144ms (477 modules)
+ [32m[1m✓[22m[39m Compiled in 160ms (477 modules)
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ [32m[1m✓[22m[39m Compiled in 463ms (477 modules)
+ [32m[1m✓[22m[39m Compiled in 352ms (477 modules)
+ [32m[1m✓[22m[39m Compiled in 334ms (477 modules)
+ [32m[1m✓[22m[39m Compiled in 247ms (477 modules)
+ [32m[1m✓[22m[39m Compiled in 428ms (477 modules)
+ POST /api/chat [31m503[39m in 300738ms
+ GET / [32m200[39m in 150ms
+ GET /api/sessions?type=stats [32m200[39m in 229590ms
+ GET /api/sessions [32m200[39m in 249150ms
+ GET /api/sessions?type=stats [32m200[39m in 249561ms
+ GET /api/sessions?type=stats [32m200[39m in 208228ms
+ GET /api/sessions [32m200[39m in 229589ms
+ [32m[1m✓[22m[39m Compiled /api/sessions in 78ms (241 modules)
+ [32m[1m✓[22m[39m Compiled (243 modules)
+ GET /api/workout/stats [32m200[39m in 178ms
+ GET /api/workout/stats [32m200[39m in 6ms
+ GET /api/sessions [31m503[39m in 15893ms
+ GET /api/sessions?type=stats [31m503[39m in 15913ms
+ GET /api/sessions?type=stats [31m503[39m in 16ms
+ GET /api/sessions [31m503[39m in 17ms
+ GET / [32m200[39m in 104ms
+ GET / [32m200[39m in 27ms
+ [32m[1m✓[22m[39m Compiled in 210ms (477 modules)

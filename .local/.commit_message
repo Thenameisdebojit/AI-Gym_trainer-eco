@@ -1,0 +1,46 @@
+Task #5: Mistral-nemo LLM + Account/Profile Page
+
+## Backend changes
+- chat_service.py: OLLAMA_MODEL changed to "mistral-nemo"; ollama_chat() uses Ollama
+  /api/chat endpoint with messages array for multi-turn memory; conversation_history param
+  (list of {role,content} dicts) prepended to messages; _build_system_message() helper;
+  get_workout_tip() switched to /api/chat; ensure_model_available() updated with 600s timeout.
+- chatbot.py: Added conversationHistory: Optional[List[Dict]] to ChatRequest; forwarded
+  to ollama_chat().
+
+## Ollama workflow
+- Updated .replit Ollama LLM workflow to: ollama pull mistral-nemo 2>/dev/null || true; ollama serve
+
+## Frontend API + multi-turn chat
+- /api/chat/route.js: Accepts and forwards conversationHistory to backend.
+- AICoach.js: messagesRef tracks latest messages; send() captures history snapshot and
+  sends as conversationHistory.
+- page.js FloatingChatbot: Same messagesRef pattern; sends conversationHistory.
+
+## Account screen (new, frontend/screens/Account.js)
+- 128px circular avatar (upload photo as base64 → fitai_avatar localStorage, OR choose
+  from 12 preset emoji avatars → fitai_avatar_emoji).
+- Editable fields: Name, Age, Weight (kg), Height (cm), Fitness Goal (dropdown with 5
+  options), Fitness Level (dropdown with 3 options).
+- Save button writes to fitai_user localStorage.
+- Animated floating bottom toast notification (green, 2.5s) on save.
+- Back button via onBack prop; onProfileUpdated callback for parent state refresh.
+
+## Settings cleanup (frontend/screens/Settings.js)
+- Large blue profile card removed.
+- Compact "Account & Profile" row at top: shows avatar thumbnail + label "ACCOUNT & PROFILE" 
+  + display name + chevron.
+- onNavigate('account') prop triggers navigation to Account screen.
+- Logout moved to dedicated bottom section.
+
+## Navigation wiring (frontend/app/page.js)
+- Account imported + added to SCREEN_MAP (not in NAV_IDS).
+- Header avatar navigates to Account (not logout); shows photo/emoji/initials.
+- prevActive tracked to enable Back navigation; guards added to avoid overwriting prevActive
+  when already on Account.
+- refreshProfile callback: reads localStorage and increments profileVersion on save so
+  header avatar/initials update immediately without requiring navigation.
+- Updated initials computation to support name field (in addition to first_name/last_name).
+
+## CSS fix
+- globals.css: Added --warning dark mode variable (was missing in .dark block).

@@ -1,0 +1,127 @@
+[32mINFO[0m:     Will watch for changes in these directories: ['/home/runner/workspace/Backend']
+[32mINFO[0m:     Uvicorn running on [1mhttp://localhost:8000[0m (Press CTRL+C to quit)
+[32mINFO[0m:     Started reloader process [[36m[1m11214[0m] using [36m[1mStatReload[0m
+[32mINFO[0m:     Started server process [[36m11232[0m]
+[32mINFO[0m:     Waiting for application startup.
+[32mINFO[0m:     Application startup complete.
+[32mINFO[0m:     127.0.0.1:49754 - "[1mGET / HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:49760 - "[1mGET / HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:49760 - "[1mGET /favicon.ico HTTP/1.1[0m" [31m404 Not Found[0m
+[32mINFO[0m:     127.0.0.1:49754 - "[1mGET /favicon.ico HTTP/1.1[0m" [31m404 Not Found[0m
+[32mINFO[0m:     127.0.0.1:42868 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42872 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42868 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42868 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:45028 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:45038 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:45028 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:45028 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42762 - "[1mPOST /auth/login HTTP/1.1[0m" [31m401 Unauthorized[0m
+[FitAI] OTP email sent to debojitmishra03@gmail.com
+[32mINFO[0m:     127.0.0.1:54328 - "[1mPOST /auth/register HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:36106 - "[1mPOST /auth/verify-otp HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:36106 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:36116 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:36106 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:36106 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:37594 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:37610 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:37594 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:37594 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:56132 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:56136 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:56132 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:56136 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:34136 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:34142 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:34136 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:34136 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:34150 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:34150 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42320 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42334 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42320 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42334 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42320 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42320 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42320 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42320 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38402 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38402 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38402 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38404 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38402 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38402 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38402 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38402 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38402 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:51218 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38402 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38402 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:51226 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:51232 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:51226 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:51226 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:51226 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:51232 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:51226 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:51232 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:39532 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:39536 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:39532 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:39536 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:39134 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:39134 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:39134 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:39134 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38066 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38076 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38066 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38066 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38076 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:38066 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:33968 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:33968 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:33968 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:33968 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:33968 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:58394 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:33968 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:33968 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:41974 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:41974 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:41974 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:41974 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:41976 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:41976 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:41976 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:41976 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:45246 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:45246 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:45246 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:45246 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:56090 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:56090 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:56090 - "[1mGET /sessions/history?limit=20 HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:56090 - "[1mGET /sessions/stats HTTP/1.1[0m" [32m200 OK[0m
+[33mWARNING[0m:  StatReload detected changes in 'routes/chatbot.py'. Reloading...
+[32mINFO[0m:     Shutting down
+[32mINFO[0m:     Waiting for application shutdown.
+[32mINFO[0m:     Application shutdown complete.
+[32mINFO[0m:     Finished server process [[36m11232[0m]
+[32mINFO[0m:     Started server process [[36m15516[0m]
+[32mINFO[0m:     Waiting for application startup.
+[32mINFO[0m:     Application startup complete.
+[33mWARNING[0m:  StatReload detected changes in 'services/chat_service.py'. Reloading...
+[32mINFO[0m:     Shutting down
+[32mINFO[0m:     Waiting for application shutdown.
+[32mINFO[0m:     Application shutdown complete.
+[32mINFO[0m:     Finished server process [[36m15516[0m]
+[32mINFO[0m:     Started server process [[36m15540[0m]
+[32mINFO[0m:     Waiting for application startup.
+[32mINFO[0m:     Application startup complete.
+[32mINFO[0m:     Shutting down
+[32mINFO[0m:     Waiting for application shutdown.
+[32mINFO[0m:     Application shutdown complete.
+[32mINFO[0m:     Finished server process [[36m15540[0m]
+[32mINFO[0m:     Stopping reloader process [[36m[1m11214[0m]
