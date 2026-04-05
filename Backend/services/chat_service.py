@@ -1,4 +1,7 @@
+import logging
 import httpx
+
+logger = logging.getLogger(__name__)
 
 OLLAMA_BASE = "http://localhost:11434"
 OLLAMA_MODEL = "llama3"
@@ -178,9 +181,66 @@ KEYWORD_MAP = [
     ("प्रेरणा",  "motivat"),
 ]
 
+LANG_NAMES = {
+    "en": "English",
+    "es": "Spanish",
+    "fr": "French",
+    "de": "German",
+    "hi": "Hindi",
+    "pt": "Portuguese",
+}
+
+LANG_INSTRUCTIONS = {
+    "en": "Respond in English.",
+    "es": "Responde en español.",
+    "fr": "Réponds en français.",
+    "de": "Antworte auf Deutsch.",
+    "hi": "हिंदी में जवाब दें।",
+    "pt": "Responda em português.",
+}
+
+
+def _build_profile_context(user_profile: dict) -> str:
+    if not user_profile:
+        return ""
+    parts = []
+    if user_profile.get("name") and user_profile["name"] != "User":
+        parts.append(f"Name: {user_profile['name']}")
+    if user_profile.get("age"):
+        parts.append(f"Age: {user_profile['age']}")
+    if user_profile.get("weight"):
+        parts.append(f"Weight: {user_profile['weight']}")
+    if user_profile.get("height"):
+        parts.append(f"Height: {user_profile['height']}")
+    if user_profile.get("goal"):
+        parts.append(f"Fitness goal: {user_profile['goal']}")
+    if user_profile.get("level"):
+        parts.append(f"Fitness level: {user_profile['level']}")
+    return f"\n\nUser profile: {', '.join(parts)}" if parts else ""
+
+
+def _build_history_context(workout_history: list) -> str:
+    if not workout_history:
+        return ""
+    lines = ["Recent workout history (last sessions):"]
+    for s in workout_history[:5]:
+        title = s.get("title", "Unknown workout")
+        date = s.get("date", "")
+        calories = s.get("calories_burned", "")
+        duration = s.get("duration", "")
+        parts = [title]
+        if date:
+            parts.append(f"on {date[:10]}")
+        if duration:
+            parts.append(f"{duration} min")
+        if calories:
+            parts.append(f"{calories} kcal")
+        lines.append(f"  - {', '.join(parts)}")
+    return "\n\n" + "\n".join(lines)
+
 
 def keyword_reply(msg: str, language: str = "en") -> str:
-    lang = language if language in ("en", "es", "fr", "de", "hi", "pt") else "en"
+    lang = language if language in LANG_NAMES else "en"
     msg_lower = msg.lower()
     for keyword, topic in KEYWORD_MAP:
         if keyword.lower() in msg_lower:
@@ -193,85 +253,106 @@ def reply(msg: str, language: str = "en") -> str:
     return keyword_reply(msg, language)
 
 
-async def ollama_chat(message: str, language: str = "en", user_profile: dict = None) -> str:
-    lang = language if language in ("en", "es", "fr", "de", "hi", "pt") else "en"
+async def ensure_model_available() -> bool:
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            r = await client.get(f"{OLLAMA_BASE}/api/tags")
+            if r.status_code != 200:
+                return False
+            tags = r.json().get("models", [])
+            names = [m.get("name", "") for m in tags]
+            if any(OLLAMA_MODEL in n for n in names):
+                return True
+            logger.info("Pulling %s model from Ollama…", OLLAMA_MODEL)
+            await client.post(
+                f"{OLLAMA_BASE}/api/pull",
+                json={"name": OLLAMA_MODEL, "stream": False},
+                timeout=300.0,
+            )
+            return True
+    except Exception as exc:
+        logger.debug("Ollama not available: %s", exc)
+        return False
 
-    profile_ctx = ""
-    if user_profile:
-        parts = []
-        if user_profile.get("name") and user_profile["name"] != "User":
-            parts.append(f"Name: {user_profile['name']}")
-        if user_profile.get("age"):
-            parts.append(f"Age: {user_profile['age']}")
-        if user_profile.get("weight"):
-            parts.append(f"Weight: {user_profile['weight']}")
-        if user_profile.get("height"):
-            parts.append(f"Height: {user_profile['height']}")
-        if parts:
-            profile_ctx = f"\n\nUser profile: {', '.join(parts)}"
 
-    lang_instruction = {
-        "en": "Respond in English.",
-        "es": "Responde en español.",
-        "fr": "Réponds en français.",
-        "de": "Antworte auf Deutsch.",
-        "hi": "हिंदी में जवाब दें।",
-        "pt": "Responda em português.",
-    }.get(lang, "Respond in English.")
+async def ollama_chat(
+    message: str,
+    language: str = "en",
+    user_profile: dict = None,
+    workout_history: list = None,
+    current_exercise: str = None,
+) -> str:
+    lang = language if language in LANG_NAMES else "en"
+
+    profile_ctx = _build_profile_context(user_profile)
+    history_ctx = _build_history_context(workout_history or [])
+    exercise_ctx = (
+        f"\n\nCurrent workout context: The user is currently doing {current_exercise}."
+        if current_exercise else ""
+    )
+    lang_instruction = LANG_INSTRUCTIONS.get(lang, LANG_INSTRUCTIONS["en"])
 
     full_prompt = (
-        f"{SYSTEM_PROMPT}{profile_ctx}\n\n"
+        f"{SYSTEM_PROMPT}{profile_ctx}{history_ctx}{exercise_ctx}\n\n"
         f"Instruction: {lang_instruction}\n\n"
         f"User: {message}\n\nAssistant:"
     )
 
-    async with httpx.AsyncClient(timeout=25.0) as client:
-        response = await client.post(
-            f"{OLLAMA_BASE}/api/generate",
-            json={"model": OLLAMA_MODEL, "prompt": full_prompt, "stream": False},
-        )
-        result = response.json()
-        text = result.get("response", "").strip()
-        if text:
-            return text
+    try:
+        async with httpx.AsyncClient(timeout=25.0) as client:
+            response = await client.post(
+                f"{OLLAMA_BASE}/api/generate",
+                json={"model": OLLAMA_MODEL, "prompt": full_prompt, "stream": False},
+            )
+            result = response.json()
+            text = result.get("response", "").strip()
+            if text:
+                return text
+    except Exception as exc:
+        logger.debug("Ollama chat failed: %s", exc)
     return ""
 
 
-async def get_workout_tip(exercise: str, phase: str, language: str = "en", user_profile: dict = None) -> str:
-    lang = language if language in ("en", "es", "fr", "de", "hi", "pt") else "en"
+async def get_workout_tip(
+    exercise: str,
+    phase: str,
+    language: str = "en",
+    user_profile: dict = None,
+    workout_history: list = None,
+) -> str:
+    lang = language if language in LANG_NAMES else "en"
     phase_key = phase if phase in PHASE_TEMPLATES else "exercise"
 
     fallback = PHASE_TEMPLATES[phase_key].get(lang, PHASE_TEMPLATES[phase_key]["en"]).format(exercise=exercise)
 
-    profile_ctx = ""
-    if user_profile:
-        parts = []
-        if user_profile.get("name") and user_profile["name"] != "User":
-            parts.append(f"Name: {user_profile['name']}")
-        if user_profile.get("age"):
-            parts.append(f"Age: {user_profile['age']}")
-        if user_profile.get("weight"):
-            parts.append(f"Weight: {user_profile['weight']}")
-        if parts:
-            profile_ctx = f" User profile: {', '.join(parts)}."
+    profile_ctx = _build_profile_context(user_profile).strip()
+    history_summary = ""
+    if workout_history:
+        sessions_done = len(workout_history)
+        history_summary = f" The user has completed {sessions_done} previous session(s)."
 
-    lang_instruction = {
-        "en": "English",
-        "es": "Spanish",
-        "fr": "French",
-        "de": "German",
-        "hi": "Hindi",
-        "pt": "Portuguese",
-    }.get(lang, "English")
+    lang_name = LANG_NAMES.get(lang, "English")
+    extra = (f" {profile_ctx.replace(chr(10), ' ').strip()}" if profile_ctx else "") + history_summary
 
     phase_prompts = {
-        "start": f"The user is starting their workout with {exercise}.{profile_ctx} Give a short motivational coaching cue to start (1-2 sentences). Language: {lang_instruction}.",
-        "exercise": f"The user just started the exercise: {exercise}.{profile_ctx} Give a brief form tip or motivation (1-2 sentences). Language: {lang_instruction}.",
-        "rest": f"The user completed {exercise} and is now resting.{profile_ctx} Give a brief encouragement and hint about the next effort (1-2 sentences). Language: {lang_instruction}.",
-        "complete": f"The user just completed their full workout session!{profile_ctx} Give a short celebration and recovery tip (1-2 sentences). Language: {lang_instruction}.",
+        "start": (
+            f"The user is starting their workout with {exercise}.{extra} "
+            f"Give a short motivational coaching cue to start (1–2 sentences). Language: {lang_name}."
+        ),
+        "exercise": (
+            f"The user just started the exercise: {exercise}.{extra} "
+            f"Give a brief form tip or motivation (1–2 sentences). Language: {lang_name}."
+        ),
+        "rest": (
+            f"The user completed {exercise} and is now resting.{extra} "
+            f"Give brief encouragement and a hint about the next effort (1–2 sentences). Language: {lang_name}."
+        ),
+        "complete": (
+            f"The user just completed their full workout session!{extra} "
+            f"Give a short celebration and recovery tip (1–2 sentences). Language: {lang_name}."
+        ),
     }
     prompt_text = phase_prompts.get(phase_key, phase_prompts["exercise"])
-
     full_prompt = f"{WORKOUT_SYSTEM_PROMPT}\n\nCoach: {prompt_text}\n\nResponse:"
 
     try:
@@ -284,7 +365,7 @@ async def get_workout_tip(exercise: str, phase: str, language: str = "en", user_
             text = result.get("response", "").strip()
             if text:
                 return text
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug("Ollama workout-tip failed: %s", exc)
 
     return fallback

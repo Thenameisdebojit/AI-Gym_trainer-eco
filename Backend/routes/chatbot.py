@@ -3,7 +3,7 @@ import httpx
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse, Response
 from pydantic import BaseModel
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 from services.chat_service import reply, ollama_chat, get_workout_tip
 
@@ -17,6 +17,8 @@ class ChatRequest(BaseModel):
     message: str
     language: str = "en"
     userProfile: Optional[Dict] = None
+    workoutHistory: Optional[List[Dict]] = None
+    currentExercise: Optional[str] = None
 
 
 class WorkoutTipRequest(BaseModel):
@@ -24,6 +26,7 @@ class WorkoutTipRequest(BaseModel):
     phase: str = "exercise"
     language: str = "en"
     userProfile: Optional[Dict] = None
+    workoutHistory: Optional[List[Dict]] = None
 
 
 class TTSRequest(BaseModel):
@@ -34,7 +37,13 @@ class TTSRequest(BaseModel):
 @router.post("/")
 async def chat(req: ChatRequest):
     try:
-        response = await ollama_chat(req.message, req.language, req.userProfile)
+        response = await ollama_chat(
+            req.message,
+            req.language,
+            req.userProfile,
+            req.workoutHistory,
+            req.currentExercise,
+        )
         if response:
             return {"response": response}
     except Exception:
@@ -44,7 +53,13 @@ async def chat(req: ChatRequest):
 
 @router.post("/workout-tip")
 async def workout_tip(req: WorkoutTipRequest):
-    tip = await get_workout_tip(req.exercise, req.phase, req.language, req.userProfile)
+    tip = await get_workout_tip(
+        req.exercise,
+        req.phase,
+        req.language,
+        req.userProfile,
+        req.workoutHistory,
+    )
     return {"tip": tip}
 
 

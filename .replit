@@ -70,12 +70,12 @@ waitForPort = 8080
 name = "Ollama LLM"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "ollama serve"
-
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "ollama pull llama3 2>/dev/null || true; ollama serve"
 
 [[ports]]
 localPort = 5000
