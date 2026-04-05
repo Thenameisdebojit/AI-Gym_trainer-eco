@@ -1,7 +1,9 @@
+import { BACKEND_URL } from '../../../../lib/backend';
+
 export async function POST(request) {
   try {
     const body = await request.json();
-    const res = await fetch('http://localhost:8000/auth/register', {
+    const res = await fetch(`${BACKEND_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
