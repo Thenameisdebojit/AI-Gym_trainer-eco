@@ -17,8 +17,39 @@ Base.metadata.create_all(bind=engine)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    _check_env_config()
     asyncio.create_task(_pull_ollama_model())
     yield
+
+
+def _check_env_config():
+    import os
+    missing = []
+    warnings = []
+
+    if not os.environ.get("SMTP_USER") or not os.environ.get("SMTP_PASS"):
+        warnings.append(
+            "SMTP_USER / SMTP_PASS not set — OTP emails will NOT be delivered. "
+            "The OTP will be returned in the API response instead (dev/demo mode). "
+            "Set these secrets for production email delivery."
+        )
+
+    if not os.environ.get("ELEVENLABS_API_KEY"):
+        warnings.append("ELEVENLABS_API_KEY not set — AI voice responses disabled.")
+
+    google_verify = os.environ.get("GOOGLE_VERIFY_TOKENS", "true").lower()
+    if google_verify == "false":
+        warnings.append(
+            "GOOGLE_VERIFY_TOKENS=false — Google token verification is DISABLED. "
+            "Only use this in local development."
+        )
+
+    for w in warnings:
+        logger.warning("[CONFIG] %s", w)
+
+    if missing:
+        for m in missing:
+            logger.error("[CONFIG] REQUIRED: %s", m)
 
 
 async def _pull_ollama_model():

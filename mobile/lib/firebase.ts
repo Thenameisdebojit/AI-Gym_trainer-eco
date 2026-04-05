@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, limit, Timestamp } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY || '',
@@ -94,3 +94,38 @@ export async function getStatsFromFirebase(userId: string) {
 }
 
 export { isConfigured };
+
+export async function signInWithGoogle(): Promise<{
+  idToken: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  photoUrl: string;
+}> {
+  if (!app || !isConfigured) {
+    throw new Error(
+      'Google Sign-In requires Firebase to be configured. Add EXPO_PUBLIC_FIREBASE_API_KEY and related variables to mobile/.env'
+    );
+  }
+
+  const authInstance = getAuth(app);
+  const provider = new GoogleAuthProvider();
+  provider.addScope('email');
+  provider.addScope('profile');
+
+  const result = await signInWithPopup(authInstance, provider);
+  const firebaseUser = result.user;
+  const idToken = await firebaseUser.getIdToken();
+
+  const nameParts = (firebaseUser.displayName || '').split(' ');
+  const firstName = nameParts[0] || '';
+  const lastName = nameParts.slice(1).join(' ') || '';
+
+  return {
+    idToken,
+    email: firebaseUser.email || '',
+    firstName,
+    lastName,
+    photoUrl: firebaseUser.photoURL || '',
+  };
+}

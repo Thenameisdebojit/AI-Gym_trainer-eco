@@ -4,6 +4,7 @@ import hashlib
 import time
 import smtplib
 import os
+import httpx
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from fastapi import APIRouter, HTTPException, Depends
@@ -72,6 +73,36 @@ def generate_otp() -> str:
 def generate_token(email: str) -> str:
     rand = ''.join(random.choices(string.ascii_letters + string.digits, k=32))
     return hashlib.sha256(f"{email}{rand}{time.time()}".encode()).hexdigest()[:40]
+
+
+def verify_google_token(id_token: str) -> dict:
+    """
+    Verify a Firebase/Google ID token using Google's public tokeninfo endpoint.
+    Returns verified claims {email, given_name, family_name, ...} or raises HTTPException.
+    Set GOOGLE_VERIFY_TOKENS=false to skip verification in local development.
+    """
+    if os.environ.get("GOOGLE_VERIFY_TOKENS", "true").lower() == "false":
+        return {}
+
+    try:
+        resp = httpx.get(
+            "https://oauth2.googleapis.com/tokeninfo",
+            params={"id_token": id_token},
+            timeout=8,
+        )
+        if resp.status_code != 200:
+            raise HTTPException(status_code=401, detail="Invalid Google token.")
+        claims = resp.json()
+        if "error" in claims:
+            raise HTTPException(status_code=401, detail="Google token verification failed.")
+        return claims
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(
+            status_code=503,
+            detail="Could not verify Google token. Check your internet connection.",
+        )
 
 
 def send_otp_email(to_email: str, otp: str, first_name: str = "") -> bool:
@@ -300,14 +331,28 @@ def login(body: LoginRequest, db: OrmSession = Depends(get_db)):
 
 @router.post("/google")
 def google_auth(body: GoogleAuthRequest, db: OrmSession = Depends(get_db)):
-    email = body.email.lower().strip()
+    claims = verify_google_token(body.id_token)
 
-    user = db.query(AuthUser).filter(AuthUser.email == email).first()
+    if claims:
+        verified_email = claims.get("email", "").lower().strip()
+        if not verified_email:
+            raise HTTPException(status_code=401, detail="Google token contains no email.")
+        first_name = claims.get("given_name", body.first_name)
+        last_name = claims.get("family_name", body.last_name)
+    else:
+        verified_email = body.email.lower().strip()
+        first_name = body.first_name
+        last_name = body.last_name
+
+    if not verified_email:
+        raise HTTPException(status_code=400, detail="Email is required.")
+
+    user = db.query(AuthUser).filter(AuthUser.email == verified_email).first()
     if not user:
         user = AuthUser(
-            first_name=body.first_name,
-            last_name=body.last_name,
-            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            email=verified_email,
             mobile="",
             password_hash=None,
             verified=True,
@@ -316,13 +361,13 @@ def google_auth(body: GoogleAuthRequest, db: OrmSession = Depends(get_db)):
         db.add(user)
     else:
         user.verified = True
-        if not user.first_name and body.first_name:
-            user.first_name = body.first_name
-        if not user.last_name and body.last_name:
-            user.last_name = body.last_name
+        if first_name and not user.first_name:
+            user.first_name = first_name
+        if last_name and not user.last_name:
+            user.last_name = last_name
 
-    token = generate_token(email)
-    db.add(AuthSession(token=token, email=email))
+    token = generate_token(verified_email)
+    db.add(AuthSession(token=token, email=verified_email))
     db.commit()
     db.refresh(user)
 

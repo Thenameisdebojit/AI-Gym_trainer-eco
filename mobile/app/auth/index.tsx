@@ -16,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useAuth } from "@/context/AuthContext";
+import { signInWithGoogle as firebaseGoogleSignIn } from "@/lib/firebase";
 import { COLORS, FONTS, SIZES, RADIUS, SPACING } from "@/constants/theme";
 
 type Mode = "login" | "register" | "verify";
@@ -105,10 +106,21 @@ export default function AuthScreen() {
   };
 
   const handleGoogle = async () => {
-    Alert.alert(
-      "Google Sign-In",
-      "To enable Google Sign-In, please set up FIREBASE_WEB_CLIENT_ID in your environment and configure Firebase in app.json."
-    );
+    setLoading(true);
+    try {
+      const { idToken, email, firstName, lastName, photoUrl } = await firebaseGoogleSignIn();
+      await googleLogin(idToken, email, firstName, lastName, photoUrl);
+      router.replace("/(tabs)");
+    } catch (e: any) {
+      Alert.alert(
+        "Google Sign-In",
+        e.message?.includes("Firebase")
+          ? "Google Sign-In is not yet configured. Add your Firebase credentials to mobile/.env (see .env.production_example for details)."
+          : e.message || "Google Sign-In failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (mode === "verify") {
