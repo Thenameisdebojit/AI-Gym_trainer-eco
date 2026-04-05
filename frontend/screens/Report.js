@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import WeightChart from '../components/charts/WeightChart';
 import Button from '../components/ui/Button';
+import { useAppSettings } from '../context/AppSettingsContext.js';
 
 const RISK_COLORS = { low: '#10B981', medium: '#F59E0B', high: '#EF4444', unknown: '#64748B' };
 
@@ -113,6 +114,7 @@ function RelativeDate(dateStr) {
 }
 
 function InlineHistoryView({ onClose }) {
+  const { t } = useAppSettings();
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const today = new Date();
@@ -156,7 +158,7 @@ function InlineHistoryView({ onClose }) {
   return (
     <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)', marginBottom: 20, animation: 'fadeIn 0.3s ease' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--border-light)' }}>
-        <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--text)' }}>Full History</div>
+        <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--text)' }}>{t.history}</div>
         <button onClick={onClose} style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, width: 32, height: 32, cursor: 'pointer', fontSize: 14, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
       </div>
 
@@ -242,6 +244,7 @@ function InlineHistoryView({ onClose }) {
 }
 
 export default function Report() {
+  const { t } = useAppSettings();
   const [today, setToday] = useState(0);
   const [stats, setStats] = useState(null);
   const [sessionStats, setSessionStats] = useState(null);
@@ -329,7 +332,7 @@ export default function Report() {
   return (
     <div style={{ padding: '24px 28px', maxWidth: '960px', animation: 'fadeIn 0.4s ease' }}>
       <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.03em' }}>REPORT</h1>
+        <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.03em' }}>{t.reportTitle}</h1>
       </div>
 
       {/* ─── Unified Stats Card (matches reference image) ─── */}
@@ -340,9 +343,9 @@ export default function Report() {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
           {[
-            { icon: '🏅', value: totalSessions, label: 'Workouts' },
-            { icon: '🔥', value: totalCalories, label: 'Kcal' },
-            { icon: '⏱', value: totalMinutes, label: 'Minutes' },
+            { icon: '🏅', value: totalSessions, label: t.statsWorkouts },
+            { icon: '🔥', value: totalCalories, label: t.statsKcal },
+            { icon: '⏱', value: totalMinutes, label: t.statsMinutes },
           ].map((s, i) => (
             <div key={i} style={{
               flex: 1, textAlign: 'center',
@@ -359,12 +362,12 @@ export default function Report() {
 
       {/* ─── History heading with All Records link ─── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-        <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text)' }}>History</h2>
+        <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text)' }}>{t.history}</h2>
         <button
           onClick={() => setShowFullHistory(v => !v)}
           style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: 700, color: 'var(--primary)', padding: 0 }}
         >
-          {showFullHistory ? 'Close ✕' : 'All records →'}
+          {showFullHistory ? `${t.close} ✕` : t.allRecords}
         </button>
       </div>
 
@@ -530,7 +533,7 @@ export default function Report() {
         background: 'var(--surface)', borderRadius: 'var(--radius-xl)',
         padding: '24px', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)',
       }}>
-        <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginBottom: '6px' }}>BMI Calculator</h3>
+        <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginBottom: '6px' }}>{t.bmiCalculator}</h3>
         <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '20px' }}>Body Mass Index</p>
         <div style={{ display: 'flex', gap: '12px', marginBottom: '14px' }}>
           <div style={{ flex: 1 }}>
@@ -550,7 +553,7 @@ export default function Report() {
               }} />
           </div>
         </div>
-        <Button variant="primary" size="md" onClick={calcBmi} fullWidth>Calculate BMI</Button>
+        <Button variant="primary" size="md" onClick={calcBmi} fullWidth>{t.calcBmi}</Button>
         {bmi && (
           <div style={{ marginTop: '20px', animation: 'fadeIn 0.3s ease' }}>
             <div style={{ textAlign: 'center', marginBottom: '16px' }}>
@@ -567,7 +570,7 @@ export default function Report() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
           <div style={{ width: 40, height: 40, borderRadius: 'var(--radius)', background: 'linear-gradient(135deg,#2563EB15,#7C3AED15)', border: '1px solid #7C3AED20', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🧠</div>
           <div>
-            <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginBottom: '2px' }}>Consistency Analyzer</h3>
+            <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginBottom: '2px' }}>{t.consistencyTitle}</h3>
             <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Check your dropout risk and get motivational insights</p>
           </div>
         </div>
@@ -592,7 +595,7 @@ export default function Report() {
         </div>
 
         <Button variant="primary" size="md" loading={behaviorLoading} onClick={analyzeBehavior} fullWidth icon="🧠">
-          Analyze My Consistency
+          {t.analyzeBtn}
         </Button>
 
         {behavior && (

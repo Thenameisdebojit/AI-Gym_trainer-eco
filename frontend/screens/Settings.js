@@ -63,7 +63,7 @@ function SettingSection({ title, children }) {
 }
 
 export default function Settings() {
-  const { darkMode, setDarkMode, language, setLanguage, notifications, setNotifications, healthSync, setHealthSync } = useAppSettings();
+  const { darkMode, setDarkMode, language, setLanguage, notifications, setNotifications, healthSync, setHealthSync, t } = useAppSettings();
   const [voice, setVoice] = useState(true);
   const [sound, setSound] = useState(true);
   const [restTime, setRestTime] = useState(60);
@@ -103,10 +103,10 @@ export default function Settings() {
     <div style={{ padding: '24px 28px', maxWidth: '720px', animation: 'fadeIn 0.4s ease' }}>
       <div style={{ marginBottom: '28px' }}>
         <div style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500, marginBottom: '4px' }}>
-          Preferences
+          {t.preferences}
         </div>
         <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.03em' }}>
-          Settings
+          {t.settingsTitle}
         </h1>
       </div>
 
@@ -124,15 +124,15 @@ export default function Settings() {
           }}>👤</div>
           <div>
             <div style={{ fontSize: '20px', fontWeight: 700, color: '#fff' }}>{profile.name}</div>
-            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Free Plan · Edit Profile</div>
+            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>{t.freePlan}</div>
           </div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
           {[
-            { k: 'name', label: 'Name', placeholder: 'Your name' },
-            { k: 'age', label: 'Age', placeholder: 'e.g. 25' },
-            { k: 'weight', label: 'Weight (kg)', placeholder: 'e.g. 70' },
-            { k: 'height', label: 'Height (cm)', placeholder: 'e.g. 175' },
+            { k: 'name', label: t.name, placeholder: t.namePlaceholder },
+            { k: 'age', label: t.age, placeholder: t.agePlaceholder },
+            { k: 'weight', label: t.weightLabel, placeholder: t.weightPlaceholder },
+            { k: 'height', label: t.heightLabel, placeholder: t.heightPlaceholder },
           ].map(f => (
             <div key={f.k}>
               <label style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -146,14 +146,14 @@ export default function Settings() {
                   width: '100%', padding: '9px 12px', border: 'none',
                   borderRadius: 'var(--radius-sm)', fontSize: '14px',
                   background: 'rgba(255,255,255,0.15)', color: '#fff',
-                  backdropFilter: 'blur(10px)',
+                  backdropFilter: 'blur(10px)', boxSizing: 'border-box',
                 }}
               />
             </div>
           ))}
         </div>
         <Button variant="white" size="sm" onClick={saveProfile}>
-          {saved ? '✅ Saved!' : 'Save Profile'}
+          {saved ? t.saved : t.saveProfile}
         </Button>
       </div>
 
@@ -167,50 +167,50 @@ export default function Settings() {
         <span style={{ fontSize: '40px' }}>👑</span>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: '17px', fontWeight: 800, color: '#fff', marginBottom: '3px' }}>
-            Upgrade to Premium
+            {t.upgradePremium}
           </div>
           <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)' }}>
-            Unlock AI pose detection, custom plans & more
+            {t.upgradeDesc}
           </div>
         </div>
-        <Button variant="white" size="sm">Upgrade →</Button>
+        <Button variant="white" size="sm">{t.upgrade}</Button>
       </div>
 
       {/* Workout */}
-      <SettingSection title="Workout">
-        <SettingRow icon="🔕" label="Rest Time" sub="Seconds between sets">
+      <SettingSection title={t.sectionWorkout}>
+        <SettingRow icon="🔕" label={t.restTime} sub={t.restTimeSub}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button onClick={() => setRestTime(t => Math.max(10, t - 10))} style={{ width: '28px', height: '28px', borderRadius: '50%', border: '1.5px solid var(--border)', background: 'var(--surface-2)', cursor: 'pointer', fontWeight: 700, fontSize: '14px', color: 'var(--text-secondary)' }}>−</button>
-            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)', minWidth: '36px', textAlign: 'center' }}>{restTime}s</span>
-            <button onClick={() => setRestTime(t => Math.min(300, t + 10))} style={{ width: '28px', height: '28px', borderRadius: '50%', border: '1.5px solid var(--border)', background: 'var(--surface-2)', cursor: 'pointer', fontWeight: 700, fontSize: '14px', color: 'var(--text-secondary)' }}>+</button>
+            <button onClick={() => setRestTime(v => Math.max(10, v - 10))} style={{ width: '28px', height: '28px', borderRadius: '50%', border: '1.5px solid var(--border)', background: 'var(--surface-2)', cursor: 'pointer', fontWeight: 700, fontSize: '14px', color: 'var(--text-secondary)' }}>−</button>
+            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)', minWidth: '36px', textAlign: 'center' }}>{restTime}{t.sec}</span>
+            <button onClick={() => setRestTime(v => Math.min(300, v + 10))} style={{ width: '28px', height: '28px', borderRadius: '50%', border: '1.5px solid var(--border)', background: 'var(--surface-2)', cursor: 'pointer', fontWeight: 700, fontSize: '14px', color: 'var(--text-secondary)' }}>+</button>
           </div>
         </SettingRow>
-        <SettingRow icon="📏" label="Units" sub="Metric or Imperial">
+        <SettingRow icon="📏" label={t.units} sub={t.unitsSub}>
           <select value={unit} onChange={e => setUnit(e.target.value)} style={{
             padding: '7px 12px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)',
             fontSize: '13px', fontWeight: 600, color: 'var(--text)', background: 'var(--surface-2)', cursor: 'pointer',
           }}>
-            <option value="metric">Metric (kg/cm)</option>
-            <option value="imperial">Imperial (lb/in)</option>
+            <option value="metric">{t.unitsMetric}</option>
+            <option value="imperial">{t.unitsImperial}</option>
           </select>
         </SettingRow>
         <div style={{ borderBottom: 'none' }}>
-          <SettingRow icon="🎯" label="Difficulty" sub="Auto-adjust based on performance">
+          <SettingRow icon="🎯" label={t.difficulty} sub={t.difficultySub}>
             <ToggleSwitch value={true} onChange={() => {}} />
           </SettingRow>
         </div>
       </SettingSection>
 
       {/* Audio */}
-      <SettingSection title="Audio & Voice">
-        <SettingRow icon="🔊" label="Sound Effects" sub="Exercise cues and transitions">
+      <SettingSection title={t.sectionAudio}>
+        <SettingRow icon="🔊" label={t.soundEffects} sub={t.soundEffectsSub}>
           <ToggleSwitch value={sound} onChange={setSound} />
         </SettingRow>
-        <SettingRow icon="🎙️" label="Voice Coach" sub="Audio guidance during workouts">
+        <SettingRow icon="🎙️" label={t.voiceCoach} sub={t.voiceCoachSub}>
           <ToggleSwitch value={voice} onChange={setVoice} />
         </SettingRow>
         <div style={{ borderBottom: 'none' }}>
-          <SettingRow icon="🔔" label="Notifications" sub="Workout reminders & streaks">
+          <SettingRow icon="🔔" label={t.notifications} sub={t.notificationsSub}>
             <ToggleSwitch value={notifications} onChange={handleNotifications} />
           </SettingRow>
         </div>
@@ -222,8 +222,8 @@ export default function Settings() {
       </SettingSection>
 
       {/* App */}
-      <SettingSection title="App">
-        <SettingRow icon="🌐" label="Language" sub="Display language">
+      <SettingSection title={t.sectionApp}>
+        <SettingRow icon="🌐" label={t.language} sub={t.languageSub}>
           <select value={language} onChange={e => setLanguage(e.target.value)} style={{
             padding: '7px 12px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)',
             fontSize: '13px', fontWeight: 600, color: 'var(--text)', background: 'var(--surface-2)', cursor: 'pointer',
@@ -236,11 +236,11 @@ export default function Settings() {
             <option value="pt">Português</option>
           </select>
         </SettingRow>
-        <SettingRow icon="🌙" label="Dark Mode" sub="Enable dark theme">
+        <SettingRow icon="🌙" label={t.darkMode} sub={t.darkModeSub}>
           <ToggleSwitch value={darkMode} onChange={setDarkMode} />
         </SettingRow>
         <div style={{ borderBottom: healthMsg ? '1px solid var(--border-light)' : 'none' }}>
-          <SettingRow icon="❤️" label="Health Sync" sub="Sync with Apple Health / Google Fit">
+          <SettingRow icon="❤️" label={t.healthSync} sub={t.healthSyncSub}>
             <ToggleSwitch value={healthSync} onChange={handleHealthSync} />
           </SettingRow>
         </div>
@@ -248,24 +248,24 @@ export default function Settings() {
           <div style={{ margin: '0 20px 14px', padding: '12px 14px', background: 'var(--primary-50)', borderRadius: 'var(--radius-sm)', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
             <span style={{ fontSize: 18 }}>📱</span>
             <div style={{ fontSize: '12px', color: 'var(--primary)', fontWeight: 500, lineHeight: 1.5 }}>
-              <strong>Health Sync requires the FitAI mobile app.</strong><br />
-              Download the FitAI app on your iPhone or Android to sync with Apple Health or Google Fit automatically.
+              <strong>{t.healthSyncMsg}</strong><br />
+              {t.healthSyncMsgDesc}
             </div>
           </div>
         )}
       </SettingSection>
 
       {/* Data */}
-      <SettingSection title="Data">
-        <SettingRow icon="☁️" label="Backup & Restore" sub="Cloud sync your progress">
+      <SettingSection title={t.sectionData}>
+        <SettingRow icon="☁️" label={t.backup} sub={t.backupSub}>
           <button style={{ padding: '7px 14px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)', background: 'var(--surface-2)', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
-            Backup
+            {t.backupBtn}
           </button>
         </SettingRow>
         <div style={{ borderBottom: 'none' }}>
-          <SettingRow icon="🗑️" label="Clear Data" sub="Delete all workout history" danger>
+          <SettingRow icon="🗑️" label={t.clearData} sub={t.clearDataSub} danger>
             <button style={{ padding: '7px 14px', border: '1.5px solid var(--danger)', borderRadius: 'var(--radius-sm)', background: 'var(--danger-light)', color: 'var(--danger)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
-              Clear
+              {t.clearBtn}
             </button>
           </SettingRow>
         </div>
@@ -274,7 +274,7 @@ export default function Settings() {
       {/* App Info */}
       <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-tertiary)', fontSize: '12px' }}>
         <div style={{ fontWeight: 600, marginBottom: '4px' }}>FitAI — Universal AI Fitness Trainer</div>
-        <div>Version 1.0.0 · Made with ❤️</div>
+        <div>{t.appVersion}</div>
       </div>
     </div>
   );

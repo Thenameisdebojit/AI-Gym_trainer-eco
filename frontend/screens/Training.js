@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { generateWorkout, getWorkoutOptions, DURATION_TARGETS } from '../services/workoutGenerator.js';
 import { getRecommendation, getPersonalizedGreeting } from '../services/recommendation.js';
 import ExerciseAnimation from '../components/ExerciseAnimation.js';
+import { useAppSettings } from '../context/AppSettingsContext.js';
 
 const BODY_PARTS = [
   {
@@ -495,6 +496,25 @@ function Breadcrumb({ steps, onBack }) {
 }
 
 export default function Training() {
+  const { t } = useAppSettings();
+
+  const tBodyParts = BODY_PARTS.map(b => ({
+    ...b,
+    label: t[`bp_${b.id}`] || b.label,
+    subtitle: t[`bp_${b.id}_sub`] || b.subtitle,
+  }));
+  const tLevels = LEVELS.map(l => ({
+    ...l,
+    label: t[l.id] || l.label,
+    tagline: t[`${l.id}_tag`] || l.tagline,
+  }));
+  const tModes = MODES.map(m => ({
+    ...m,
+    label: t[`mode_${m.id}`] || m.label,
+    subtitle: t[`mode_${m.id}_sub`] || m.subtitle,
+    desc: t[`mode_${m.id}_desc`] || m.desc,
+  }));
+
   const [navStep, setNavStep] = useState('home');
   const [selectedBody, setSelectedBody] = useState(null);
   const [selectedLevel, setSelectedLevel] = useState(null);
@@ -773,10 +793,10 @@ export default function Training() {
         {phase === 'countdown' && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '24px', animation: 'fadeIn 0.4s ease' }}>
             <div style={{ fontSize: '48px' }}>🏁</div>
-            <div style={{ fontSize: '22px', fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>Get Ready!</div>
+            <div style={{ fontSize: '22px', fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>{t.getReady}</div>
             <CountdownRing value={countdown} max={5} color="#F97316" />
             <div style={{ fontSize: '16px', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>
-              {exercises.length} exercises · {selectedMode?.label} · {selectedLevel?.label}
+              {exercises.length} {t.exercises} · {selectedMode?.label} · {selectedLevel?.label}
             </div>
             <button onClick={exitSession} style={{
               marginTop: '12px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
@@ -828,7 +848,7 @@ export default function Training() {
             {phase === 'rest' ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', marginBottom: '32px' }}>
                 <div style={{ fontSize: '48px' }}>😤</div>
-                <div style={{ fontSize: '24px', fontWeight: 800 }}>Rest</div>
+                <div style={{ fontSize: '24px', fontWeight: 800 }}>{t.rest}</div>
                 <CountdownRing value={restTimer} max={15} color="#10B981" />
                 <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}>
                   Next: {exercises[exIdx + 1]?.name || 'Finish'}
@@ -987,7 +1007,7 @@ export default function Training() {
             })
           : Array.from({ length: 7 }, (_, i) => ({ label: days[i], date: null, isToday: false }));
         const weeklyDone = sessionStats?.this_week ?? Math.min(sessionStats?.total_sessions ?? 0, 3);
-        const filtered = BODY_PARTS.filter(bp =>
+        const filtered = tBodyParts.filter(bp =>
           !searchQuery || bp.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
           bp.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
         );
@@ -1146,8 +1166,8 @@ export default function Training() {
                   </div>
                   <button
                     onClick={() => {
-                      const bodyPart = BODY_PARTS.find(b => b.id === recommendation.muscle) || BODY_PARTS[0];
-                      const level = LEVELS.find(l => l.id === recommendation.level) || LEVELS[0];
+                      const bodyPart = tBodyParts.find(b => b.id === recommendation.muscle) || tBodyParts[0];
+                      const level = tLevels.find(l => l.id === recommendation.level) || tLevels[0];
                       const mode = MODES[0];
                       setSelectedBody(bodyPart);
                       setSelectedLevel(level);
@@ -1245,7 +1265,7 @@ export default function Training() {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-              <div style={{ fontSize: '17px', fontWeight: 800, color: 'var(--text)' }}>Body Focus</div>
+              <div style={{ fontSize: '17px', fontWeight: 800, color: 'var(--text)' }}>{t.chooseBodyPart}</div>
               {searchQuery && (
                 <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{filtered.length} result{filtered.length !== 1 ? 's' : ''}</span>
               )}
@@ -1349,11 +1369,11 @@ export default function Training() {
           </div>
 
           <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '16px' }}>
-            Choose Your Level
+            {t.chooseLevelSub}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {LEVELS.map(level => {
+            {tLevels.map(level => {
               const exCount = EXERCISE_DB[selectedBody.id]?.home?.[level.id]?.length || 0;
               return (
                 <button
@@ -1423,7 +1443,7 @@ export default function Training() {
           <Breadcrumb steps={getBreadcrumbs()} onBack={goBack} />
           <div style={{ marginBottom: '28px' }}>
             <h2 style={{ fontSize: '26px', fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.02em', marginBottom: '6px' }}>
-              Where are you training?
+              {t.chooseModeSub}
             </h2>
             <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
               {selectedBody.label} · <span style={{ color: selectedLevel.color, fontWeight: 600 }}>{selectedLevel.label}</span>
@@ -1431,7 +1451,7 @@ export default function Training() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '18px' }}>
-            {MODES.map(mode => {
+            {tModes.map(mode => {
               const exList = EXERCISE_DB[selectedBody.id]?.[mode.id]?.[selectedLevel.id] || [];
               const totalCalsEst = exList.reduce((sum, e) => sum + (e.cals || 0), 0);
               return (

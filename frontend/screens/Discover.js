@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useAppSettings } from '../context/AppSettingsContext.js';
 
 /* ─── DATA ─────────────────────────────────────────────────────────── */
 const CAT_COLORS = {
@@ -91,6 +92,7 @@ function CountdownRing({ value, max, color = '#2563EB' }) {
 
 /* ─── HISTORY VIEW ──────────────────────────────────────────────────── */
 function HistoryView({ onBack }) {
+  const { t } = useAppSettings();
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const today = new Date();
@@ -138,7 +140,7 @@ function HistoryView({ onBack }) {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', padding: '20px 24px 16px', gap: 14, borderBottom: '1px solid var(--border)' }}>
         <button onClick={onBack} style={{ width: 38, height: 38, borderRadius: 10, background: 'var(--surface)', border: '1px solid var(--border)', cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>←</button>
-        <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text)' }}>History</div>
+        <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text)' }}>{t.history}</div>
       </div>
 
       <div style={{ padding: '20px 24px' }}>
@@ -177,18 +179,18 @@ function HistoryView({ onBack }) {
         ) : sessions.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px 20px', background: 'var(--surface)', borderRadius: 20, border: '1px solid var(--border)' }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>🏋️</div>
-            <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--text)', marginBottom: 6 }}>No workouts yet</div>
-            <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Complete a workout to see your history here.</div>
+            <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--text)', marginBottom: 6 }}>{t.noWorkoutsYet}</div>
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{t.noWorkoutsDesc}</div>
           </div>
         ) : (
           <>
-            <div style={{ fontWeight: 800, fontSize: 18, color: 'var(--text)', marginBottom: 16 }}>Weekly Summary</div>
+            <div style={{ fontWeight: 800, fontSize: 18, color: 'var(--text)', marginBottom: 16 }}>{t.weeklySummary}</div>
             {weeks.map(group => (
               <div key={group.key} style={{ marginBottom: 24 }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid var(--border)' }}>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)' }}>{group.range}</div>
-                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{group.items.length} Workout{group.items.length !== 1 ? 's' : ''}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{group.items.length} {group.items.length !== 1 ? t.workoutsLabelP : t.workoutsLabel}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: 12, color: '#3B82F6', fontWeight: 600 }}>⏱ {fmtDuration(group.secs)}</div>
@@ -226,6 +228,7 @@ function HistoryView({ onBack }) {
 
 /* ─── SEARCH VIEW ───────────────────────────────────────────────────── */
 function SearchView({ onBack, onOpenWorkout }) {
+  const { t } = useAppSettings();
   const [query, setQuery] = useState('');
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [selectedType, setSelectedType] = useState(null);
@@ -257,16 +260,16 @@ function SearchView({ onBack, onOpenWorkout }) {
       {/* Search bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 20px', background: 'var(--surface)', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ fontSize: 16, color: 'var(--text-tertiary)' }}>🔍</div>
-        <input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} placeholder="Search workouts, plans..."
+        <input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} placeholder={t.searchPlaceholder}
           style={{ flex: 1, border: 'none', background: 'transparent', fontSize: 15, color: 'var(--text)', outline: 'none' }} />
         {query && <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, color: 'var(--text-tertiary)' }}>✕</button>}
-        <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+        <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>{t.back}</button>
       </div>
 
       <div style={{ padding: '20px 20px 0' }}>
         {/* Body Focus - circular */}
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--text)', marginBottom: 14 }}>Body Focus</div>
+          <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--text)', marginBottom: 14 }}>{t.chooseBodyPart}</div>
           <div style={{ display: 'flex', gap: 18, overflowX: 'auto', paddingBottom: 8 }} className="hide-scroll">
             {BODY_FOCUS.map((bf, i) => (
               <button key={i} onClick={() => setSelectedBody(selectedBody === bf.label ? null : bf.label)}
@@ -282,7 +285,7 @@ function SearchView({ onBack, onOpenWorkout }) {
 
         {/* Workout Type */}
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--text)', marginBottom: 12 }}>Workout Type</div>
+          <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--text)', marginBottom: 12 }}>{t.workoutType}</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10 }}>
             {WORKOUT_TYPES.map(wt => (
               <button key={wt.key} onClick={() => setSelectedType(selectedType === wt.key ? null : wt.key)}
@@ -296,15 +299,15 @@ function SearchView({ onBack, onOpenWorkout }) {
 
         {/* Level */}
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--text)', marginBottom: 12 }}>Level</div>
+          <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--text)', marginBottom: 12 }}>{t.filterLevel}</div>
           <div style={{ display: 'flex', gap: 10 }}>
-            {['Beginner', 'Intermediate', 'Advanced'].map(lvl => {
-              const color = LEVEL_COLORS[lvl];
-              const active = selectedLevel === lvl;
+            {[{ key: 'Beginner', label: t.lvl_beginner }, { key: 'Intermediate', label: t.lvl_intermediate }, { key: 'Advanced', label: t.lvl_advanced }].map(lvl => {
+              const color = LEVEL_COLORS[lvl.key];
+              const active = selectedLevel === lvl.key;
               return (
-                <button key={lvl} onClick={() => setSelectedLevel(active ? null : lvl)}
+                <button key={lvl.key} onClick={() => setSelectedLevel(active ? null : lvl.key)}
                   style={{ flex: 1, padding: '10px 0', borderRadius: 99, border: `1.5px solid ${active ? color : color + '50'}`, background: active ? color + '20' : 'var(--surface)', color, fontWeight: 600, fontSize: 13, cursor: 'pointer', outline: 'none', transition: 'all 0.15s' }}>
-                  {lvl}
+                  {lvl.label}
                 </button>
               );
             })}
@@ -313,7 +316,7 @@ function SearchView({ onBack, onOpenWorkout }) {
 
         {/* Duration */}
         <div style={{ marginBottom: 28 }}>
-          <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--text)', marginBottom: 12 }}>Duration</div>
+          <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--text)', marginBottom: 12 }}>{t.filterDuration}</div>
           <div style={{ display: 'flex', gap: 10 }}>
             {[{ key: 's', label: '< 4\nmins' }, { key: 'm', label: '5–7\nmins' }, { key: 'l', label: '8–10\nmins' }].map(d => (
               <div key={d.key} style={{ flex: 1, padding: '16px 8px', borderRadius: 14, border: '1.5px solid var(--border)', background: 'var(--surface)', textAlign: 'center', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', whiteSpace: 'pre-line', lineHeight: 1.4 }}>{d.label}</div>
@@ -324,9 +327,9 @@ function SearchView({ onBack, onOpenWorkout }) {
         {/* Can't find */}
         {!showResults && (
           <div style={{ textAlign: 'center', padding: '20px 0' }}>
-            <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginBottom: 14 }}>Can't find what you want?</div>
+            <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginBottom: 14 }}>{t.cantFind}</div>
             <button style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 28px', borderRadius: 12, border: '1.5px solid var(--primary)', background: 'var(--primary-50)', color: 'var(--primary)', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
-              ✏️ Tell us what you need
+              ✏️ {t.tellUs}
             </button>
           </div>
         )}
@@ -340,8 +343,8 @@ function SearchView({ onBack, onOpenWorkout }) {
             {filtered.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '40px 20px', background: 'var(--surface)', borderRadius: 20, border: '1px solid var(--border)' }}>
                 <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
-                <div style={{ fontWeight: 700, color: 'var(--text)' }}>No results found</div>
-                <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>Try adjusting your filters</div>
+                <div style={{ fontWeight: 700, color: 'var(--text)' }}>{t.noResults}</div>
+                <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>{t.tryFilters}</div>
               </div>
             ) : filtered.map(w => {
               const catColor = CAT_COLORS[w.category] || '#2563EB';
@@ -368,6 +371,7 @@ function SearchView({ onBack, onOpenWorkout }) {
 
 /* ─── MAIN DISCOVER COMPONENT ───────────────────────────────────────── */
 export default function Discover() {
+  const { t } = useAppSettings();
   const [view, setView] = useState('browse');
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [hoveredCard, setHoveredCard] = useState(null);
@@ -640,14 +644,14 @@ export default function Discover() {
             <div style={{ position: 'absolute', inset: 0, padding: '28px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
               <div style={{ fontSize: 26, fontWeight: 900, color: '#fff', lineHeight: 1.25, marginBottom: 8 }}>{hero.title}</div>
               <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', marginBottom: 16 }}>Only simple exercises — takes just {hero.duration} min a day! Burn fat fast.</div>
-              <div style={{ background: '#fff', color: '#0F172A', padding: '10px 24px', borderRadius: 99, fontSize: 14, fontWeight: 800 }}>Start Now ▶</div>
+              <div style={{ background: '#fff', color: '#0F172A', padding: '10px 24px', borderRadius: 99, fontSize: 14, fontWeight: 800 }}>{t.startNow}</div>
             </div>
           </button>
         </div>
       )}
 
       {/* ── Picks for You ── */}
-      <Section label="Picks for you" sub={`${picks.length} workouts`} pad>
+      <Section label={t.picksForYou} sub={`${picks.length} ${picks.length !== 1 ? t.workoutsLabelP : t.workoutsLabel}`} pad>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {picks.map(w => <PickRow key={w.id} workout={w} onOpen={openDetail} hovered={hoveredCard} setHovered={setHoveredCard} />)}
         </div>
@@ -663,7 +667,7 @@ export default function Discover() {
             <img src={banner.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.38)' }} />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg,rgba(30,64,175,0.85),rgba(124,58,237,0.7))' }} />
             <div style={{ position: 'absolute', inset: 0, padding: '20px 24px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <div style={{ fontSize: 20, fontWeight: 900, color: '#fff', lineHeight: 1.25, marginBottom: 4 }}>Stay active,<br />stay in shape</div>
+              <div style={{ fontSize: 20, fontWeight: 900, color: '#fff', lineHeight: 1.25, marginBottom: 4 }}>{t.stayActive.split('\n').map((line, i) => i === 0 ? <span key={i}>{line}<br /></span> : <span key={i}>{line}</span>)}</div>
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>{WORKOUT_CATALOG.filter(w => w.level === 'Intermediate').length} workouts</div>
             </div>
           </button>
@@ -671,21 +675,21 @@ export default function Discover() {
       )}
 
       {/* ── For Beginners ── */}
-      <Section label="For beginners 🌱" sub="Start here" pad={false}>
+      <Section label={t.forBeginners} pad={false}>
         <div style={{ display: 'flex', gap: 14, overflowX: 'auto', paddingLeft: 24, paddingRight: 24, paddingBottom: 6 }} className="hide-scroll">
           {beginners.map(w => <HScrollCard key={w.id} workout={w} onOpen={openDetail} hovered={hoveredCard} setHovered={setHoveredCard} />)}
         </div>
       </Section>
 
       {/* ── Challenges ── */}
-      <Section label="Challenges 🔥" sub="For the brave" pad={false}>
+      <Section label={`${t.challengesLabel} 🔥`} pad={false}>
         <div style={{ display: 'flex', gap: 14, overflowX: 'auto', paddingLeft: 24, paddingRight: 24, paddingBottom: 6 }} className="hide-scroll">
           {challenges.map(w => <ChallengeCard key={w.id} workout={w} onOpen={openDetail} hovered={hoveredCard} setHovered={setHoveredCard} />)}
         </div>
       </Section>
 
       {/* ── Stretch & Recovery ── */}
-      <Section label="Stretch & Recovery 🧘" sub="Relax & restore" pad={false}>
+      <Section label={`${t.stretchRecovery} 🧘`} pad={false}>
         <div style={{ display: 'flex', gap: 14, overflowX: 'auto', paddingLeft: 24, paddingRight: 24, paddingBottom: 6 }} className="hide-scroll">
           {stretchRecovery.map(w => <HScrollCard key={w.id} workout={w} onOpen={openDetail} hovered={hoveredCard} setHovered={setHoveredCard} />)}
         </div>
