@@ -4,6 +4,7 @@ import Training from '../screens/Training';
 import Discover from '../screens/Discover';
 import Report from '../screens/Report';
 import Settings from '../screens/Settings';
+import Auth from '../screens/Auth';
 
 const NAV_ITEMS = [
   { id: 'training', label: 'Training', icon: '🏋️' },
@@ -174,8 +175,31 @@ function FloatingChatbot() {
 export default function App() {
   const [active, setActive] = useState('training');
   const [collapsed, setCollapsed] = useState(false);
+  const [user, setUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('fitai_user');
+      if (stored) setUser(JSON.parse(stored));
+    } catch {}
+    setAuthChecked(true);
+  }, []);
+
+  const handleLogout = () => {
+    const token = localStorage.getItem('fitai_token');
+    if (token) fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+    localStorage.removeItem('fitai_token');
+    localStorage.removeItem('fitai_user');
+    setUser(null);
+  };
+
+  if (!authChecked) return null;
+  if (!user) return <Auth onAuth={(u) => setUser(u)} />;
+
   const Screen = SCREEN_MAP[active];
   const activeItem = NAV_ITEMS.find(n => n.id === active);
+  const initials = `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase() || '?';
 
   return (
     <div style={{ display: 'flex', height: '100vh', background: 'var(--bg)', overflow: 'hidden' }}>
@@ -252,7 +276,13 @@ export default function App() {
               <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--success)', display: 'inline-block', boxShadow: '0 0 0 2px rgba(16,185,129,0.25)' }} />
               <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary)' }}>Live AI</span>
             </div>
-            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#2563EB,#7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>👤</div>
+            {!collapsed && user && <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>{user.first_name}</span>}
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <button onClick={handleLogout} title="Sign out"
+                style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#2563EB,#7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 800, color: '#fff', cursor: 'pointer', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.25)', letterSpacing: '-0.02em' }}>
+                {initials}
+              </button>
+            </div>
           </div>
         </header>
 

@@ -21,7 +21,8 @@ A production-grade AI-powered fitness ecosystem with a **Next.js web dashboard**
 
 ### Screens (`/frontend/screens/`)
 - **`Training.js`** — Home: current plan card, stats, body-focus tabs, workout generator, recent + equipment sections
-- **`Discover.js`** — Search, hero banner, 7 category grid, 5 horizontal scroll sections
+- **`Discover.js`** — Redesigned: DISCOVER header + search/history icon buttons (no search bar or filter chips). Browse view shows hero banner, "Picks for you" row-cards, "Stay active" promo banner, horizontally-scrolling beginner/challenges/stretch sections. Search icon → SearchView (body focus circles, workout type grid, level chips, duration cards). History icon → HistoryView (calendar with workout dots, weekly grouped session list).
+- **`Auth.js`** — Login / Sign Up / OTP Verification screen. Supports email+password, OTP email verification, and a Google sign-in button (UI). Session stored in localStorage.
 - **`Report.js`** — Stats cards, weekly bar chart, streak & personal best, weight tracking + chart, BMI calculator
 - **`AICoach.js`** — Chat interface with quick prompts, AI chatbot, consistency analyzer
 - **`Settings.js`** — Profile card, premium banner, toggle switches, language, units, backup
