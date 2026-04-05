@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Button from '../components/ui/Button';
+import { useAppSettings } from '../context/AppSettingsContext';
 
 function ToggleSwitch({ value, onChange }) {
   return (
@@ -62,20 +63,40 @@ function SettingSection({ title, children }) {
 }
 
 export default function Settings() {
+  const { darkMode, setDarkMode, language, setLanguage, notifications, setNotifications, healthSync, setHealthSync } = useAppSettings();
   const [voice, setVoice] = useState(true);
   const [sound, setSound] = useState(true);
-  const [notifications, setNotifications] = useState(true);
-  const [healthSync, setHealthSync] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-  const [language, setLanguage] = useState('en');
   const [restTime, setRestTime] = useState(60);
   const [unit, setUnit] = useState('metric');
   const [profile, setProfile] = useState({ name: 'User', age: '', weight: '', height: '' });
   const [saved, setSaved] = useState(false);
+  const [healthMsg, setHealthMsg] = useState(false);
+  const [notifMsg, setNotifMsg] = useState('');
 
   const saveProfile = () => {
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
+  };
+
+  const handleHealthSync = (val) => {
+    setHealthSync(val);
+    setHealthMsg(val);
+    if (!val) setHealthMsg(false);
+  };
+
+  const handleNotifications = async (val) => {
+    await setNotifications(val);
+    if (val) {
+      if (typeof window !== 'undefined' && 'Notification' in window) {
+        if (Notification.permission === 'denied') {
+          setNotifMsg('Notifications blocked by browser. Please allow them in your browser settings.');
+        } else {
+          setNotifMsg('');
+        }
+      }
+    } else {
+      setNotifMsg('');
+    }
   };
 
   return (
@@ -190,9 +211,14 @@ export default function Settings() {
         </SettingRow>
         <div style={{ borderBottom: 'none' }}>
           <SettingRow icon="🔔" label="Notifications" sub="Workout reminders & streaks">
-            <ToggleSwitch value={notifications} onChange={setNotifications} />
+            <ToggleSwitch value={notifications} onChange={handleNotifications} />
           </SettingRow>
         </div>
+        {notifMsg && (
+          <div style={{ margin: '0 20px 14px', padding: '10px 14px', background: 'var(--warning-light)', borderRadius: 'var(--radius-sm)', fontSize: '12px', color: 'var(--warning)', fontWeight: 500 }}>
+            {notifMsg}
+          </div>
+        )}
       </SettingSection>
 
       {/* App */}
@@ -213,11 +239,20 @@ export default function Settings() {
         <SettingRow icon="🌙" label="Dark Mode" sub="Enable dark theme">
           <ToggleSwitch value={darkMode} onChange={setDarkMode} />
         </SettingRow>
-        <div style={{ borderBottom: 'none' }}>
+        <div style={{ borderBottom: healthMsg ? '1px solid var(--border-light)' : 'none' }}>
           <SettingRow icon="❤️" label="Health Sync" sub="Sync with Apple Health / Google Fit">
-            <ToggleSwitch value={healthSync} onChange={setHealthSync} />
+            <ToggleSwitch value={healthSync} onChange={handleHealthSync} />
           </SettingRow>
         </div>
+        {healthMsg && (
+          <div style={{ margin: '0 20px 14px', padding: '12px 14px', background: 'var(--primary-50)', borderRadius: 'var(--radius-sm)', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+            <span style={{ fontSize: 18 }}>📱</span>
+            <div style={{ fontSize: '12px', color: 'var(--primary)', fontWeight: 500, lineHeight: 1.5 }}>
+              <strong>Health Sync requires the FitAI mobile app.</strong><br />
+              Download the FitAI app on your iPhone or Android to sync with Apple Health or Google Fit automatically.
+            </div>
+          </div>
+        )}
       </SettingSection>
 
       {/* Data */}

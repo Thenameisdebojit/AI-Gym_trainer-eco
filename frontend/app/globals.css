@@ -141,3 +141,25 @@ input, select, textarea {
   animation: shimmer 1.5s infinite;
   border-radius: var(--radius-sm);
 }
+
+[data-theme="dark"] {
+  --bg: #0F172A;
+  --surface: #1E293B;
+  --surface-2: #273548;
+  --border: #334155;
+  --border-light: #1E293B;
+  --text: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-tertiary: #64748B;
+  --primary-50: #1e3a5f;
+  --primary-light: #1e3a5f;
+  --success-light: #064E3B;
+  --warning-light: #451A03;
+  --danger-light: #450A0A;
+  --purple-light: #2E1065;
+  --orange-light: #431407;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+  --shadow: 0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.25);
+  --shadow-md: 0 10px 25px rgba(0,0,0,0.4), 0 4px 10px rgba(0,0,0,0.3);
+  --shadow-lg: 0 20px 40px rgba(0,0,0,0.5), 0 8px 16px rgba(0,0,0,0.35);
+}

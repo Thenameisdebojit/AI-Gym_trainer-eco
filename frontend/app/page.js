@@ -5,12 +5,13 @@ import Discover from '../screens/Discover';
 import Report from '../screens/Report';
 import Settings from '../screens/Settings';
 import Auth from '../screens/Auth';
+import { AppSettingsProvider, useAppSettings } from '../context/AppSettingsContext';
 
-const NAV_ITEMS = [
-  { id: 'training', label: 'Training', icon: '🏋️' },
-  { id: 'discover', label: 'Discover', icon: '🔍' },
-  { id: 'report', label: 'Report', icon: '📊' },
-  { id: 'settings', label: 'Settings', icon: '⚙️' },
+const NAV_IDS = [
+  { id: 'training', icon: '🏋️', tKey: 'training', subKey: 'trainingSub' },
+  { id: 'discover', icon: '🔍', tKey: 'discover', subKey: 'discoverSub' },
+  { id: 'report', icon: '📊', tKey: 'report', subKey: 'reportSub' },
+  { id: 'settings', icon: '⚙️', tKey: 'settings', subKey: 'settingsSub' },
 ];
 
 const SCREEN_MAP = {
@@ -20,14 +21,7 @@ const SCREEN_MAP = {
   settings: Settings,
 };
 
-const SUB_TITLES = {
-  training: 'Your personalized training hub',
-  discover: 'Explore workouts and exercises',
-  report: 'Track your fitness progress',
-  settings: 'App preferences and profile',
-};
-
-const QUICK_PROMPTS = [
+const QUICK_PROMPTS_EN = [
   'Build muscle faster?',
   'Best fat loss exercises?',
   'How many rest days?',
@@ -116,7 +110,7 @@ function FloatingChatbot() {
 
           <div style={{ padding: '6px 12px', borderTop: '1px solid var(--border-light)' }}>
             <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 6 }} className="hide-scroll">
-              {QUICK_PROMPTS.map((q, i) => (
+              {QUICK_PROMPTS_EN.map((q, i) => (
                 <button key={i} onClick={() => send(q)} style={{ padding: '5px 12px', border: '1.5px solid var(--border)', borderRadius: 99, background: 'var(--surface-2)', color: 'var(--text-secondary)', fontSize: 11, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, transition: 'all 0.12s ease', outline: 'none' }}
                   onMouseEnter={e => { e.target.style.borderColor = '#7C3AED'; e.target.style.color = '#7C3AED'; }}
                   onMouseLeave={e => { e.target.style.borderColor = 'var(--border)'; e.target.style.color = 'var(--text-secondary)'; }}>
@@ -172,11 +166,14 @@ function FloatingChatbot() {
   );
 }
 
-export default function App() {
+function AppInner() {
+  const { t } = useAppSettings();
   const [active, setActive] = useState('training');
   const [collapsed, setCollapsed] = useState(false);
   const [user, setUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
+
+  const NAV_ITEMS = NAV_IDS.map(n => ({ ...n, label: t[n.tKey] || n.tKey }));
 
   useEffect(() => {
     try {
@@ -268,7 +265,7 @@ export default function App() {
             <span style={{ fontSize: '22px', lineHeight: 1 }}>{activeItem?.icon}</span>
             <div>
               <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{activeItem?.label}</div>
-              <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontWeight: 500 }}>{SUB_TITLES[active]}</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontWeight: 500 }}>{t[activeItem?.subKey] || ''}</div>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -314,5 +311,13 @@ export default function App() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AppSettingsProvider>
+      <AppInner />
+    </AppSettingsProvider>
   );
 }

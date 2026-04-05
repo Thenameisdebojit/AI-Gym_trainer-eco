@@ -1,7 +1,5 @@
 {
-  "/page": "app/page.js",
-  "/api/auth/register/route": "app/api/auth/register/route.js",
-  "/api/auth/verify-otp/route": "app/api/auth/verify-otp/route.js",
+  "/api/workout/stats/route": "app/api/workout/stats/route.js",
   "/api/sessions/route": "app/api/sessions/route.js",
-  "/api/workout/stats/route": "app/api/workout/stats/route.js"
+  "/page": "app/page.js"
 }
