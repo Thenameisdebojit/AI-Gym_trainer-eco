@@ -6,7 +6,7 @@ import fr from "@/locales/fr.json";
 import es from "@/locales/es.json";
 import hi from "@/locales/hi.json";
 
-export type Language = "en" | "fr" | "es" | "hi";
+export type Language = "en" | "fr" | "es" | "hi" | "de" | "pt" | "zh" | "ja" | "ko" | "ar" | "it" | "tr" | "ru" | "nl" | "pl";
 
 export interface LanguageOption {
   code: Language;
@@ -20,24 +20,41 @@ export const LANGUAGE_OPTIONS: LanguageOption[] = [
   { code: "fr", label: "French", nativeLabel: "Français", flag: "🇫🇷" },
   { code: "es", label: "Spanish", nativeLabel: "Español", flag: "🇪🇸" },
   { code: "hi", label: "Hindi", nativeLabel: "हिंदी", flag: "🇮🇳" },
+  { code: "de", label: "German", nativeLabel: "Deutsch", flag: "🇩🇪" },
+  { code: "pt", label: "Portuguese", nativeLabel: "português", flag: "🇧🇷" },
+  { code: "zh", label: "Chinese (Traditional)", nativeLabel: "繁體中文", flag: "🇹🇼" },
+  { code: "ja", label: "Japanese", nativeLabel: "日本語", flag: "🇯🇵" },
+  { code: "ko", label: "Korean", nativeLabel: "한국어", flag: "🇰🇷" },
+  { code: "ar", label: "Arabic", nativeLabel: "العربية", flag: "🇸🇦" },
+  { code: "it", label: "Italian", nativeLabel: "Italiano", flag: "🇮🇹" },
+  { code: "tr", label: "Turkish", nativeLabel: "Türkçe", flag: "🇹🇷" },
+  { code: "ru", label: "Russian", nativeLabel: "Русский", flag: "🇷🇺" },
+  { code: "nl", label: "Dutch", nativeLabel: "Nederlands", flag: "🇳🇱" },
+  { code: "pl", label: "Polish", nativeLabel: "Polski", flag: "🇵🇱" },
 ];
 
-const TRANSLATIONS: Record<Language, Record<string, string>> = { en, fr, es, hi };
+const TRANSLATIONS: Record<string, Record<string, string>> = { en, fr, es, hi };
 
 export interface AppSettings {
   language: Language;
   units: "metric" | "imperial";
-  difficulty: "beginner" | "intermediate" | "advanced";
+  difficulty: boolean;
+  soundEffects: boolean;
   voiceCoach: boolean;
   notifications: boolean;
+  darkMode: boolean;
+  healthSync: boolean;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
   language: "en",
   units: "metric",
-  difficulty: "intermediate",
+  difficulty: true,
+  soundEffects: true,
   voiceCoach: true,
   notifications: true,
+  darkMode: true,
+  healthSync: false,
 };
 
 interface LanguageContextType {
@@ -91,7 +108,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const t = useCallback(
     (key: string): string => {
       const dict = TRANSLATIONS[settings.language] ?? TRANSLATIONS.en;
-      return (dict as Record<string, string>)[key] ?? (TRANSLATIONS.en as Record<string, string>)[key] ?? key;
+      return dict[key] ?? TRANSLATIONS.en[key] ?? key;
     },
     [settings.language]
   );

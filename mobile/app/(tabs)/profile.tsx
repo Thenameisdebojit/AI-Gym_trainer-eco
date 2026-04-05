@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -26,41 +26,57 @@ import {
 const GOAL_LABELS = { lose: "Lose Weight", gain: "Build Muscle", maintain: "Stay Fit" };
 const LEVEL_LABELS = { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" };
 
-function RowItem({ icon, label, value, onPress, iconColor, rightElement }: any) {
+function SectionHeader({ title }: { title: string }) {
+  return <Text style={styles.sectionHeader}>{title}</Text>;
+}
+
+function SettingRow({
+  icon,
+  label,
+  sublabel,
+  right,
+  onPress,
+  isLast,
+}: {
+  icon: string;
+  label: string;
+  sublabel?: string;
+  right?: React.ReactNode;
+  onPress?: () => void;
+  isLast?: boolean;
+}) {
   return (
-    <TouchableOpacity style={styles.rowItem} onPress={onPress} activeOpacity={0.7}>
-      <View style={[styles.rowIcon, { backgroundColor: (iconColor || COLORS.primary) + "20" }]}>
-        <Ionicons name={icon} size={18} color={iconColor || COLORS.primary} />
+    <TouchableOpacity
+      style={[styles.settingRow, isLast && styles.settingRowLast]}
+      onPress={onPress}
+      activeOpacity={onPress ? 0.7 : 1}
+    >
+      <View style={styles.settingIconWrap}>
+        <Ionicons name={icon as any} size={20} color={COLORS.textSecondary} />
       </View>
-      <Text style={styles.rowLabel}>{label}</Text>
-      <View style={styles.rowRight}>
-        {rightElement ? (
-          rightElement
-        ) : (
-          <>
-            {value && <Text style={styles.rowValue}>{value}</Text>}
-            <Ionicons name="chevron-forward" size={16} color={COLORS.textMuted} />
-          </>
-        )}
+      <View style={styles.settingText}>
+        <Text style={styles.settingLabel}>{label}</Text>
+        {sublabel && <Text style={styles.settingSubLabel}>{sublabel}</Text>}
       </View>
+      <View style={styles.settingRight}>{right}</View>
     </TouchableOpacity>
   );
 }
 
-function SwitchRow({ icon, label, value, onValueChange, iconColor }: any) {
+function DropdownSelect({
+  value,
+  label,
+  onPress,
+}: {
+  value: string;
+  label?: string;
+  onPress: () => void;
+}) {
   return (
-    <View style={styles.rowItem}>
-      <View style={[styles.rowIcon, { backgroundColor: (iconColor || COLORS.primary) + "20" }]}>
-        <Ionicons name={icon} size={18} color={iconColor || COLORS.primary} />
-      </View>
-      <Text style={styles.rowLabel}>{label}</Text>
-      <Switch
-        value={value}
-        onValueChange={onValueChange}
-        trackColor={{ false: COLORS.border, true: COLORS.primary + "60" }}
-        thumbColor={value ? COLORS.primary : COLORS.textMuted}
-      />
-    </View>
+    <TouchableOpacity style={styles.dropdown} onPress={onPress} activeOpacity={0.8}>
+      <Text style={styles.dropdownText}>{value}</Text>
+      <Ionicons name="chevron-down" size={14} color={COLORS.textMuted} />
+    </TouchableOpacity>
   );
 }
 
@@ -78,32 +94,86 @@ function LanguagePickerModal({
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
-        <Animated.View entering={FadeInDown.springify()} style={styles.modalSheet}>
+        <View style={styles.modalSheet}>
           <View style={styles.modalHandle} />
           <Text style={styles.modalTitle}>Select Language</Text>
-          {LANGUAGE_OPTIONS.map((opt) => (
-            <TouchableOpacity
-              key={opt.code}
-              style={[styles.langOption, current === opt.code && styles.langOptionActive]}
-              onPress={() => {
-                onSelect(opt.code);
-                onClose();
-              }}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.langFlag}>{opt.flag}</Text>
-              <View style={styles.langText}>
-                <Text style={[styles.langLabel, current === opt.code && { color: COLORS.primary }]}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {LANGUAGE_OPTIONS.map((opt) => {
+              const isSelected = current === opt.code;
+              return (
+                <TouchableOpacity
+                  key={opt.code}
+                  style={styles.langOption}
+                  onPress={() => { onSelect(opt.code); onClose(); }}
+                  activeOpacity={0.7}
+                >
+                  <View
+                    style={[
+                      styles.langRadio,
+                      isSelected && styles.langRadioSelected,
+                    ]}
+                  >
+                    {isSelected && <View style={styles.langRadioDot} />}
+                  </View>
+                  <Text style={styles.langFlag}>{opt.flag}</Text>
+                  <Text
+                    style={[
+                      styles.langNativeLabel,
+                      isSelected && { color: COLORS.primary },
+                    ]}
+                  >
+                    {opt.nativeLabel}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+      </TouchableOpacity>
+    </Modal>
+  );
+}
+
+function UnitsPickerModal({
+  visible,
+  current,
+  onSelect,
+  onClose,
+}: {
+  visible: boolean;
+  current: "metric" | "imperial";
+  onSelect: (v: "metric" | "imperial") => void;
+  onClose: () => void;
+}) {
+  const OPTIONS = [
+    { value: "metric" as const, label: "Metric (kg/cm)" },
+    { value: "imperial" as const, label: "Imperial (lbs/ft)" },
+  ];
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
+        <View style={[styles.modalSheet, { paddingBottom: SPACING.xl }]}>
+          <View style={styles.modalHandle} />
+          <Text style={styles.modalTitle}>Units</Text>
+          {OPTIONS.map((opt) => {
+            const isSelected = current === opt.value;
+            return (
+              <TouchableOpacity
+                key={opt.value}
+                style={styles.langOption}
+                onPress={() => { onSelect(opt.value); onClose(); }}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.langRadio, isSelected && styles.langRadioSelected]}>
+                  {isSelected && <View style={styles.langRadioDot} />}
+                </View>
+                <Text style={[styles.langNativeLabel, isSelected && { color: COLORS.primary }]}>
                   {opt.label}
                 </Text>
-                <Text style={styles.langNative}>{opt.nativeLabel}</Text>
-              </View>
-              {current === opt.code && (
-                <Ionicons name="checkmark-circle" size={20} color={COLORS.primary} />
-              )}
-            </TouchableOpacity>
-          ))}
-        </Animated.View>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </TouchableOpacity>
     </Modal>
   );
@@ -116,12 +186,14 @@ export default function ProfileScreen() {
   const { settings, setLanguage, updateSettings, language } = useLanguage();
   const { t } = useTranslation();
   const [langModalVisible, setLangModalVisible] = useState(false);
+  const [unitsModalVisible, setUnitsModalVisible] = useState(false);
 
   const currentLang = LANGUAGE_OPTIONS.find((o) => o.code === language);
+  const unitsLabel = settings.units === "metric" ? "Metric (kg/cm)" : "Imperial (lbs/ft)";
 
   const handleLogout = () => {
     Alert.alert(t("signOut"), "Are you sure you want to sign out?", [
-      { text: t("cancel") ?? "Cancel", style: "cancel" },
+      { text: "Cancel", style: "cancel" },
       {
         text: t("signOut"),
         style: "destructive",
@@ -144,13 +216,26 @@ export default function ProfileScreen() {
     <View style={[styles.container, { paddingTop: topPad }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
-        {/* Avatar */}
-        <Animated.View entering={FadeInDown.delay(0).springify()} style={styles.avatarSection}>
+        {/* Page title */}
+        <Animated.View entering={FadeInDown.delay(0).springify()} style={styles.pageHeader}>
+          <Text style={styles.pageTitle}>{t("settings")}</Text>
+          <Text style={styles.pageSubtitle}>App preferences and profile</Text>
+          <TouchableOpacity onPress={() => router.push("/(tabs)/profile")} style={styles.avatarBtn}>
+            <View style={styles.avatarSmall}>
+              <Text style={styles.avatarInitials}>{initials}</Text>
+            </View>
+          </TouchableOpacity>
+        </Animated.View>
+
+        {/* Profile Card */}
+        <Animated.View entering={FadeInDown.delay(60).springify()} style={styles.profileCard}>
           <View style={styles.avatarBg}>
             <Text style={styles.initials}>{initials}</Text>
           </View>
-          <Text style={styles.name}>{user?.displayName ?? "Athlete"}</Text>
-          <Text style={styles.email}>{isGuest ? t("guestMode") : user?.email}</Text>
+          <View style={styles.profileInfo}>
+            <Text style={styles.name}>{user?.displayName ?? "Athlete"}</Text>
+            <Text style={styles.email}>{isGuest ? t("guestMode") : user?.email}</Text>
+          </View>
           {isGuest && (
             <TouchableOpacity style={styles.upgradeBtn} onPress={() => router.replace("/auth")}>
               <Text style={styles.upgradeBtnText}>{t("createAccount")}</Text>
@@ -158,143 +243,172 @@ export default function ProfileScreen() {
           )}
         </Animated.View>
 
-        {/* Stats Summary */}
-        <Animated.View entering={FadeInDown.delay(100).springify()} style={styles.statsRow}>
-          <View style={styles.statItem}>
-            <Text style={styles.statVal}>{user?.weight ?? "—"}</Text>
-            <Text style={styles.statLbl}>kg</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statVal}>{user?.height ?? "—"}</Text>
-            <Text style={styles.statLbl}>cm</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statVal}>{GOAL_LABELS[user?.goal ?? "maintain"].split(" ")[0]}</Text>
-            <Text style={styles.statLbl}>{t("goal")}</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statVal}>
-              {LEVEL_LABELS[user?.fitnessLevel ?? "beginner"].charAt(0).toUpperCase()}
-              {LEVEL_LABELS[user?.fitnessLevel ?? "beginner"].slice(1, 3)}
-            </Text>
-            <Text style={styles.statLbl}>{t("level")}</Text>
-          </View>
-        </Animated.View>
-
-        {/* Fitness Profile */}
-        <Animated.View entering={FadeInDown.delay(180).springify()}>
-          <Text style={styles.sectionTitle}>{t("fitnessProfile")}</Text>
+        {/* SECTION: UNITS & METRICS */}
+        <Animated.View entering={FadeInDown.delay(120).springify()}>
+          <SectionHeader title="UNITS & METRICS" />
           <View style={styles.section}>
-            <RowItem icon="person-outline" label={t("displayName")} value={user?.displayName} iconColor={COLORS.primary} />
-            <RowItem icon="scale-outline" label={t("weight")} value={user?.weight ? `${user.weight} kg` : "Set weight"} iconColor={COLORS.amber} />
-            <RowItem icon="resize-outline" label={t("height")} value={user?.height ? `${user.height} cm` : "Set height"} iconColor={COLORS.blue} />
-            <RowItem icon="trophy-outline" label={t("goal")} value={GOAL_LABELS[user?.goal ?? "maintain"]} iconColor={COLORS.secondary} />
-            <RowItem icon="flash-outline" label={t("fitnessLevel")} value={LEVEL_LABELS[user?.fitnessLevel ?? "beginner"]} iconColor={COLORS.purple} />
-          </View>
-        </Animated.View>
-
-        {/* Preferences */}
-        <Animated.View entering={FadeInDown.delay(260).springify()}>
-          <Text style={styles.sectionTitle}>{t("preferences")}</Text>
-          <View style={styles.section}>
-
-            {/* Language */}
-            <RowItem
-              icon="language-outline"
-              label={t("language")}
-              iconColor={COLORS.blue}
-              onPress={() => setLangModalVisible(true)}
-              rightElement={
-                <View style={styles.langPreview}>
-                  <Text style={styles.langPreviewFlag}>{currentLang?.flag}</Text>
-                  <Text style={styles.langPreviewText}>{currentLang?.label}</Text>
-                  <Ionicons name="chevron-forward" size={16} color={COLORS.textMuted} />
-                </View>
+            <SettingRow
+              icon="options-outline"
+              label={t("units")}
+              sublabel="Metric or Imperial"
+              right={
+                <DropdownSelect
+                  value={unitsLabel}
+                  onPress={() => setUnitsModalVisible(true)}
+                />
+              }
+              onPress={() => setUnitsModalVisible(true)}
+            />
+            <SettingRow
+              icon="speedometer-outline"
+              label={t("difficulty")}
+              sublabel="Auto-adjust based on performance"
+              isLast
+              right={
+                <Switch
+                  value={settings.difficulty}
+                  onValueChange={(v) => updateSettings({ difficulty: v })}
+                  trackColor={{ false: COLORS.border, true: COLORS.primary + "60" }}
+                  thumbColor={settings.difficulty ? COLORS.primary : COLORS.textMuted}
+                />
               }
             />
+          </View>
+        </Animated.View>
 
-            {/* Units */}
-            <View style={styles.rowItem}>
-              <View style={[styles.rowIcon, { backgroundColor: COLORS.amber + "20" }]}>
-                <Ionicons name="options-outline" size={18} color={COLORS.amber} />
-              </View>
-              <Text style={styles.rowLabel}>{t("units")}</Text>
-              <View style={styles.segmentRow}>
-                {(["metric", "imperial"] as const).map((u) => (
-                  <TouchableOpacity
-                    key={u}
-                    style={[styles.segment, settings.units === u && styles.segmentActive]}
-                    onPress={() => updateSettings({ units: u })}
-                  >
-                    <Text style={[styles.segmentText, settings.units === u && styles.segmentTextActive]}>
-                      {u === "metric" ? t("metric") : t("imperial")}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-
-            {/* Difficulty */}
-            <View style={[styles.rowItem, styles.rowItemColumn]}>
-              <View style={styles.rowItemHeader}>
-                <View style={[styles.rowIcon, { backgroundColor: COLORS.purple + "20" }]}>
-                  <Ionicons name="speedometer-outline" size={18} color={COLORS.purple} />
-                </View>
-                <Text style={styles.rowLabel}>{t("difficulty")}</Text>
-              </View>
-              <View style={styles.diffRow}>
-                {(["beginner", "intermediate", "advanced"] as const).map((d) => {
-                  const colors = { beginner: COLORS.primary, intermediate: COLORS.amber, advanced: COLORS.secondary };
-                  const active = settings.difficulty === d;
-                  return (
-                    <TouchableOpacity
-                      key={d}
-                      style={[
-                        styles.diffChip,
-                        { borderColor: colors[d] + "50" },
-                        active && { backgroundColor: colors[d] + "20", borderColor: colors[d] },
-                      ]}
-                      onPress={() => updateSettings({ difficulty: d })}
-                    >
-                      <Text style={[styles.diffChipText, active && { color: colors[d] }]}>
-                        {t(d)}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </View>
-
-            {/* Voice Coach */}
-            <SwitchRow
+        {/* SECTION: AUDIO & VOICE */}
+        <Animated.View entering={FadeInDown.delay(180).springify()}>
+          <SectionHeader title="AUDIO & VOICE" />
+          <View style={styles.section}>
+            <SettingRow
+              icon="volume-medium-outline"
+              label="Sound Effects"
+              sublabel="Exercise cues and transitions"
+              right={
+                <Switch
+                  value={settings.soundEffects}
+                  onValueChange={(v) => updateSettings({ soundEffects: v })}
+                  trackColor={{ false: COLORS.border, true: COLORS.primary + "60" }}
+                  thumbColor={settings.soundEffects ? COLORS.primary : COLORS.textMuted}
+                />
+              }
+            />
+            <SettingRow
               icon="mic-outline"
               label={t("voiceCoach")}
-              value={settings.voiceCoach}
-              onValueChange={(v: boolean) => updateSettings({ voiceCoach: v })}
-              iconColor={COLORS.blue}
+              sublabel="Audio guidance during workouts"
+              right={
+                <Switch
+                  value={settings.voiceCoach}
+                  onValueChange={(v) => updateSettings({ voiceCoach: v })}
+                  trackColor={{ false: COLORS.border, true: COLORS.primary + "60" }}
+                  thumbColor={settings.voiceCoach ? COLORS.primary : COLORS.textMuted}
+                />
+              }
             />
-
-            {/* Notifications */}
-            <SwitchRow
+            <SettingRow
               icon="notifications-outline"
               label={t("notifications")}
-              value={settings.notifications}
-              onValueChange={(v: boolean) => updateSettings({ notifications: v })}
-              iconColor={COLORS.primary}
+              sublabel="Workout reminders & streaks"
+              isLast
+              right={
+                <Switch
+                  value={settings.notifications}
+                  onValueChange={(v) => updateSettings({ notifications: v })}
+                  trackColor={{ false: COLORS.border, true: COLORS.primary + "60" }}
+                  thumbColor={settings.notifications ? COLORS.primary : COLORS.textMuted}
+                />
+              }
             />
           </View>
         </Animated.View>
 
-        {/* Support */}
-        <Animated.View entering={FadeInDown.delay(340).springify()}>
-          <Text style={styles.sectionTitle}>{t("support")}</Text>
+        {/* SECTION: APP */}
+        <Animated.View entering={FadeInDown.delay(240).springify()}>
+          <SectionHeader title="APP" />
           <View style={styles.section}>
-            <RowItem icon="help-circle-outline" label={t("helpFaq")} iconColor={COLORS.blue} />
-            <RowItem icon="shield-outline" label={t("privacyPolicy")} iconColor={COLORS.textSecondary} />
-            <RowItem icon="information-circle-outline" label={t("about")} value="v2.0.0" iconColor={COLORS.textSecondary} />
+            <SettingRow
+              icon="language-outline"
+              label={t("language")}
+              sublabel="Display language"
+              onPress={() => setLangModalVisible(true)}
+              right={
+                <DropdownSelect
+                  value={`${currentLang?.flag} ${currentLang?.nativeLabel ?? "English"}`}
+                  onPress={() => setLangModalVisible(true)}
+                />
+              }
+            />
+            <SettingRow
+              icon="moon-outline"
+              label="Dark Mode"
+              sublabel="Enable dark theme"
+              right={
+                <Switch
+                  value={settings.darkMode}
+                  onValueChange={(v) => updateSettings({ darkMode: v })}
+                  trackColor={{ false: COLORS.border, true: COLORS.primary + "60" }}
+                  thumbColor={settings.darkMode ? COLORS.primary : COLORS.textMuted}
+                />
+              }
+            />
+            <SettingRow
+              icon="heart-outline"
+              label="Health Sync"
+              sublabel="Sync with Apple Health / Google Fit"
+              isLast
+              right={
+                <Switch
+                  value={settings.healthSync}
+                  onValueChange={(v) => updateSettings({ healthSync: v })}
+                  trackColor={{ false: COLORS.border, true: COLORS.primary + "60" }}
+                  thumbColor={settings.healthSync ? COLORS.primary : COLORS.textMuted}
+                />
+              }
+            />
+          </View>
+        </Animated.View>
+
+        {/* SECTION: DATA */}
+        <Animated.View entering={FadeInDown.delay(300).springify()}>
+          <SectionHeader title="DATA" />
+          <View style={styles.section}>
+            <SettingRow
+              icon="cloud-upload-outline"
+              label="Backup & Restore"
+              sublabel="Cloud sync your progress"
+              isLast
+              right={
+                <TouchableOpacity style={styles.backupBtn}>
+                  <Text style={styles.backupBtnText}>Backup</Text>
+                </TouchableOpacity>
+              }
+            />
+          </View>
+        </Animated.View>
+
+        {/* SECTION: SUPPORT */}
+        <Animated.View entering={FadeInDown.delay(360).springify()}>
+          <SectionHeader title="SUPPORT" />
+          <View style={styles.section}>
+            <SettingRow
+              icon="help-circle-outline"
+              label={t("helpFaq")}
+              onPress={() => {}}
+              right={<Ionicons name="chevron-forward" size={16} color={COLORS.textMuted} />}
+            />
+            <SettingRow
+              icon="shield-outline"
+              label={t("privacyPolicy")}
+              onPress={() => {}}
+              right={<Ionicons name="chevron-forward" size={16} color={COLORS.textMuted} />}
+            />
+            <SettingRow
+              icon="information-circle-outline"
+              label={t("about")}
+              isLast
+              right={<Text style={styles.versionText}>v2.0.0</Text>}
+            />
           </View>
         </Animated.View>
 
@@ -315,6 +429,13 @@ export default function ProfileScreen() {
         onSelect={setLanguage}
         onClose={() => setLangModalVisible(false)}
       />
+
+      <UnitsPickerModal
+        visible={unitsModalVisible}
+        current={settings.units}
+        onSelect={(v) => updateSettings({ units: v })}
+        onClose={() => setUnitsModalVisible(false)}
+      />
     </View>
   );
 }
@@ -323,97 +444,146 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   content: { paddingHorizontal: SPACING.xl },
 
-  avatarSection: { alignItems: "center", paddingVertical: SPACING.xl },
-  avatarBg: {
-    width: 84, height: 84, borderRadius: 42,
+  pageHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: SPACING.xl,
+    marginTop: SPACING.md,
+  },
+  pageTitle: { fontFamily: FONTS.bold, fontSize: SIZES.xxl, color: COLORS.text, flex: 1 },
+  pageSubtitle: { fontFamily: FONTS.regular, fontSize: SIZES.sm, color: COLORS.textSecondary, marginTop: 4, flex: 1 },
+  avatarBtn: { marginTop: 2 },
+  avatarSmall: {
+    width: 40, height: 40, borderRadius: 20,
     backgroundColor: COLORS.primaryDim, alignItems: "center", justifyContent: "center",
-    borderWidth: 2, borderColor: COLORS.primary + "40", marginBottom: SPACING.md,
+    borderWidth: 1.5, borderColor: COLORS.primary + "50",
   },
-  initials: { fontFamily: FONTS.bold, fontSize: SIZES.xxl, color: COLORS.primary },
-  name: { fontFamily: FONTS.bold, fontSize: SIZES.xl, color: COLORS.text },
-  email: { fontFamily: FONTS.regular, fontSize: SIZES.sm, color: COLORS.textSecondary, marginTop: 4 },
+  avatarInitials: { fontFamily: FONTS.bold, fontSize: SIZES.sm, color: COLORS.primary },
+
+  profileCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.xl,
+    padding: SPACING.base,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginBottom: SPACING.xl,
+    gap: SPACING.md,
+  },
+  avatarBg: {
+    width: 52, height: 52, borderRadius: 26,
+    backgroundColor: COLORS.primaryDim, alignItems: "center", justifyContent: "center",
+    borderWidth: 1.5, borderColor: COLORS.primary + "40",
+  },
+  initials: { fontFamily: FONTS.bold, fontSize: SIZES.lg, color: COLORS.primary },
+  profileInfo: { flex: 1 },
+  name: { fontFamily: FONTS.bold, fontSize: SIZES.base, color: COLORS.text },
+  email: { fontFamily: FONTS.regular, fontSize: SIZES.sm, color: COLORS.textSecondary, marginTop: 2 },
   upgradeBtn: {
-    marginTop: SPACING.md, backgroundColor: COLORS.primary,
-    borderRadius: RADIUS.full, paddingHorizontal: SPACING.xl, paddingVertical: SPACING.sm,
+    backgroundColor: COLORS.primary, borderRadius: RADIUS.full,
+    paddingHorizontal: SPACING.md, paddingVertical: SPACING.xs,
   },
-  upgradeBtnText: { fontFamily: FONTS.bold, fontSize: SIZES.sm, color: COLORS.background },
+  upgradeBtnText: { fontFamily: FONTS.bold, fontSize: SIZES.xs, color: COLORS.background },
 
-  statsRow: {
-    flexDirection: "row", backgroundColor: COLORS.surface, borderRadius: RADIUS.xl,
-    padding: SPACING.lg, borderWidth: 1, borderColor: COLORS.border, marginBottom: SPACING.xl,
-  },
-  statItem: { flex: 1, alignItems: "center" },
-  statVal: { fontFamily: FONTS.bold, fontSize: SIZES.lg, color: COLORS.text },
-  statLbl: { fontFamily: FONTS.regular, fontSize: SIZES.xs, color: COLORS.textSecondary, marginTop: 2 },
-  statDivider: { width: 1, backgroundColor: COLORS.border },
-
-  sectionTitle: {
-    fontFamily: FONTS.bold, fontSize: SIZES.sm, color: COLORS.textSecondary,
-    marginBottom: SPACING.sm, textTransform: "uppercase", letterSpacing: 0.5,
+  sectionHeader: {
+    fontFamily: FONTS.bold,
+    fontSize: SIZES.xs,
+    color: COLORS.textMuted,
+    letterSpacing: 0.8,
+    marginBottom: SPACING.sm,
+    marginTop: SPACING.md,
   },
   section: {
-    backgroundColor: COLORS.surface, borderRadius: RADIUS.xl,
-    borderWidth: 1, borderColor: COLORS.border, marginBottom: SPACING.xl, overflow: "hidden",
-  },
-  rowItem: {
-    flexDirection: "row", alignItems: "center", padding: SPACING.base,
-    gap: SPACING.md, borderBottomWidth: 1, borderBottomColor: COLORS.border,
-  },
-  rowItemColumn: { flexDirection: "column", alignItems: "stretch", gap: SPACING.sm },
-  rowItemHeader: { flexDirection: "row", alignItems: "center", gap: SPACING.md },
-  rowIcon: { width: 36, height: 36, borderRadius: RADIUS.sm, alignItems: "center", justifyContent: "center" },
-  rowLabel: { flex: 1, fontFamily: FONTS.medium, fontSize: SIZES.base, color: COLORS.text },
-  rowRight: { flexDirection: "row", alignItems: "center", gap: SPACING.sm },
-  rowValue: { fontFamily: FONTS.regular, fontSize: SIZES.sm, color: COLORS.textSecondary },
-
-  langPreview: { flexDirection: "row", alignItems: "center", gap: SPACING.sm },
-  langPreviewFlag: { fontSize: 18 },
-  langPreviewText: { fontFamily: FONTS.regular, fontSize: SIZES.sm, color: COLORS.textSecondary },
-
-  segmentRow: { flexDirection: "row", gap: 4 },
-  segment: {
-    paddingHorizontal: SPACING.sm, paddingVertical: 5,
-    borderRadius: RADIUS.sm, borderWidth: 1, borderColor: COLORS.border,
     backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.xl,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginBottom: SPACING.md,
+    overflow: "hidden",
   },
-  segmentActive: { backgroundColor: COLORS.primary + "20", borderColor: COLORS.primary },
-  segmentText: { fontFamily: FONTS.medium, fontSize: SIZES.xs, color: COLORS.textMuted },
-  segmentTextActive: { color: COLORS.primary },
 
-  diffRow: { flexDirection: "row", gap: SPACING.sm, paddingLeft: 52 },
-  diffChip: {
-    paddingHorizontal: SPACING.sm, paddingVertical: 5,
-    borderRadius: RADIUS.full, borderWidth: 1, borderColor: COLORS.border,
-    backgroundColor: COLORS.surface,
+  settingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: SPACING.base,
+    gap: SPACING.md,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+    minHeight: 64,
   },
-  diffChipText: { fontFamily: FONTS.medium, fontSize: SIZES.xs, color: COLORS.textMuted },
+  settingRowLast: { borderBottomWidth: 0 },
+  settingIconWrap: {
+    width: 36, height: 36, borderRadius: RADIUS.sm,
+    backgroundColor: COLORS.surfaceLight,
+    alignItems: "center", justifyContent: "center",
+  },
+  settingText: { flex: 1 },
+  settingLabel: { fontFamily: FONTS.medium, fontSize: SIZES.base, color: COLORS.text },
+  settingSubLabel: { fontFamily: FONTS.regular, fontSize: SIZES.xs, color: COLORS.textMuted, marginTop: 2 },
+  settingRight: { alignItems: "flex-end" },
+
+  dropdown: {
+    flexDirection: "row", alignItems: "center", gap: SPACING.xs,
+    backgroundColor: COLORS.surfaceLight, borderRadius: RADIUS.sm,
+    paddingHorizontal: SPACING.sm, paddingVertical: SPACING.xs + 2,
+    borderWidth: 1, borderColor: COLORS.border,
+  },
+  dropdownText: { fontFamily: FONTS.medium, fontSize: SIZES.sm, color: COLORS.text },
+
+  backupBtn: {
+    backgroundColor: COLORS.primary,
+    borderRadius: RADIUS.full,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs + 2,
+  },
+  backupBtnText: { fontFamily: FONTS.bold, fontSize: SIZES.sm, color: COLORS.background },
+
+  versionText: { fontFamily: FONTS.regular, fontSize: SIZES.sm, color: COLORS.textMuted },
 
   logoutBtn: {
     flexDirection: "row", alignItems: "center", justifyContent: "center",
     gap: SPACING.sm, backgroundColor: COLORS.error + "15", borderRadius: RADIUS.xl,
     padding: SPACING.base, borderWidth: 1, borderColor: COLORS.error + "30", marginBottom: SPACING.md,
+    marginTop: SPACING.sm,
   },
   logoutText: { fontFamily: FONTS.semiBold, fontSize: SIZES.base, color: COLORS.error },
 
   modalOverlay: {
-    flex: 1, backgroundColor: "rgba(0,0,0,0.7)", justifyContent: "flex-end",
+    flex: 1, backgroundColor: "rgba(0,0,0,0.75)", justifyContent: "flex-end",
   },
   modalSheet: {
-    backgroundColor: COLORS.surface, borderTopLeftRadius: RADIUS.xxl, borderTopRightRadius: RADIUS.xxl,
-    padding: SPACING.xl, paddingBottom: SPACING.xxxl, borderTopWidth: 1, borderTopColor: COLORS.border,
+    backgroundColor: COLORS.surface,
+    borderTopLeftRadius: RADIUS.xxl,
+    borderTopRightRadius: RADIUS.xxl,
+    paddingHorizontal: SPACING.xl,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.xxxl,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    maxHeight: "80%",
   },
   modalHandle: {
-    width: 40, height: 4, borderRadius: 2, backgroundColor: COLORS.border,
-    alignSelf: "center", marginBottom: SPACING.lg,
+    width: 40, height: 4, borderRadius: 2,
+    backgroundColor: COLORS.border, alignSelf: "center", marginBottom: SPACING.lg,
   },
-  modalTitle: { fontFamily: FONTS.bold, fontSize: SIZES.lg, color: COLORS.text, marginBottom: SPACING.lg },
+  modalTitle: { fontFamily: FONTS.bold, fontSize: SIZES.lg, color: COLORS.text, marginBottom: SPACING.md },
+
   langOption: {
     flexDirection: "row", alignItems: "center", gap: SPACING.md,
-    paddingVertical: SPACING.md, borderBottomWidth: 1, borderBottomColor: COLORS.border,
+    paddingVertical: SPACING.md,
+    borderBottomWidth: 1, borderBottomColor: COLORS.border + "60",
   },
-  langOptionActive: { backgroundColor: COLORS.primaryDim + "80" },
-  langFlag: { fontSize: 28, width: 40, textAlign: "center" },
-  langText: { flex: 1 },
-  langLabel: { fontFamily: FONTS.semiBold, fontSize: SIZES.base, color: COLORS.text },
-  langNative: { fontFamily: FONTS.regular, fontSize: SIZES.sm, color: COLORS.textSecondary, marginTop: 2 },
+  langRadio: {
+    width: 22, height: 22, borderRadius: 11,
+    borderWidth: 2, borderColor: COLORS.border,
+    alignItems: "center", justifyContent: "center",
+  },
+  langRadioSelected: { borderColor: COLORS.primary },
+  langRadioDot: {
+    width: 11, height: 11, borderRadius: 6,
+    backgroundColor: COLORS.primary,
+  },
+  langFlag: { fontSize: 22, width: 32, textAlign: "center" },
+  langNativeLabel: { fontFamily: FONTS.medium, fontSize: SIZES.base, color: COLORS.text, flex: 1 },
 });

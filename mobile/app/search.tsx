@@ -25,23 +25,25 @@ import { BODY_FOCUS_CATEGORIES } from "@/utils/getCategoryImage";
 import { useTranslation } from "@/context/LanguageContext";
 
 const WORKOUT_TYPES = [
-  { key: "muscle", label: "Build Muscle", icon: "barbell-outline", color: COLORS.primary },
-  { key: "fat", label: "Fat Burning", icon: "flame-outline", color: COLORS.secondary },
-  { key: "cardio", label: "Cardio", icon: "heart-outline", color: COLORS.blue },
-  { key: "equipment", label: "Equipment", icon: "fitness-outline", color: COLORS.purple },
+  { key: "muscle", label: "Build Muscle", icon: "💪" },
+  { key: "warmup", label: "Warm-Up", icon: "🏃" },
+  { key: "fat", label: "Fat Burning", icon: "🔥" },
+  { key: "equipment", label: "With Equipment", icon: "🏋️" },
+  { key: "stretching", label: "Stretching", icon: "🧘" },
+  { key: "cardio", label: "Cardio", icon: "❤️" },
 ];
 
 const LEVELS: DifficultyLevel[] = ["beginner", "intermediate", "advanced"];
 const LEVEL_COLORS: Record<DifficultyLevel, string> = {
-  beginner: COLORS.primary,
-  intermediate: COLORS.amber,
-  advanced: COLORS.secondary,
+  beginner: "#5B8DEF",
+  intermediate: "#F59E0B",
+  advanced: "#EF5B5B",
 };
 
 const DURATIONS = [
-  { key: "short", label: "< 5 min" },
-  { key: "medium", label: "5–10 min" },
-  { key: "long", label: "10–20 min" },
+  { key: "short", label: "< 4\nmins" },
+  { key: "medium", label: "5–7\nmins" },
+  { key: "long", label: "8–10\nmins" },
 ];
 
 export default function SearchScreen() {
@@ -79,14 +81,17 @@ export default function SearchScreen() {
       !selectedBody ||
       ex.muscle_groups.some((m) => m.toLowerCase().includes(selectedBody.toLowerCase())) ||
       ex.category.toLowerCase().includes(selectedBody.toLowerCase()) ||
-      ex.subcategory.toLowerCase().includes(selectedBody.toLowerCase());
+      ex.subcategory.toLowerCase().includes(selectedBody.toLowerCase()) ||
+      selectedBody === "fullbody";
 
     const matchesType =
       !selectedType ||
       (selectedType === "muscle" && (ex.category === "gym" || ex.subcategory.toLowerCase().includes("strength"))) ||
       (selectedType === "fat" && ex.subcategory.toLowerCase().includes("hiit")) ||
       (selectedType === "cardio" && ex.category === "cardio") ||
-      (selectedType === "equipment" && ex.category === "gym");
+      (selectedType === "equipment" && ex.category === "gym") ||
+      (selectedType === "warmup" && ex.subcategory.toLowerCase().includes("warm")) ||
+      (selectedType === "stretching" && (ex.category === "yoga" || ex.category === "rehab"));
 
     return matchesQuery && matchesLevel && matchesBody && matchesType;
   });
@@ -97,11 +102,11 @@ export default function SearchScreen() {
     <View style={[styles.container, { paddingTop: topPad }]}>
       {/* Search Bar */}
       <Animated.View entering={FadeIn.duration(200)} style={styles.searchBar}>
-        <Ionicons name="search-outline" size={18} color={COLORS.textMuted} style={styles.searchIcon} />
+        <Ionicons name="search-outline" size={18} color={COLORS.textMuted} style={{ marginLeft: 4 }} />
         <TextInput
           ref={inputRef}
           style={styles.searchInput}
-          placeholder={t("searchExercises")}
+          placeholder="Search workouts, plans..."
           placeholderTextColor={COLORS.textMuted}
           value={query}
           onChangeText={setQuery}
@@ -118,77 +123,103 @@ export default function SearchScreen() {
         </TouchableOpacity>
       </Animated.View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-
-        {/* Body Focus */}
-        {!showResults && (
-          <Animated.View entering={FadeInDown.delay(50).springify()}>
-            <Text style={styles.sectionTitle}>{t("bodyFocus")}</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View style={styles.bodyRow}>
-                {BODY_FOCUS_CATEGORIES.map((item) => (
-                  <TouchableOpacity
-                    key={item.key}
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Body Focus - circular images */}
+        <Animated.View entering={FadeInDown.delay(40).springify()}>
+          <Text style={styles.sectionTitle}>{t("bodyFocus")}</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.bodyRow}>
+              {BODY_FOCUS_CATEGORIES.map((item) => (
+                <TouchableOpacity
+                  key={item.key}
+                  style={styles.bodyItem}
+                  onPress={() => setSelectedBody(selectedBody === item.key ? null : item.key)}
+                  activeOpacity={0.8}
+                >
+                  <View
                     style={[
-                      styles.bodyCard,
-                      selectedBody === item.key && styles.bodyCardActive,
+                      styles.bodyCircle,
+                      selectedBody === item.key && styles.bodyCircleActive,
                     ]}
-                    onPress={() => setSelectedBody(selectedBody === item.key ? null : item.key)}
-                    activeOpacity={0.8}
                   >
-                    <Image source={{ uri: item.image }} style={styles.bodyImage} resizeMode="cover" />
-                    <View style={styles.bodyOverlay} />
-                    <Text style={styles.bodyLabel}>{item.label}</Text>
+                    <Image source={{ uri: item.image }} style={styles.bodyCircleImg} resizeMode="cover" />
                     {selectedBody === item.key && (
-                      <View style={styles.bodyCheck}>
-                        <Ionicons name="checkmark-circle" size={18} color={COLORS.primary} />
+                      <View style={styles.bodyCircleOverlay}>
+                        <Ionicons name="checkmark" size={22} color="#fff" />
                       </View>
                     )}
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </ScrollView>
-          </Animated.View>
-        )}
+                  </View>
+                  <Text
+                    style={[
+                      styles.bodyLabel,
+                      selectedBody === item.key && { color: COLORS.primary },
+                    ]}
+                  >
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
+        </Animated.View>
 
         {/* Workout Type */}
-        <Animated.View entering={FadeInDown.delay(100).springify()}>
+        <Animated.View entering={FadeInDown.delay(80).springify()}>
           <Text style={styles.sectionTitle}>{t("workoutType")}</Text>
-          <View style={styles.typeGrid}>
-            {WORKOUT_TYPES.map((wt) => (
-              <TouchableOpacity
-                key={wt.key}
-                style={[
-                  styles.typeCard,
-                  { borderColor: wt.color + "40" },
-                  selectedType === wt.key && { backgroundColor: wt.color + "20", borderColor: wt.color },
-                ]}
-                onPress={() => setSelectedType(selectedType === wt.key ? null : wt.key)}
-                activeOpacity={0.8}
-              >
-                <Ionicons name={wt.icon as any} size={20} color={wt.color} />
-                <Text style={[styles.typeLabel, { color: selectedType === wt.key ? wt.color : COLORS.textSecondary }]}>
-                  {wt.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.typeRow}>
+              {WORKOUT_TYPES.map((wt) => (
+                <TouchableOpacity
+                  key={wt.key}
+                  style={[
+                    styles.typeCard,
+                    selectedType === wt.key && styles.typeCardActive,
+                  ]}
+                  onPress={() => setSelectedType(selectedType === wt.key ? null : wt.key)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.typeIcon}>{wt.icon}</Text>
+                  <Text
+                    style={[
+                      styles.typeLabel,
+                      selectedType === wt.key && { color: COLORS.text },
+                    ]}
+                  >
+                    {wt.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
         </Animated.View>
 
         {/* Level Filter */}
-        <Animated.View entering={FadeInDown.delay(150).springify()}>
+        <Animated.View entering={FadeInDown.delay(120).springify()}>
           <Text style={styles.sectionTitle}>{t("level")}</Text>
-          <View style={styles.chipRow}>
+          <View style={styles.levelRow}>
             {LEVELS.map((lvl) => (
               <TouchableOpacity
                 key={lvl}
                 style={[
-                  styles.chip,
-                  selectedLevel === lvl && { backgroundColor: LEVEL_COLORS[lvl] + "25", borderColor: LEVEL_COLORS[lvl] },
+                  styles.levelChip,
+                  { borderColor: LEVEL_COLORS[lvl] + "60" },
+                  selectedLevel === lvl && {
+                    backgroundColor: LEVEL_COLORS[lvl] + "20",
+                    borderColor: LEVEL_COLORS[lvl],
+                  },
                 ]}
                 onPress={() => setSelectedLevel(selectedLevel === lvl ? null : lvl)}
               >
-                <Text style={[styles.chipText, selectedLevel === lvl && { color: LEVEL_COLORS[lvl] }]}>
+                <Text
+                  style={[
+                    styles.levelText,
+                    { color: LEVEL_COLORS[lvl] },
+                  ]}
+                >
                   {t(lvl)}
                 </Text>
               </TouchableOpacity>
@@ -197,19 +228,24 @@ export default function SearchScreen() {
         </Animated.View>
 
         {/* Duration Filter */}
-        <Animated.View entering={FadeInDown.delay(200).springify()}>
+        <Animated.View entering={FadeInDown.delay(160).springify()}>
           <Text style={styles.sectionTitle}>{t("duration")}</Text>
-          <View style={styles.chipRow}>
+          <View style={styles.durationRow}>
             {DURATIONS.map((d) => (
               <TouchableOpacity
                 key={d.key}
                 style={[
-                  styles.chip,
-                  selectedDuration === d.key && { backgroundColor: COLORS.blue + "25", borderColor: COLORS.blue },
+                  styles.durationCard,
+                  selectedDuration === d.key && styles.durationCardActive,
                 ]}
                 onPress={() => setSelectedDuration(selectedDuration === d.key ? null : d.key)}
               >
-                <Text style={[styles.chipText, selectedDuration === d.key && { color: COLORS.blue }]}>
+                <Text
+                  style={[
+                    styles.durationText,
+                    selectedDuration === d.key && { color: COLORS.primary },
+                  ]}
+                >
                   {d.label}
                 </Text>
               </TouchableOpacity>
@@ -217,32 +253,20 @@ export default function SearchScreen() {
           </View>
         </Animated.View>
 
-        {/* Body Focus (when filtering) */}
-        {showResults && selectedBody === null && (
-          <Animated.View entering={FadeInDown.delay(220).springify()}>
-            <Text style={styles.sectionTitle}>{t("bodyFocus")}</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View style={styles.bodyRow}>
-                {BODY_FOCUS_CATEGORIES.map((item) => (
-                  <TouchableOpacity
-                    key={item.key}
-                    style={styles.bodyCard}
-                    onPress={() => setSelectedBody(item.key)}
-                    activeOpacity={0.8}
-                  >
-                    <Image source={{ uri: item.image }} style={styles.bodyImage} resizeMode="cover" />
-                    <View style={styles.bodyOverlay} />
-                    <Text style={styles.bodyLabel}>{item.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </ScrollView>
+        {/* Can't find / tell us */}
+        {!showResults && (
+          <Animated.View entering={FadeInDown.delay(200).springify()} style={styles.tellUs}>
+            <Text style={styles.tellUsText}>Can't find what you want?</Text>
+            <TouchableOpacity style={styles.tellUsBtn}>
+              <Ionicons name="pencil-outline" size={14} color={COLORS.primary} />
+              <Text style={styles.tellUsBtnText}>Tell us what you need</Text>
+            </TouchableOpacity>
           </Animated.View>
         )}
 
         {/* Search Results */}
         {showResults && (
-          <Animated.View entering={FadeInDown.springify()}>
+          <Animated.View entering={FadeInDown.springify()} style={{ marginTop: SPACING.md }}>
             <Text style={styles.sectionTitle}>
               {t("results")} ({filtered.length})
             </Text>
@@ -254,7 +278,7 @@ export default function SearchScreen() {
               </View>
             ) : (
               filtered.slice(0, 30).map((ex, i) => (
-                <Animated.View key={ex.id} entering={FadeInDown.delay(i * 30).springify()}>
+                <Animated.View key={ex.id} entering={FadeInDown.delay(i * 25).springify()}>
                   <TouchableOpacity
                     style={styles.resultRow}
                     onPress={() =>
@@ -262,8 +286,17 @@ export default function SearchScreen() {
                     }
                     activeOpacity={0.8}
                   >
-                    <View style={[styles.resultIcon, { backgroundColor: getCategoryColor(ex.category) + "20" }]}>
-                      <Ionicons name={getCategoryIcon(ex.category) as any} size={20} color={getCategoryColor(ex.category)} />
+                    <View
+                      style={[
+                        styles.resultIcon,
+                        { backgroundColor: getCategoryColor(ex.category) + "20" },
+                      ]}
+                    >
+                      <Ionicons
+                        name={getCategoryIcon(ex.category) as any}
+                        size={20}
+                        color={getCategoryColor(ex.category)}
+                      />
                     </View>
                     <View style={styles.resultInfo}>
                       <Text style={styles.resultName}>{ex.name}</Text>
@@ -296,23 +329,23 @@ export default function SearchScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
+
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: SPACING.base,
+    paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
     gap: SPACING.sm,
     backgroundColor: COLORS.surface,
   },
-  searchIcon: { marginLeft: SPACING.xs },
   searchInput: {
     flex: 1,
     fontFamily: FONTS.regular,
     fontSize: SIZES.base,
     color: COLORS.text,
-    height: 40,
+    height: 42,
     paddingVertical: 0,
   },
   clearBtn: { padding: 4 },
@@ -320,48 +353,51 @@ const styles = StyleSheet.create({
   cancelText: { fontFamily: FONTS.medium, fontSize: SIZES.base, color: COLORS.primary },
 
   content: { paddingHorizontal: SPACING.xl, paddingTop: SPACING.lg },
-  sectionTitle: { fontFamily: FONTS.bold, fontSize: SIZES.base, color: COLORS.text, marginBottom: SPACING.md, marginTop: SPACING.sm },
 
-  bodyRow: { flexDirection: "row", gap: SPACING.sm, paddingBottom: SPACING.md },
-  bodyCard: {
-    width: 100,
-    height: 120,
-    borderRadius: RADIUS.lg,
+  sectionTitle: {
+    fontFamily: FONTS.bold, fontSize: SIZES.lg,
+    color: COLORS.text, marginBottom: SPACING.md,
+  },
+
+  /* Body Focus - Circular */
+  bodyRow: {
+    flexDirection: "row",
+    gap: SPACING.lg,
+    paddingBottom: SPACING.md,
+    paddingRight: SPACING.xl,
+  },
+  bodyItem: { alignItems: "center", gap: SPACING.sm, width: 76 },
+  bodyCircle: {
+    width: 76,
+    height: 76,
+    borderRadius: 38,
     overflow: "hidden",
-    position: "relative",
     borderWidth: 2,
     borderColor: "transparent",
   },
-  bodyCardActive: { borderColor: COLORS.primary },
-  bodyImage: { width: "100%", height: "100%", position: "absolute" },
-  bodyOverlay: {
+  bodyCircleActive: { borderColor: COLORS.primary },
+  bodyCircleImg: { width: "100%", height: "100%" },
+  bodyCircleOverlay: {
     position: "absolute",
     width: "100%",
     height: "100%",
-    backgroundColor: "rgba(0,0,0,0.45)",
+    backgroundColor: "rgba(0,255,136,0.3)",
+    alignItems: "center",
+    justifyContent: "center",
   },
   bodyLabel: {
-    position: "absolute",
-    bottom: SPACING.sm,
-    left: SPACING.sm,
-    right: SPACING.sm,
-    fontFamily: FONTS.bold,
-    fontSize: SIZES.sm,
-    color: "#fff",
-  },
-  bodyCheck: {
-    position: "absolute",
-    top: SPACING.xs,
-    right: SPACING.xs,
-    backgroundColor: COLORS.background + "CC",
-    borderRadius: RADIUS.full,
+    fontFamily: FONTS.medium,
+    fontSize: SIZES.xs,
+    color: COLORS.textSecondary,
+    textAlign: "center",
   },
 
-  typeGrid: {
+  /* Workout Type */
+  typeRow: {
     flexDirection: "row",
-    flexWrap: "wrap",
     gap: SPACING.sm,
-    marginBottom: SPACING.md,
+    paddingBottom: SPACING.md,
+    flexWrap: "wrap",
   },
   typeCard: {
     flexDirection: "row",
@@ -370,28 +406,100 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
     paddingHorizontal: SPACING.base,
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.md,
     borderWidth: 1,
     borderColor: COLORS.border,
-    width: "47%",
+    minWidth: "45%",
+    marginBottom: SPACING.xs,
   },
+  typeCardActive: {
+    backgroundColor: COLORS.primaryDim,
+    borderColor: COLORS.primary,
+  },
+  typeIcon: { fontSize: 20 },
   typeLabel: {
     fontFamily: FONTS.medium,
     fontSize: SIZES.sm,
     color: COLORS.textSecondary,
+    flex: 1,
   },
 
-  chipRow: { flexDirection: "row", gap: SPACING.sm, marginBottom: SPACING.md, flexWrap: "wrap" },
-  chip: {
-    backgroundColor: COLORS.surface,
+  /* Level chips */
+  levelRow: {
+    flexDirection: "row",
+    gap: SPACING.sm,
+    marginBottom: SPACING.lg,
+  },
+  levelChip: {
+    flex: 1,
+    paddingVertical: SPACING.sm + 2,
     borderRadius: RADIUS.full,
-    paddingHorizontal: SPACING.base,
-    paddingVertical: SPACING.sm,
+    borderWidth: 1.5,
+    backgroundColor: COLORS.surface,
+    alignItems: "center",
+  },
+  levelText: {
+    fontFamily: FONTS.semiBold,
+    fontSize: SIZES.sm,
+  },
+
+  /* Duration */
+  durationRow: {
+    flexDirection: "row",
+    gap: SPACING.sm,
+    marginBottom: SPACING.lg,
+  },
+  durationCard: {
+    flex: 1,
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.lg,
+    paddingVertical: SPACING.base,
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
     borderColor: COLORS.border,
+    minHeight: 70,
   },
-  chipText: { fontFamily: FONTS.medium, fontSize: SIZES.sm, color: COLORS.textSecondary },
+  durationCardActive: {
+    backgroundColor: COLORS.primaryDim,
+    borderColor: COLORS.primary,
+  },
+  durationText: {
+    fontFamily: FONTS.semiBold,
+    fontSize: SIZES.sm,
+    color: COLORS.textSecondary,
+    textAlign: "center",
+  },
 
+  /* Tell us */
+  tellUs: {
+    alignItems: "center",
+    paddingVertical: SPACING.xl,
+    gap: SPACING.sm,
+  },
+  tellUsText: {
+    fontFamily: FONTS.regular,
+    fontSize: SIZES.sm,
+    color: COLORS.textMuted,
+  },
+  tellUsBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.xs,
+    backgroundColor: COLORS.primaryDim,
+    borderRadius: RADIUS.full,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.primary + "40",
+  },
+  tellUsBtnText: {
+    fontFamily: FONTS.semiBold,
+    fontSize: SIZES.sm,
+    color: COLORS.primary,
+  },
+
+  /* Results */
   resultRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -404,11 +512,8 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   resultIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: RADIUS.md,
-    alignItems: "center",
-    justifyContent: "center",
+    width: 44, height: 44, borderRadius: RADIUS.md,
+    alignItems: "center", justifyContent: "center",
   },
   resultInfo: { flex: 1 },
   resultName: { fontFamily: FONTS.semiBold, fontSize: SIZES.base, color: COLORS.text },
