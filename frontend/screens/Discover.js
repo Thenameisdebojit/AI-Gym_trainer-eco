@@ -392,9 +392,10 @@ export default function Discover() {
 
   useEffect(() => {
     if (navTarget?.tab === 'discover') {
+      if (navTarget.subView) setView(navTarget.subView);
       clearNavTarget();
     }
-  }, []);
+  }, [navTarget]);
 
   const openDetail = useCallback((workout) => { setSelectedWorkout(workout); setView('detail'); }, []);
   const openById = useCallback((id) => { const w = WORKOUT_CATALOG.find(x => x.id === id); if (w) openDetail(w); }, [openDetail]);
