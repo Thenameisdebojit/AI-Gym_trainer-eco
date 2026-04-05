@@ -11,6 +11,7 @@ import {
 } from "@expo-google-fonts/inter";
 import * as SplashScreen from "expo-splash-screen";
 import { AuthProvider } from "@/context/AuthContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 import { COLORS } from "@/constants/theme";
 
 SplashScreen.preventAutoHideAsync();
@@ -39,24 +40,27 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <StatusBar style="light" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: COLORS.background },
-            animation: "slide_from_right",
-          }}
-        >
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="auth/index" options={{ headerShown: false, animation: "fade" }} />
-          <Stack.Screen name="exercise/[category]" options={{ headerShown: false }} />
-          <Stack.Screen name="exercise/detail" options={{ headerShown: false }} />
-          <Stack.Screen name="exercise/live" options={{ headerShown: false }} />
-          <Stack.Screen name="workout/session" options={{ headerShown: false, gestureEnabled: false }} />
-          <Stack.Screen name="workout/history" options={{ headerShown: false }} />
-        </Stack>
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <StatusBar style="light" />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: COLORS.background },
+              animation: "slide_from_right",
+            }}
+          >
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="auth/index" options={{ headerShown: false, animation: "fade" }} />
+            <Stack.Screen name="exercise/[category]" options={{ headerShown: false }} />
+            <Stack.Screen name="exercise/detail" options={{ headerShown: false }} />
+            <Stack.Screen name="exercise/live" options={{ headerShown: false }} />
+            <Stack.Screen name="workout/session" options={{ headerShown: false, gestureEnabled: false }} />
+            <Stack.Screen name="workout/history" options={{ headerShown: false }} />
+            <Stack.Screen name="search" options={{ headerShown: false, animation: "slide_from_right" }} />
+          </Stack>
+        </AuthProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }

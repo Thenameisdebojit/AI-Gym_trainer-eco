@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Platform,
-  TextInput,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,8 +18,8 @@ import {
   getCategoryColor,
   getCategoryIcon,
   getCategoryLabel,
-  DifficultyLevel,
 } from "@/constants/exercises";
+import { useTranslation } from "@/context/LanguageContext";
 
 const ALL_CATEGORIES: ExerciseCategory[] = [
   "gym",
@@ -42,144 +41,115 @@ const CATEGORY_SUBTITLES: Record<ExerciseCategory, string> = {
   rehab: "Recovery & balance",
 };
 
-const DIFFICULTY_COLORS: Record<DifficultyLevel, string> = {
-  beginner: COLORS.primary,
-  intermediate: COLORS.amber,
-  advanced: COLORS.secondary,
-};
-
 const MUSCLE_FILTERS = ["Chest", "Back", "Legs", "Shoulders", "Arms", "Core", "Glutes", "Calves"];
 
 export default function ExploreScreen() {
   const insets = useSafeAreaInsets();
-  const [search, setSearch] = useState("");
   const topPad = Platform.OS === "web" ? 67 : insets.top;
-
-  const filtered = search.length > 1
-    ? EXERCISES.filter(e =>
-        e.name.toLowerCase().includes(search.toLowerCase()) ||
-        e.muscle_groups.some(m => m.toLowerCase().includes(search.toLowerCase())) ||
-        e.category.toLowerCase().includes(search.toLowerCase()) ||
-        e.subcategory.toLowerCase().includes(search.toLowerCase())
-      )
-    : [];
+  const { t } = useTranslation();
 
   return (
     <View style={[styles.container, { paddingTop: topPad }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+
+        {/* Header with icons */}
         <Animated.View entering={FadeInDown.delay(0).springify()} style={styles.header}>
-          <Text style={styles.title}>Explore</Text>
-          <Text style={styles.subtitle}>Find your perfect workout</Text>
-        </Animated.View>
-
-        {/* Search */}
-        <Animated.View entering={FadeInDown.delay(80).springify()} style={styles.searchWrapper}>
-          <Ionicons name="search-outline" size={18} color={COLORS.textMuted} style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search exercises, muscles, categories..."
-            placeholderTextColor={COLORS.textMuted}
-            value={search}
-            onChangeText={setSearch}
-          />
-          {search.length > 0 && (
-            <TouchableOpacity onPress={() => setSearch("")}>
-              <Ionicons name="close-circle" size={18} color={COLORS.textMuted} />
+          <View style={styles.headerLeft}>
+            <Text style={styles.title}>{t("discover")}</Text>
+            <Text style={styles.subtitle}>{t("findPerfectWorkout")}</Text>
+          </View>
+          <View style={styles.headerIcons}>
+            <TouchableOpacity
+              style={styles.iconBtn}
+              onPress={() => router.push("/search")}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="search-outline" size={22} color={COLORS.text} />
             </TouchableOpacity>
-          )}
+            <TouchableOpacity
+              style={styles.iconBtn}
+              onPress={() => router.push("/workout/history")}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="time-outline" size={22} color={COLORS.text} />
+            </TouchableOpacity>
+          </View>
         </Animated.View>
 
-        {/* Search Results */}
-        {filtered.length > 0 && (
-          <Animated.View entering={FadeInDown.springify()}>
-            <Text style={styles.sectionTitle}>Results ({filtered.length})</Text>
-            {filtered.map((ex) => (
-              <TouchableOpacity
-                key={ex.id}
-                style={styles.resultRow}
-                onPress={() => router.push({ pathname: "/exercise/detail", params: { id: ex.id, category: ex.category } })}
-              >
-                <View style={[styles.resultIcon, { backgroundColor: getCategoryColor(ex.category) + "20" }]}>
-                  <Ionicons name={getCategoryIcon(ex.category) as any} size={20} color={getCategoryColor(ex.category)} />
-                </View>
-                <View style={styles.resultInfo}>
-                  <Text style={styles.resultName}>{ex.name}</Text>
-                  <Text style={styles.resultMeta}>{getCategoryLabel(ex.category)} • {ex.muscle_groups[0]}</Text>
-                </View>
-                <View style={[styles.diffBadge, { backgroundColor: DIFFICULTY_COLORS[ex.difficulty] + "20" }]}>
-                  <Text style={[styles.diffText, { color: DIFFICULTY_COLORS[ex.difficulty] }]}>{ex.difficulty}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </Animated.View>
-        )}
+        {/* Quick search tap target */}
+        <Animated.View entering={FadeInDown.delay(60).springify()}>
+          <TouchableOpacity
+            style={styles.searchTapArea}
+            onPress={() => router.push("/search")}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="search-outline" size={16} color={COLORS.textMuted} />
+            <Text style={styles.searchPlaceholder}>{t("searchExercises")}</Text>
+          </TouchableOpacity>
+        </Animated.View>
 
         {/* Categories Grid */}
-        {search.length === 0 && (
-          <>
-            <Text style={styles.sectionTitle}>All Categories</Text>
-            <View style={styles.categoriesGrid}>
-              {ALL_CATEGORIES.map((cat, i) => {
-                const count = EXERCISES.filter(e => e.category === cat).length;
-                const color = getCategoryColor(cat);
-                return (
-                  <Animated.View key={cat} entering={FadeInDown.delay(i * 60 + 150).springify()} style={styles.catCardWrapper}>
-                    <TouchableOpacity
-                      style={[styles.catCard, { borderColor: color + "35" }]}
-                      onPress={() => router.push({ pathname: "/exercise/[category]", params: { category: cat } })}
-                      activeOpacity={0.8}
-                    >
-                      <View style={[styles.catIconBg, { backgroundColor: color + "20" }]}>
-                        <Ionicons name={getCategoryIcon(cat) as any} size={26} color={color} />
-                      </View>
-                      <Text style={[styles.catLabel, { color }]}>{getCategoryLabel(cat)}</Text>
-                      <Text style={styles.catSub}>{CATEGORY_SUBTITLES[cat]}</Text>
-                      <View style={[styles.catCountBadge, { backgroundColor: color + "15" }]}>
-                        <Text style={[styles.catCount, { color }]}>{count}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  </Animated.View>
-                );
-              })}
+        <Text style={styles.sectionTitle}>{t("allCategories")}</Text>
+        <View style={styles.categoriesGrid}>
+          {ALL_CATEGORIES.map((cat, i) => {
+            const count = EXERCISES.filter((e) => e.category === cat).length;
+            const color = getCategoryColor(cat);
+            return (
+              <Animated.View key={cat} entering={FadeInDown.delay(i * 60 + 120).springify()} style={styles.catCardWrapper}>
+                <TouchableOpacity
+                  style={[styles.catCard, { borderColor: color + "35" }]}
+                  onPress={() => router.push({ pathname: "/exercise/[category]", params: { category: cat } })}
+                  activeOpacity={0.8}
+                >
+                  <View style={[styles.catIconBg, { backgroundColor: color + "20" }]}>
+                    <Ionicons name={getCategoryIcon(cat) as any} size={26} color={color} />
+                  </View>
+                  <Text style={[styles.catLabel, { color }]}>{getCategoryLabel(cat)}</Text>
+                  <Text style={styles.catSub}>{CATEGORY_SUBTITLES[cat]}</Text>
+                  <View style={[styles.catCountBadge, { backgroundColor: color + "15" }]}>
+                    <Text style={[styles.catCount, { color }]}>{count}</Text>
+                  </View>
+                </TouchableOpacity>
+              </Animated.View>
+            );
+          })}
+        </View>
+
+        {/* Muscle Filter */}
+        <Animated.View entering={FadeInDown.delay(580).springify()}>
+          <Text style={[styles.sectionTitle, { marginTop: SPACING.md }]}>{t("browseByMuscle")}</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.muscleRow}>
+              {MUSCLE_FILTERS.map((m) => (
+                <TouchableOpacity
+                  key={m}
+                  style={styles.muscleChip}
+                  onPress={() => router.push({ pathname: "/search", params: { q: m } })}
+                >
+                  <Text style={styles.muscleChipText}>{m}</Text>
+                </TouchableOpacity>
+              ))}
             </View>
+          </ScrollView>
+        </Animated.View>
 
-            {/* Muscle Filter */}
-            <Animated.View entering={FadeInDown.delay(600).springify()}>
-              <Text style={[styles.sectionTitle, { marginTop: SPACING.md }]}>Browse by Muscle</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View style={styles.muscleRow}>
-                  {MUSCLE_FILTERS.map((m) => (
-                    <TouchableOpacity
-                      key={m}
-                      style={styles.muscleChip}
-                      onPress={() => setSearch(m)}
-                    >
-                      <Text style={styles.muscleChipText}>{m}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </ScrollView>
-            </Animated.View>
-
-            {/* Equipment Tags */}
-            <Animated.View entering={FadeInDown.delay(700).springify()}>
-              <Text style={[styles.sectionTitle, { marginTop: SPACING.md }]}>Browse by Equipment</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View style={styles.muscleRow}>
-                  {["No Equipment", "Dumbbell", "Barbell", "Machine", "Cable", "Mat"].map((eq) => (
-                    <TouchableOpacity
-                      key={eq}
-                      style={[styles.muscleChip, { backgroundColor: COLORS.secondary + "15", borderColor: COLORS.secondary + "30" }]}
-                      onPress={() => setSearch(eq)}
-                    >
-                      <Text style={[styles.muscleChipText, { color: COLORS.secondary }]}>{eq}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </ScrollView>
-            </Animated.View>
-          </>
-        )}
+        {/* Equipment Tags */}
+        <Animated.View entering={FadeInDown.delay(660).springify()}>
+          <Text style={[styles.sectionTitle, { marginTop: SPACING.md }]}>{t("browseByEquipment")}</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.muscleRow}>
+              {["No Equipment", "Dumbbell", "Barbell", "Machine", "Cable", "Mat"].map((eq) => (
+                <TouchableOpacity
+                  key={eq}
+                  style={[styles.muscleChip, { backgroundColor: COLORS.secondary + "15", borderColor: COLORS.secondary + "30" }]}
+                  onPress={() => router.push({ pathname: "/search", params: { q: eq } })}
+                >
+                  <Text style={[styles.muscleChipText, { color: COLORS.secondary }]}>{eq}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
+        </Animated.View>
 
         <View style={{ height: SPACING.xxxl + 20 }} />
       </ScrollView>
@@ -190,10 +160,31 @@ export default function ExploreScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   content: { paddingHorizontal: SPACING.xl },
-  header: { marginBottom: SPACING.lg, marginTop: SPACING.md },
+
+  header: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    marginBottom: SPACING.md,
+    marginTop: SPACING.md,
+  },
+  headerLeft: { flex: 1 },
   title: { fontFamily: FONTS.bold, fontSize: SIZES.xxxl, color: COLORS.text },
   subtitle: { fontFamily: FONTS.regular, fontSize: SIZES.md, color: COLORS.textSecondary, marginTop: 4 },
-  searchWrapper: {
+
+  headerIcons: { flexDirection: "row", gap: SPACING.sm, marginTop: 4 },
+  iconBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.surface,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  searchTapArea: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: COLORS.surface,
@@ -202,10 +193,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     marginBottom: SPACING.xl,
-    height: 48,
+    height: 46,
+    gap: SPACING.sm,
   },
-  searchIcon: { marginRight: SPACING.sm },
-  searchInput: { flex: 1, fontFamily: FONTS.regular, fontSize: SIZES.base, color: COLORS.text },
+  searchPlaceholder: {
+    fontFamily: FONTS.regular,
+    fontSize: SIZES.base,
+    color: COLORS.textMuted,
+  },
+
   sectionTitle: { fontFamily: FONTS.bold, fontSize: SIZES.lg, color: COLORS.text, marginBottom: SPACING.md },
   categoriesGrid: {
     flexDirection: "row",
@@ -239,29 +235,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xs,
   },
   catCount: { fontFamily: FONTS.bold, fontSize: SIZES.xs },
-  resultRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    marginBottom: SPACING.sm,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    gap: SPACING.md,
-  },
-  resultIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: RADIUS.md,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  resultInfo: { flex: 1 },
-  resultName: { fontFamily: FONTS.semiBold, fontSize: SIZES.base, color: COLORS.text },
-  resultMeta: { fontFamily: FONTS.regular, fontSize: SIZES.sm, color: COLORS.textSecondary, marginTop: 2 },
-  diffBadge: { paddingHorizontal: SPACING.sm, paddingVertical: 4, borderRadius: RADIUS.full },
-  diffText: { fontFamily: FONTS.semiBold, fontSize: SIZES.xs },
+
   muscleRow: { flexDirection: "row", gap: SPACING.sm, paddingBottom: SPACING.md },
   muscleChip: {
     backgroundColor: COLORS.surface,
