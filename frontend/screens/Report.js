@@ -196,12 +196,12 @@ function InlineHistoryView({ onClose }) {
         ) : sessions.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '32px 20px', background: 'var(--surface-2)', borderRadius: 16, border: '1px dashed var(--border)' }}>
             <div style={{ fontSize: 40, marginBottom: 10 }}>🏋️</div>
-            <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>No workouts yet</div>
-            <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Complete a workout to see your history here.</div>
+            <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>{t.noWorkoutsYet}</div>
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{t.noWorkoutsDesc}</div>
           </div>
         ) : (
           <>
-            <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--text)', marginBottom: 14 }}>Weekly Summary</div>
+            <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--text)', marginBottom: 14 }}>{t.weeklySummary}</div>
             {weeks.map(group => (
               <div key={group.key} style={{ marginBottom: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid var(--border-light)' }}>
@@ -382,8 +382,8 @@ export default function Report() {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <div>
-            <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginBottom: '2px' }}>Weekly Activity</h3>
-            <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Calories burned per day this week</p>
+            <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginBottom: '2px' }}>{t.weeklyActivity}</h3>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{t.weeklyActivitySub}</p>
           </div>
           <div style={{
             background: 'var(--primary-50)', borderRadius: 'var(--radius)', padding: '8px 14px', textAlign: 'right',
@@ -391,7 +391,7 @@ export default function Report() {
             <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--primary)' }}>
               {weeklyData.reduce((a, b) => a + b.value, 0)}
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: 500 }}>Total kcal</div>
+            <div style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: 500 }}>{t.totalKcal}</div>
           </div>
         </div>
         <WeeklyBar data={weeklyData} today={today} />
@@ -405,8 +405,8 @@ export default function Report() {
         }}>
           <div style={{ fontSize: '36px', marginBottom: '6px' }}>🏆</div>
           <div style={{ fontSize: '32px', fontWeight: 800, lineHeight: 1 }}>{totalSessions}</div>
-          <div style={{ fontSize: '13px', fontWeight: 600, opacity: 0.85, marginTop: '4px' }}>Total Sessions</div>
-          <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '2px' }}>Keep going!</div>
+          <div style={{ fontSize: '13px', fontWeight: 600, opacity: 0.85, marginTop: '4px' }}>{t.totalSessions}</div>
+          <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '2px' }}>{t.keepGoing}</div>
         </div>
         <div style={{
           flex: 1, background: 'var(--surface)', borderRadius: 'var(--radius-md)',
@@ -416,8 +416,8 @@ export default function Report() {
           <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text)', lineHeight: 1 }}>
             {sessionStats?.total_exercises ?? stats?.total_reps ?? 0}
           </div>
-          <div style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 600, marginTop: '4px' }}>Exercises Done</div>
-          <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '2px' }}>Total completed</div>
+          <div style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 600, marginTop: '4px' }}>{t.exercisesDone}</div>
+          <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '2px' }}>{t.totalCompleted}</div>
         </div>
       </div>
 
@@ -441,9 +441,9 @@ export default function Report() {
             borderRadius: 'var(--radius-md)', border: '1px dashed var(--border)',
           }}>
             <div style={{ fontSize: '40px', marginBottom: '12px' }}>🏋️</div>
-            <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)', marginBottom: '6px' }}>No sessions yet</div>
+            <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)', marginBottom: '6px' }}>{t.noSessionsYet}</div>
             <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-              Complete a workout in the Training tab to see your history here
+              {t.noSessionsDesc}
             </div>
           </div>
         ) : (
@@ -467,7 +467,7 @@ export default function Report() {
                       {s.title}
                     </div>
                     <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                      {RelativeDate(s.date)} · {durationMin > 0 ? `${durationMin} min` : 'Quick session'} · {Math.round(s.calories)} cal · {s.exercises_completed} exercises
+                      {RelativeDate(s.date)} · {durationMin > 0 ? `${durationMin} min` : t.quickSession} · {Math.round(s.calories)} cal · {s.exercises_completed} {t.exercises}
                     </div>
                   </div>
                   <div style={{
@@ -494,7 +494,7 @@ export default function Report() {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <div>
-            <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginBottom: '2px' }}>Weight Tracking</h3>
+            <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginBottom: '2px' }}>{t.weightTracking}</h3>
             <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
               Current: <strong style={{ color: 'var(--text)' }}>{weightHistory[weightHistory.length - 1]?.weight} kg</strong>
             </p>
@@ -516,7 +516,7 @@ export default function Report() {
           <input
             value={newWeight}
             onChange={e => setNewWeight(e.target.value)}
-            placeholder="Log weight (kg)"
+            placeholder={t.logWeight}
             type="number"
             style={{
               flex: 1, padding: '10px 14px', border: '1.5px solid var(--border)',
@@ -524,7 +524,7 @@ export default function Report() {
               background: 'var(--surface-2)', outline: 'none',
             }}
           />
-          <Button variant="primary" size="md" onClick={logWeight}>Log</Button>
+          <Button variant="primary" size="md" onClick={logWeight}>{t.log}</Button>
         </div>
       </div>
 
@@ -534,7 +534,7 @@ export default function Report() {
         padding: '24px', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)',
       }}>
         <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginBottom: '6px' }}>{t.bmiCalculator}</h3>
-        <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '20px' }}>Body Mass Index</p>
+        <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '20px' }}>{t.bmiSub}</p>
         <div style={{ display: 'flex', gap: '12px', marginBottom: '14px' }}>
           <div style={{ flex: 1 }}>
             <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>WEIGHT (kg)</label>
@@ -558,7 +558,7 @@ export default function Report() {
           <div style={{ marginTop: '20px', animation: 'fadeIn 0.3s ease' }}>
             <div style={{ textAlign: 'center', marginBottom: '16px' }}>
               <div style={{ fontSize: '52px', fontWeight: 900, color: 'var(--text)', lineHeight: 1 }}>{bmi}</div>
-              <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>Your BMI Score</div>
+              <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>{t.yourBmi}</div>
             </div>
             <BMIScale bmi={parseFloat(bmi)} />
           </div>
@@ -571,7 +571,7 @@ export default function Report() {
           <div style={{ width: 40, height: 40, borderRadius: 'var(--radius)', background: 'linear-gradient(135deg,#2563EB15,#7C3AED15)', border: '1px solid #7C3AED20', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🧠</div>
           <div>
             <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text)', marginBottom: '2px' }}>{t.consistencyTitle}</h3>
-            <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Check your dropout risk and get motivational insights</p>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{t.consistencySub}</p>
           </div>
         </div>
 
