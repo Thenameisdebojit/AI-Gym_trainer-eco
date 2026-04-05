@@ -1,7 +1,10 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Button from '../components/ui/Button';
 import { useAppSettings } from '../context/AppSettingsContext';
+import { speakText } from '../utils/tts';
+
+const LANG_CODES = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', de: 'de-DE', hi: 'hi-IN', pt: 'pt-BR' };
 
 function Message({ msg }) {
   const isUser = msg.role === 'user';
@@ -22,7 +25,13 @@ export default function AICoach() {
   const [messages, setMessages] = useState(() => [{ role: 'assistant', content: t.chatGreeting }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [micState, setMicState] = useState('idle');
+  const [voiceOut, setVoiceOut] = useState(false);
   const bottomRef = useRef(null);
+  const recognitionRef = useRef(null);
+  const inputRef = useRef(null);
+
+  const hasSpeechRecognition = typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
 
   useEffect(() => {
     setMessages([{ role: 'assistant', content: t.chatGreeting }]);
@@ -32,21 +41,55 @@ export default function AICoach() {
 
   const quickPrompts = [t.chatPrompt1, t.chatPrompt2, t.chatPrompt3, t.chatPrompt4, t.chatPrompt5, t.chatPrompt6];
 
-  const send = async (text) => {
-    const q = text || input.trim();
+  const getUserProfile = () => {
+    try { return JSON.parse(localStorage.getItem('fitai_user') || '{}'); } catch { return {}; }
+  };
+
+  const send = useCallback(async (text, fromMic = false) => {
+    const q = (text || input).trim();
     if (!q) return;
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: q }]);
     setLoading(true);
     try {
-      const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: q, language }) });
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: q, language, userProfile: getUserProfile() }),
+      });
       const data = await res.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response || data.message || t.chatErrorMsg }]);
+      const reply = data.response || data.message || t.chatErrorMsg;
+      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+      if (fromMic || voiceOut) {
+        speakText(reply, language);
+      }
     } catch {
       setMessages(prev => [...prev, { role: 'assistant', content: t.chatErrorMsg }]);
     }
     setLoading(false);
-  };
+    setMicState('idle');
+  }, [input, language, t, voiceOut]);
+
+  const startListening = useCallback(() => {
+    if (!hasSpeechRecognition) return;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (recognitionRef.current) { try { recognitionRef.current.abort(); } catch {} }
+    const recognition = new SR();
+    recognitionRef.current = recognition;
+    recognition.lang = LANG_CODES[language] || 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onstart = () => setMicState('listening');
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setMicState('processing');
+      setInput(transcript);
+      send(transcript, true);
+    };
+    recognition.onerror = () => setMicState('idle');
+    recognition.onend = () => setMicState(prev => prev === 'listening' ? 'idle' : prev);
+    recognition.start();
+  }, [hasSpeechRecognition, language, send]);
 
   return (
     <div style={{ padding: '24px 28px', maxWidth: '960px', animation: 'fadeIn 0.4s ease' }}>
@@ -58,13 +101,20 @@ export default function AICoach() {
         <div style={{ fontSize: '56px' }}>🤖</div>
         <div>
           <div style={{ fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '6px' }}>Your Personal AI Coach</div>
-          <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>Ask anything about workouts, nutrition, or get a personalized plan. Also available as a floating button on every screen!</div>
+          <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>Ask anything about workouts, nutrition, recovery, or sports. Voice input supported!</div>
         </div>
       </div>
       <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-xl)', marginBottom: '24px', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)', overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--success)', boxShadow: '0 0 6px var(--success)' }} />
-          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text)' }}>AI Coach · {t.chatOnline}</span>
+          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text)', flex: 1 }}>AI Coach · {t.chatOnline}</span>
+          <button
+            onClick={() => setVoiceOut(v => !v)}
+            title={voiceOut ? 'Mute voice responses' : 'Enable voice responses'}
+            style={{ background: voiceOut ? 'rgba(37,99,235,0.1)' : 'transparent', border: voiceOut ? '1.5px solid var(--primary)' : '1.5px solid var(--border)', borderRadius: 8, padding: '4px 10px', cursor: 'pointer', fontSize: 16, color: voiceOut ? 'var(--primary)' : 'var(--text-tertiary)', transition: 'all 0.15s ease' }}
+          >
+            {voiceOut ? '🔊' : '🔇'}
+          </button>
         </div>
         <div style={{ height: '380px', overflowY: 'auto', padding: '20px 20px 10px' }} className="hide-scroll">
           {messages.map((m, i) => <Message key={i} msg={m} />)}
@@ -86,11 +136,34 @@ export default function AICoach() {
           </div>
         </div>
         <div style={{ padding: '12px 16px', borderTop: '1px solid var(--border-light)', display: 'flex', gap: '10px' }}>
-          <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()} placeholder={t.chatPlaceholder}
+          <input
+            ref={inputRef}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
+            placeholder={micState === 'listening' ? '🎤 Listening…' : micState === 'processing' ? '⏳ Processing…' : t.chatPlaceholder}
             style={{ flex: 1, padding: '12px 16px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius)', fontSize: '14px', color: 'var(--text)', background: 'var(--surface-2)', transition: 'border-color 0.2s', outline: 'none' }}
             onFocus={e => e.target.style.borderColor = 'var(--primary)'}
             onBlur={e => e.target.style.borderColor = 'var(--border)'}
           />
+          {hasSpeechRecognition && (
+            <button
+              onClick={startListening}
+              disabled={micState !== 'idle' || loading}
+              title="Voice input"
+              style={{
+                width: 44, height: 44, borderRadius: 12, border: 'none', cursor: micState !== 'idle' || loading ? 'default' : 'pointer',
+                background: micState === 'listening' ? '#DC2626' : micState === 'processing' ? '#F59E0B' : 'var(--surface-2)',
+                color: micState === 'listening' ? '#fff' : micState === 'processing' ? '#fff' : 'var(--text-secondary)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0,
+                outline: '1.5px solid ' + (micState === 'listening' ? '#DC2626' : micState === 'processing' ? '#F59E0B' : 'var(--border)'),
+                animation: micState === 'listening' ? 'pulse 1s ease infinite' : 'none',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              🎤
+            </button>
+          )}
           <Button variant="primary" size="md" onClick={() => send()} loading={loading} icon="✈️" />
         </div>
       </div>

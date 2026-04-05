@@ -1,3 +1,66 @@
+import httpx
+
+OLLAMA_BASE = "http://localhost:11434"
+OLLAMA_MODEL = "llama3"
+
+SYSTEM_PROMPT = (
+    "You are an expert AI fitness coach with deep knowledge in:\n"
+    "- Strength training, hypertrophy, powerlifting, and functional fitness\n"
+    "- Cardio, HIIT, endurance sports, and athletic conditioning\n"
+    "- Nutrition, meal planning, macros, and supplementation for athletes\n"
+    "- Sports performance, injury prevention, and recovery protocols\n"
+    "- Martial arts conditioning (boxing, MMA, BJJ, wrestling, Muay Thai)\n"
+    "- Gym programming, periodization, and progressive overload\n"
+    "- Flexibility, mobility, and yoga for athletes\n\n"
+    "RULES:\n"
+    "- Always respond in the same language the user writes in.\n"
+    "- Be concise, practical, and motivating — 2–4 sentences unless a plan is requested.\n"
+    "- Personalize advice using any user profile data provided.\n"
+    "- Never say you are an AI language model — you are a fitness coach.\n"
+    "- If asked about mental health or clinical conditions, encourage seeing a professional."
+)
+
+WORKOUT_SYSTEM_PROMPT = (
+    "You are a live workout voice coach. Your role is to give brief, energetic coaching cues "
+    "during a live workout session. Keep responses to 1-2 short sentences. Be encouraging and specific. "
+    "Respond in the same language specified. No markdown formatting."
+)
+
+PHASE_TEMPLATES = {
+    "start": {
+        "en": "We're starting with {exercise}! Get ready to crush it.",
+        "es": "¡Empezamos con {exercise}! Prepárate para darlo todo.",
+        "fr": "On commence avec {exercise} ! Prépare-toi à tout donner.",
+        "de": "Wir beginnen mit {exercise}! Mach dich bereit, alles zu geben.",
+        "hi": "हम {exercise} से शुरू कर रहे हैं! तैयार हो जाओ।",
+        "pt": "Começamos com {exercise}! Prepare-se para arrasar.",
+    },
+    "exercise": {
+        "en": "Next up: {exercise}. Keep that energy going, you're doing great!",
+        "es": "A continuación: {exercise}. ¡Mantén esa energía, lo estás haciendo genial!",
+        "fr": "Ensuite : {exercise}. Garde cette énergie, tu fais du super travail !",
+        "de": "Als nächstes: {exercise}. Behalte die Energie, du machst das großartig!",
+        "hi": "अगला है: {exercise}। यह ऊर्जा बनाए रखो, तुम बहुत अच्छा कर रहे हो!",
+        "pt": "A seguir: {exercise}. Mantém essa energia, estás a arrasar!",
+    },
+    "rest": {
+        "en": "Good work! Take your breath, the next exercise is coming up strong.",
+        "es": "¡Buen trabajo! Recupera el aliento, el próximo ejercicio se acerca.",
+        "fr": "Bon travail ! Reprends ton souffle, le prochain exercice arrive.",
+        "de": "Gute Arbeit! Hol Luft, die nächste Übung kommt gleich.",
+        "hi": "अच्छा काम! सांस लो, अगला व्यायाम आने वाला है।",
+        "pt": "Bom trabalho! Recupera o fôlego, o próximo exercício está chegando.",
+    },
+    "complete": {
+        "en": "Workout complete! You crushed it today — amazing effort!",
+        "es": "¡Entrenamiento completado! Lo destrozaste hoy, ¡esfuerzo increíble!",
+        "fr": "Entraînement terminé ! Tu as tout donné aujourd'hui — effort incroyable !",
+        "de": "Training abgeschlossen! Du hast es heute gerockt — tolle Leistung!",
+        "hi": "वर्कआउट पूरा हुआ! आज आपने शानदार किया — अद्भुत प्रयास!",
+        "pt": "Treino concluído! Você arrasou hoje — esforço incrível!",
+    },
+}
+
 REPLIES = {
     "muscle": {
         "en": "Focus on progressive overload and adequate protein — aim for 1.6–2.2 g per kg of body weight daily 🥩",
@@ -74,58 +137,49 @@ DEFAULT_REPLY = {
     "pt": "Seja consistente e confie no processo! Cada repetição conta 💪",
 }
 
-# Multilingual keyword aliases → internal topic key
 KEYWORD_MAP = [
-    # muscle
     ("muscle",   "muscle"),
-    ("músculo",  "muscle"),  # ES/PT
-    ("muskeln",  "muscle"),  # DE
-    ("मांसपेशी", "muscle"),  # HI
-    # fat / grasa / graisse / fett / vasa
+    ("músculo",  "muscle"),
+    ("muskeln",  "muscle"),
+    ("मांसपेशी", "muscle"),
     ("fat",         "fat"),
-    ("grasa",       "fat"),   # ES
-    ("graisse",     "fat"),   # FR
-    ("fett",        "fat"),   # DE
-    ("gordura",     "fat"),   # PT
-    ("वसा",         "fat"),   # HI
-    ("फैट",         "fat"),   # HI (loanword)
-    # rest
+    ("grasa",       "fat"),
+    ("graisse",     "fat"),
+    ("fett",        "fat"),
+    ("gordura",     "fat"),
+    ("वसा",         "fat"),
+    ("फैट",         "fat"),
     ("rest",        "rest"),
-    ("descanso",    "rest"),  # ES/PT
-    ("repos",       "rest"),  # FR
-    ("ruhe",        "rest"),  # DE
-    ("आराम",        "rest"),  # HI
-    # nutrition / pre-workout
+    ("descanso",    "rest"),
+    ("repos",       "rest"),
+    ("ruhe",        "rest"),
+    ("आराम",        "rest"),
     ("nutri",       "nutri"),
-    ("nutrición",   "nutri"),  # ES
-    ("nutrição",    "nutri"),  # PT
-    ("nutrition",   "nutri"),  # FR
-    ("ernährung",   "nutri"),  # DE
-    ("पोषण",        "nutri"),  # HI
-    # flexibility
+    ("nutrición",   "nutri"),
+    ("nutrição",    "nutri"),
+    ("nutrition",   "nutri"),
+    ("ernährung",   "nutri"),
+    ("पोषण",        "nutri"),
     ("flex",           "flex"),
-    ("flexibilidad",   "flex"),  # ES
-    ("flexibilité",    "flex"),  # FR
-    ("flexibilität",   "flex"),  # DE
-    ("flexibilidade",  "flex"),  # PT
-    ("लचीलापन",        "flex"),  # HI
-    # plan / weekly
+    ("flexibilidad",   "flex"),
+    ("flexibilité",    "flex"),
+    ("flexibilität",   "flex"),
+    ("flexibilidade",  "flex"),
+    ("लचीलापन",        "flex"),
     ("plan",    "plan"),
-    ("plano",   "plan"),  # PT
-    ("प्लान",   "plan"),  # HI
-    ("साप्ताहिक", "plan"),  # HI (weekly)
-    # sad / discouraged
+    ("plano",   "plan"),
+    ("प्लान",   "plan"),
+    ("साप्ताहिक", "plan"),
     ("sad",     "sad"),
-    ("triste",  "sad"),  # ES/PT
-    # motivat
+    ("triste",  "sad"),
     ("motivat", "motivat"),
-    ("motivaci", "motivat"),  # ES
-    ("motivation", "motivat"),  # FR/DE
-    ("प्रेरणा",  "motivat"),  # HI
+    ("motivaci", "motivat"),
+    ("motivation", "motivat"),
+    ("प्रेरणा",  "motivat"),
 ]
 
 
-def reply(msg: str, language: str = "en") -> str:
+def keyword_reply(msg: str, language: str = "en") -> str:
     lang = language if language in ("en", "es", "fr", "de", "hi", "pt") else "en"
     msg_lower = msg.lower()
     for keyword, topic in KEYWORD_MAP:
@@ -133,3 +187,104 @@ def reply(msg: str, language: str = "en") -> str:
             translations = REPLIES[topic]
             return translations.get(lang, translations["en"])
     return DEFAULT_REPLY.get(lang, DEFAULT_REPLY["en"])
+
+
+def reply(msg: str, language: str = "en") -> str:
+    return keyword_reply(msg, language)
+
+
+async def ollama_chat(message: str, language: str = "en", user_profile: dict = None) -> str:
+    lang = language if language in ("en", "es", "fr", "de", "hi", "pt") else "en"
+
+    profile_ctx = ""
+    if user_profile:
+        parts = []
+        if user_profile.get("name") and user_profile["name"] != "User":
+            parts.append(f"Name: {user_profile['name']}")
+        if user_profile.get("age"):
+            parts.append(f"Age: {user_profile['age']}")
+        if user_profile.get("weight"):
+            parts.append(f"Weight: {user_profile['weight']}")
+        if user_profile.get("height"):
+            parts.append(f"Height: {user_profile['height']}")
+        if parts:
+            profile_ctx = f"\n\nUser profile: {', '.join(parts)}"
+
+    lang_instruction = {
+        "en": "Respond in English.",
+        "es": "Responde en español.",
+        "fr": "Réponds en français.",
+        "de": "Antworte auf Deutsch.",
+        "hi": "हिंदी में जवाब दें।",
+        "pt": "Responda em português.",
+    }.get(lang, "Respond in English.")
+
+    full_prompt = (
+        f"{SYSTEM_PROMPT}{profile_ctx}\n\n"
+        f"Instruction: {lang_instruction}\n\n"
+        f"User: {message}\n\nAssistant:"
+    )
+
+    async with httpx.AsyncClient(timeout=25.0) as client:
+        response = await client.post(
+            f"{OLLAMA_BASE}/api/generate",
+            json={"model": OLLAMA_MODEL, "prompt": full_prompt, "stream": False},
+        )
+        result = response.json()
+        text = result.get("response", "").strip()
+        if text:
+            return text
+    return ""
+
+
+async def get_workout_tip(exercise: str, phase: str, language: str = "en", user_profile: dict = None) -> str:
+    lang = language if language in ("en", "es", "fr", "de", "hi", "pt") else "en"
+    phase_key = phase if phase in PHASE_TEMPLATES else "exercise"
+
+    fallback = PHASE_TEMPLATES[phase_key].get(lang, PHASE_TEMPLATES[phase_key]["en"]).format(exercise=exercise)
+
+    profile_ctx = ""
+    if user_profile:
+        parts = []
+        if user_profile.get("name") and user_profile["name"] != "User":
+            parts.append(f"Name: {user_profile['name']}")
+        if user_profile.get("age"):
+            parts.append(f"Age: {user_profile['age']}")
+        if user_profile.get("weight"):
+            parts.append(f"Weight: {user_profile['weight']}")
+        if parts:
+            profile_ctx = f" User profile: {', '.join(parts)}."
+
+    lang_instruction = {
+        "en": "English",
+        "es": "Spanish",
+        "fr": "French",
+        "de": "German",
+        "hi": "Hindi",
+        "pt": "Portuguese",
+    }.get(lang, "English")
+
+    phase_prompts = {
+        "start": f"The user is starting their workout with {exercise}.{profile_ctx} Give a short motivational coaching cue to start (1-2 sentences). Language: {lang_instruction}.",
+        "exercise": f"The user just started the exercise: {exercise}.{profile_ctx} Give a brief form tip or motivation (1-2 sentences). Language: {lang_instruction}.",
+        "rest": f"The user completed {exercise} and is now resting.{profile_ctx} Give a brief encouragement and hint about the next effort (1-2 sentences). Language: {lang_instruction}.",
+        "complete": f"The user just completed their full workout session!{profile_ctx} Give a short celebration and recovery tip (1-2 sentences). Language: {lang_instruction}.",
+    }
+    prompt_text = phase_prompts.get(phase_key, phase_prompts["exercise"])
+
+    full_prompt = f"{WORKOUT_SYSTEM_PROMPT}\n\nCoach: {prompt_text}\n\nResponse:"
+
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            response = await client.post(
+                f"{OLLAMA_BASE}/api/generate",
+                json={"model": OLLAMA_MODEL, "prompt": full_prompt, "stream": False},
+            )
+            result = response.json()
+            text = result.get("response", "").strip()
+            if text:
+                return text
+    except Exception:
+        pass
+
+    return fallback

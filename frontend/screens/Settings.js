@@ -63,7 +63,7 @@ function SettingSection({ title, children }) {
 }
 
 export default function Settings() {
-  const { darkMode, setDarkMode, language, setLanguage, notifications, setNotifications, healthSync, setHealthSync, t } = useAppSettings();
+  const { darkMode, setDarkMode, language, setLanguage, notifications, setNotifications, healthSync, setHealthSync, voiceCoach, setVoiceCoach, t } = useAppSettings();
 
   const handleLogout = () => {
     try {
@@ -75,7 +75,8 @@ export default function Settings() {
     window.location.reload();
   };
 
-  const [voice, setVoice] = useState(true);
+  const voice = voiceCoach;
+  const setVoice = setVoiceCoach;
   const [sound, setSound] = useState(true);
   const [restTime, setRestTime] = useState(60);
   const [unit, setUnit] = useState('metric');

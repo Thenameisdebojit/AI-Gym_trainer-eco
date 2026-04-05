@@ -211,8 +211,48 @@ Added complete end-to-end workout execution system:
 - Session screen reads `currentPlan` from store, starts workout, tracks sets
 - `finishSession(duration)` → saves to AsyncStorage and resets active session
 
+## Task #4 — Ollama LLM + ElevenLabs Voice Agent
+
+### AI Chat Service (`Backend/services/chat_service.py`)
+- Async Ollama integration (`llama3` model via `http://localhost:11434/api/generate`)
+- Graceful keyword-based fallback when Ollama is not running
+- Context-aware prompts include user profile (name, level, goal, language)
+
+### Backend Chat Routes (`Backend/routes/chatbot.py`)
+- `POST /chat/` — Main chatbot (JSON body: `message`, `language`, optional `userProfile`)
+- `POST /chat/tts` — ElevenLabs TTS proxy (returns `audio/mpeg` stream); 503 when key absent
+- `POST /chat/workout-tip` — Phase-aware workout coaching tips (`exercise`, `phase`, `language`)
+
+### Frontend API Routes (`frontend/app/api/`)
+- `POST /api/chat` — Proxies to backend `/chat/` with userProfile from localStorage
+- `POST /api/tts` — Proxies to backend `/chat/tts` for ElevenLabs audio
+- `POST /api/chat/workout-tip` — Proxies workout coaching tips
+
+### TTS Utility (`frontend/utils/tts.js`)
+- `speakText(text, language)` — ElevenLabs → browser SpeechSynthesis fallback
+- `stopSpeaking()` — Cancels active Audio or SpeechSynthesis
+- Properly awaits playback completion (resolves on `onended`)
+
+### Voice UI (`frontend/context/AppSettingsContext.js`)
+- `voiceCoach` / `setVoiceCoach` — Global toggle persisted to `fitai_voiceCoach` localStorage
+- Translation key `voiceCoachSpeaking` in all 6 languages (EN/ES/FR/DE/HI/PT)
+
+### Chatbot Voice (`frontend/screens/AICoach.js`, `frontend/app/page.js`)
+- Mic button (🎤) triggers Speech-to-Text via `window.SpeechRecognition`
+- 🔊/🔇 voice output toggle in header
+- TTS playback on mic-triggered AI responses
+
+### Workout Voice Coaching (`frontend/screens/Training.js`)
+- `fireVoiceCoach(exercise, phase)` → fetches tip → speaks via `speakText`
+- Phase transitions: `start`, `exercise` (exercise change), `rest`, `complete`
+- "AI Coach speaking…" overlay indicator while voice plays
+
+### Ollama Workflow
+- `Ollama LLM` workflow configured (`ollama serve`) — start manually if Ollama is installed
+- Backend falls back to keyword templates when Ollama is unreachable
+
 ## Dependencies
-**Backend:** fastapi, uvicorn, numpy, pydantic, sqlalchemy, python-multipart
+**Backend:** fastapi, uvicorn, numpy, pydantic, sqlalchemy, python-multipart, httpx
 
 **Frontend:** next, react, react-dom, axios, react-chartjs-2, chart.js
 

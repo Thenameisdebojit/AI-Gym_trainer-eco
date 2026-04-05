@@ -4,6 +4,7 @@ import { generateWorkout, getWorkoutOptions, DURATION_TARGETS } from '../service
 import { getRecommendation, getPersonalizedGreeting } from '../services/recommendation.js';
 import ExerciseAnimation from '../components/ExerciseAnimation.js';
 import { useAppSettings } from '../context/AppSettingsContext.js';
+import { speakText } from '../utils/tts.js';
 
 const BODY_PARTS = [
   {
@@ -496,7 +497,7 @@ function Breadcrumb({ steps, onBack }) {
 }
 
 export default function Training() {
-  const { t } = useAppSettings();
+  const { t, voiceCoach, language } = useAppSettings();
 
   const tBodyParts = BODY_PARTS.map(b => ({
     ...b,
@@ -548,6 +549,9 @@ export default function Training() {
   const [mounted, setMounted] = useState(false);
 
   const timerRef = useRef(null);
+  const coachPhaseRef = useRef(null);
+  const coachExIdxRef = useRef(null);
+  const [coachSpeaking, setCoachSpeaking] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -766,6 +770,49 @@ export default function Training() {
 
   const currentExercise = exercises[exIdx];
 
+  const fireVoiceCoach = useCallback(async (exercise, phaseKey) => {
+    if (!exercise) return;
+    setCoachSpeaking(true);
+    try {
+      const userProfile = (() => {
+        try { return JSON.parse(localStorage.getItem('fitai_user') || '{}'); } catch { return {}; }
+      })();
+      const res = await fetch('/api/chat/workout-tip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ exercise: exercise.name || exercise, phase: phaseKey, language, userProfile }),
+      });
+      const data = await res.json();
+      if (data.tip) {
+        await speakText(data.tip, language);
+      }
+    } catch {}
+    setCoachSpeaking(false);
+  }, [language]);
+
+  useEffect(() => {
+    if (navStep !== 'session') {
+      coachPhaseRef.current = null;
+      coachExIdxRef.current = null;
+      return;
+    }
+    const prevPhase = coachPhaseRef.current;
+    const prevExIdx = coachExIdxRef.current;
+    if (voiceCoach) {
+      if (prevPhase === 'countdown' && phase === 'exercise') {
+        fireVoiceCoach(exercises[0], 'start');
+      } else if (phase === 'exercise' && prevExIdx !== null && exIdx !== prevExIdx && exIdx > 0) {
+        fireVoiceCoach(exercises[exIdx], 'exercise');
+      } else if (prevPhase === 'exercise' && phase === 'rest') {
+        fireVoiceCoach(exercises[exIdx] || exercises[exIdx - 1], 'rest');
+      } else if (phase === 'done' && prevPhase !== 'done' && prevPhase !== null) {
+        fireVoiceCoach(exercises[exercises.length - 1] || { name: 'workout' }, 'complete');
+      }
+    }
+    coachPhaseRef.current = phase;
+    coachExIdxRef.current = exIdx;
+  }, [phase, exIdx, voiceCoach, navStep, fireVoiceCoach, exercises]);
+
   const goBack = () => {
     if (navStep === 'levels') { setNavStep('home'); setSelectedBody(null); }
     else if (navStep === 'modes') { setNavStep('levels'); setSelectedLevel(null); }
@@ -790,6 +837,20 @@ export default function Training() {
 
     return (
       <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg, #0F172A 0%, #1E293B 100%)', color: '#fff', padding: '0' }}>
+        {coachSpeaking && (
+          <div style={{
+            position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)',
+            background: 'rgba(37,99,235,0.92)', color: '#fff',
+            padding: '8px 18px', borderRadius: 99, fontSize: 13, fontWeight: 600,
+            backdropFilter: 'blur(10px)', zIndex: 200,
+            display: 'flex', alignItems: 'center', gap: 8,
+            boxShadow: '0 4px 16px rgba(37,99,235,0.4)',
+            animation: 'fadeIn 0.2s ease',
+          }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', animation: 'pulse 1s ease infinite' }} />
+            {t.voiceCoachSpeaking}
+          </div>
+        )}
         {phase === 'countdown' && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '24px', animation: 'fadeIn 0.4s ease' }}>
             <div style={{ fontSize: '48px' }}>🏁</div>

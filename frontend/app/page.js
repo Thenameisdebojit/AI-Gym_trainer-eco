@@ -6,6 +6,9 @@ import Report from '../screens/Report';
 import Settings from '../screens/Settings';
 import Auth from '../screens/Auth';
 import { AppSettingsProvider, useAppSettings } from '../context/AppSettingsContext';
+import { speakText } from '../utils/tts';
+
+const LANG_CODES = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', de: 'de-DE', hi: 'hi-IN', pt: 'pt-BR' };
 
 const NAV_IDS = [
   { id: 'training', icon: '🏋️', tKey: 'training', subKey: 'trainingSub' },
@@ -30,8 +33,13 @@ function FloatingChatbot() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [pulse, setPulse] = useState(true);
+  const [micState, setMicState] = useState('idle');
+  const [voiceOut, setVoiceOut] = useState(false);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
+  const recognitionRef = useRef(null);
+
+  const hasSpeechRecognition = typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
 
   useEffect(() => {
     setMessages([{ role: 'assistant', content: t.chatGreeting }]);
@@ -52,21 +60,51 @@ function FloatingChatbot() {
 
   const quickPrompts = [t.chatPrompt1, t.chatPrompt2, t.chatPrompt3, t.chatPrompt4, t.chatPrompt5, t.chatPrompt6];
 
-  const send = useCallback(async (text) => {
+  const getUserProfile = () => {
+    try { return JSON.parse(localStorage.getItem('fitai_user') || '{}'); } catch { return {}; }
+  };
+
+  const send = useCallback(async (text, fromMic = false) => {
     const q = (text || input).trim();
     if (!q) return;
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: q }]);
     setLoading(true);
     try {
-      const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: q, language }) });
+      const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: q, language, userProfile: getUserProfile() }) });
       const data = await res.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response || data.message || t.chatErrorMsg }]);
+      const reply = data.response || data.message || t.chatErrorMsg;
+      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+      if (fromMic || voiceOut) {
+        speakText(reply, language);
+      }
     } catch {
       setMessages(prev => [...prev, { role: 'assistant', content: t.chatErrorMsg }]);
     }
     setLoading(false);
-  }, [input, language, t]);
+    setMicState('idle');
+  }, [input, language, t, voiceOut]);
+
+  const startListening = useCallback(() => {
+    if (!hasSpeechRecognition) return;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (recognitionRef.current) { try { recognitionRef.current.abort(); } catch {} }
+    const recognition = new SR();
+    recognitionRef.current = recognition;
+    recognition.lang = LANG_CODES[language] || 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onstart = () => setMicState('listening');
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setMicState('processing');
+      setInput(transcript);
+      send(transcript, true);
+    };
+    recognition.onerror = () => setMicState('idle');
+    recognition.onend = () => setMicState(prev => prev === 'listening' ? 'idle' : prev);
+    recognition.start();
+  }, [hasSpeechRecognition, language, send]);
 
   return (
     <>
@@ -81,6 +119,11 @@ function FloatingChatbot() {
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', fontWeight: 500 }}>{t.chatOnline}</span>
               </div>
             </div>
+            <button
+              onClick={() => setVoiceOut(v => !v)}
+              title={voiceOut ? 'Mute voice' : 'Enable voice'}
+              style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', width: 28, height: 28, borderRadius: '50%', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: voiceOut ? 1 : 0.6 }}
+            >{voiceOut ? '🔊' : '🔇'}</button>
             <button onClick={() => setOpen(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', width: 28, height: 28, borderRadius: '50%', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
           </div>
 
@@ -119,11 +162,30 @@ function FloatingChatbot() {
           </div>
 
           <div style={{ padding: '10px 12px 14px', display: 'flex', gap: 8 }}>
-            <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()} placeholder={t.chatPlaceholder}
+            <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()} placeholder={micState === 'listening' ? '🎤 Listening…' : micState === 'processing' ? '⏳ Processing…' : t.chatPlaceholder}
               style={{ flex: 1, padding: '10px 14px', border: '1.5px solid var(--border)', borderRadius: 12, fontSize: 13, color: 'var(--text)', background: 'var(--surface-2)', outline: 'none', transition: 'border-color 0.15s' }}
               onFocus={e => e.target.style.borderColor = '#7C3AED'}
               onBlur={e => e.target.style.borderColor = 'var(--border)'}
             />
+            {hasSpeechRecognition && (
+              <button
+                onClick={startListening}
+                disabled={micState !== 'idle' || loading}
+                title="Voice input"
+                style={{
+                  width: 40, height: 40, borderRadius: 12, border: 'none',
+                  cursor: micState !== 'idle' || loading ? 'default' : 'pointer',
+                  background: micState === 'listening' ? '#DC2626' : micState === 'processing' ? '#F59E0B' : 'var(--surface-2)',
+                  color: micState !== 'idle' ? '#fff' : 'var(--text-secondary)',
+                  fontSize: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  outline: '1.5px solid ' + (micState === 'listening' ? '#DC2626' : micState === 'processing' ? '#F59E0B' : 'var(--border)'),
+                  animation: micState === 'listening' ? 'pulse 1s ease infinite' : 'none',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                🎤
+              </button>
+            )}
             <button onClick={() => send()} disabled={loading || !input.trim()} style={{ width: 40, height: 40, borderRadius: 12, background: loading || !input.trim() ? 'var(--border)' : 'linear-gradient(135deg,#2563EB,#7C3AED)', border: 'none', color: '#fff', fontSize: 16, cursor: loading || !input.trim() ? 'default' : 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s ease' }}>
               ▶
             </button>

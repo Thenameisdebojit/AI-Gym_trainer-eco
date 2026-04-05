@@ -6,3 +6,4 @@ numpy
 pydantic
 sqlalchemy
 python-multipart
+httpx

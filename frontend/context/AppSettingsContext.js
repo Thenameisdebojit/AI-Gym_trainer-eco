@@ -148,6 +148,7 @@ const TRANSLATIONS = {
     soundEffectsSub: 'Exercise cues and transitions',
     voiceCoach: 'Voice Coach',
     voiceCoachSub: 'Audio guidance during workouts',
+    voiceCoachSpeaking: 'AI Coach speaking…',
     notifications: 'Notifications',
     notificationsSub: 'Workout reminders & streaks',
     language: 'Language',
@@ -350,6 +351,7 @@ const TRANSLATIONS = {
     soundEffectsSub: 'Señales de ejercicio y transiciones',
     voiceCoach: 'Entrenador de Voz',
     voiceCoachSub: 'Guía de audio durante los entrenamientos',
+    voiceCoachSpeaking: 'Entrenador IA hablando…',
     notifications: 'Notificaciones',
     notificationsSub: 'Recordatorios y rachas de entrenamiento',
     language: 'Idioma',
@@ -551,6 +553,7 @@ const TRANSLATIONS = {
     soundEffectsSub: 'Repères d\'exercice et transitions',
     voiceCoach: 'Coach Vocal',
     voiceCoachSub: 'Guidage audio pendant les séances',
+    voiceCoachSpeaking: 'Entraîneur IA en train de parler…',
     notifications: 'Notifications',
     notificationsSub: 'Rappels et séries d\'entraînement',
     language: 'Langue',
@@ -752,6 +755,7 @@ const TRANSLATIONS = {
     soundEffectsSub: 'Übungssignale und Übergänge',
     voiceCoach: 'Sprach-Coach',
     voiceCoachSub: 'Audio-Anleitung während des Trainings',
+    voiceCoachSpeaking: 'KI-Coach spricht…',
     notifications: 'Benachrichtigungen',
     notificationsSub: 'Trainingserinnerungen & Streaks',
     language: 'Sprache',
@@ -953,6 +957,7 @@ const TRANSLATIONS = {
     soundEffectsSub: 'व्यायाम संकेत और बदलाव',
     voiceCoach: 'वॉयस कोच',
     voiceCoachSub: 'वर्कआउट के दौरान ऑडियो मार्गदर्शन',
+    voiceCoachSpeaking: 'AI कोच बोल रहा है…',
     notifications: 'सूचनाएं',
     notificationsSub: 'वर्कआउट रिमाइंडर और स्ट्रीक',
     language: 'भाषा',
@@ -1154,6 +1159,7 @@ const TRANSLATIONS = {
     soundEffectsSub: 'Sinais de exercício e transições',
     voiceCoach: 'Treinador de Voz',
     voiceCoachSub: 'Orientação de áudio durante treinos',
+    voiceCoachSpeaking: 'Treinador IA falando…',
     notifications: 'Notificações',
     notificationsSub: 'Lembretes e sequências de treino',
     language: 'Idioma',
@@ -1226,6 +1232,7 @@ export function AppSettingsProvider({ children }) {
   const [language, setLanguageState] = useState('en');
   const [notifications, setNotificationsState] = useState(false);
   const [healthSync, setHealthSyncState] = useState(false);
+  const [voiceCoach, setVoiceCoachState] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [navTarget, setNavTarget] = useState(null);
 
@@ -1241,10 +1248,12 @@ export function AppSettingsProvider({ children }) {
       const lang = localStorage.getItem('fitai_language');
       const notif = localStorage.getItem('fitai_notifications');
       const hs = localStorage.getItem('fitai_healthSync');
+      const vc = localStorage.getItem('fitai_voiceCoach');
       if (dm !== null) setDarkModeState(dm === 'true');
       if (lang) setLanguageState(lang);
       if (notif !== null) setNotificationsState(notif === 'true');
       if (hs !== null) setHealthSyncState(hs === 'true');
+      if (vc !== null) setVoiceCoachState(vc === 'true');
     } catch {}
     setHydrated(true);
   }, []);
@@ -1274,9 +1283,15 @@ export function AppSettingsProvider({ children }) {
     try { localStorage.setItem('fitai_healthSync', String(healthSync)); } catch {}
   }, [healthSync, hydrated]);
 
+  useEffect(() => {
+    if (!hydrated) return;
+    try { localStorage.setItem('fitai_voiceCoach', String(voiceCoach)); } catch {}
+  }, [voiceCoach, hydrated]);
+
   const setDarkMode = useCallback((val) => setDarkModeState(val), []);
   const setLanguage = useCallback((val) => setLanguageState(val), []);
   const setHealthSync = useCallback((val) => setHealthSyncState(val), []);
+  const setVoiceCoach = useCallback((val) => setVoiceCoachState(val), []);
 
   const setNotifications = useCallback(async (val) => {
     if (val && typeof window !== 'undefined' && 'Notification' in window) {
@@ -1300,6 +1315,7 @@ export function AppSettingsProvider({ children }) {
       language, setLanguage,
       notifications, setNotifications,
       healthSync, setHealthSync,
+      voiceCoach, setVoiceCoach,
       t,
       navTarget, navigateTo, clearNavTarget,
     }}>
