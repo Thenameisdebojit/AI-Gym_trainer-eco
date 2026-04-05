@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAppSettings } from '../context/AppSettingsContext';
 
 const PRESET_AVATARS = ['🏋️', '🤸', '🧘', '🏃', '⚡', '🦁', '🐉', '🌟', '🔥', '💪', '🥊', '🎯'];
@@ -17,6 +17,23 @@ const LEVEL_OPTIONS = [
   { value: 'intermediate', label: 'Intermediate' },
   { value: 'advanced', label: 'Advanced' },
 ];
+
+function Toast({ visible, message }) {
+  return (
+    <div style={{
+      position: 'fixed', bottom: '32px', left: '50%', transform: `translateX(-50%) translateY(${visible ? '0' : '24px'})`,
+      background: '#10B981', color: '#fff', padding: '12px 24px', borderRadius: '99px',
+      fontSize: '14px', fontWeight: 700, boxShadow: '0 8px 24px rgba(16,185,129,0.4)',
+      pointerEvents: 'none', zIndex: 9999,
+      opacity: visible ? 1 : 0,
+      transition: 'opacity 0.25s ease, transform 0.25s ease',
+      display: 'flex', alignItems: 'center', gap: '8px',
+    }}>
+      <span style={{ fontSize: '16px' }}>✓</span>
+      {message}
+    </div>
+  );
+}
 
 function InputField({ label, value, onChange, placeholder, type = 'text' }) {
   return (
@@ -65,15 +82,15 @@ function SelectField({ label, value, onChange, options }) {
   );
 }
 
-export default function Account({ onBack }) {
+export default function Account({ onBack, onProfileUpdated }) {
   const { t } = useAppSettings();
   const [avatar, setAvatar] = useState('🏋️');
   const [avatarImg, setAvatarImg] = useState(null);
   const [profile, setProfile] = useState({
     name: '', age: '', weight: '', height: '', goal: '', level: '',
   });
-  const [saved, setSaved] = useState(false);
-  const [activeTab, setActiveTab] = useState('emoji');
+  const [toastVisible, setToastVisible] = useState(false);
+  const toastTimerRef = useRef(null);
   const fileRef = useRef(null);
 
   useEffect(() => {
@@ -95,21 +112,26 @@ export default function Account({ onBack }) {
       });
       if (storedAvatar) {
         setAvatarImg(storedAvatar);
-        setActiveTab('photo');
       } else {
         setAvatar(storedEmoji);
       }
     } catch {}
   }, []);
 
+  const showToast = useCallback(() => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToastVisible(true);
+    toastTimerRef.current = setTimeout(() => setToastVisible(false), 2500);
+  }, []);
+
+  useEffect(() => () => { if (toastTimerRef.current) clearTimeout(toastTimerRef.current); }, []);
+
   const handlePhotoUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      const dataUrl = ev.target.result;
-      setAvatarImg(dataUrl);
-      setActiveTab('photo');
+      setAvatarImg(ev.target.result);
     };
     reader.readAsDataURL(file);
   };
@@ -137,9 +159,9 @@ export default function Account({ onBack }) {
         localStorage.setItem('fitai_avatar_emoji', avatar);
         localStorage.removeItem('fitai_avatar');
       }
+      onProfileUpdated?.();
     } catch {}
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    showToast();
   };
 
   const displayAvatar = avatarImg ? (
@@ -182,7 +204,7 @@ export default function Account({ onBack }) {
           </button>
           {avatarImg && (
             <button
-              onClick={() => { setAvatarImg(null); setActiveTab('emoji'); }}
+              onClick={() => setAvatarImg(null)}
               style={{ padding: '8px 14px', border: '1.5px solid var(--danger)', borderRadius: 'var(--radius-sm)', background: 'var(--danger-light)', color: 'var(--danger)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
             >
               Remove
@@ -239,14 +261,18 @@ export default function Account({ onBack }) {
           onClick={handleSave}
           style={{
             width: '100%', padding: '14px', border: 'none', borderRadius: 'var(--radius)',
-            background: saved ? '#10B981' : 'linear-gradient(135deg,#2563EB,#7C3AED)',
+            background: 'linear-gradient(135deg,#2563EB,#7C3AED)',
             color: '#fff', fontSize: '15px', fontWeight: 700, cursor: 'pointer',
-            transition: 'all 0.2s ease', boxShadow: saved ? '0 4px 12px rgba(16,185,129,0.3)' : '0 4px 12px rgba(37,99,235,0.3)',
+            transition: 'all 0.2s ease', boxShadow: '0 4px 12px rgba(37,99,235,0.3)',
           }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+          onMouseLeave={e => e.currentTarget.style.opacity = '1'}
         >
-          {saved ? '✓ Saved!' : 'Save Profile'}
+          Save Profile
         </button>
       </div>
+
+      <Toast visible={toastVisible} message="Profile saved!" />
 
       <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
     </div>

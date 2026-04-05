@@ -246,6 +246,7 @@ function AppInner() {
   const [collapsed, setCollapsed] = useState(false);
   const [user, setUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
+  const [profileVersion, setProfileVersion] = useState(0);
 
   const NAV_ITEMS = NAV_IDS.map(n => ({ ...n, label: t[n.tKey] || n.tKey }));
 
@@ -255,6 +256,14 @@ function AppInner() {
       if (stored) setUser(JSON.parse(stored));
     } catch {}
     setAuthChecked(true);
+  }, []);
+
+  const refreshProfile = useCallback(() => {
+    try {
+      const stored = localStorage.getItem('fitai_user');
+      if (stored) setUser(JSON.parse(stored));
+    } catch {}
+    setProfileVersion(v => v + 1);
   }, []);
 
   useEffect(() => {
@@ -292,12 +301,15 @@ function AppInner() {
   const isAccount = active === 'account';
   const displayActive = isAccount ? prevActive : active;
   const activeItem = NAV_ITEMS.find(n => n.id === displayActive) || NAV_ITEMS[0];
-  const initials = `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase() || '?';
+  const displayName = user.name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || '';
+  const initials = displayName
+    ? displayName.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase()
+    : (user.first_name?.[0] || '').toUpperCase() || '?';
   const avatarInfo = getUserAvatar();
 
   const renderScreen = () => {
     if (isAccount) {
-      return <Account key="account" onBack={() => setActive(prevActive)} />;
+      return <Account key={`account-${profileVersion}`} onBack={() => setActive(prevActive)} onProfileUpdated={refreshProfile} />;
     }
     const Screen = SCREEN_MAP[active];
     if (!Screen) return null;
