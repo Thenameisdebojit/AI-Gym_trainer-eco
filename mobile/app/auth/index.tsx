@@ -14,43 +14,162 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import Animated, {
-  FadeInDown,
-  FadeInUp,
-} from "react-native-reanimated";
+import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useAuth } from "@/context/AuthContext";
 import { COLORS, FONTS, SIZES, RADIUS, SPACING } from "@/constants/theme";
 
+type Mode = "login" | "register" | "verify";
+
 export default function AuthScreen() {
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const [mode, setMode] = useState<Mode>("login");
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [mobile, setMobile] = useState("");
   const [showPass, setShowPass] = useState(false);
+
+  const [otp, setOtp] = useState("");
+  const [otpPreview, setOtpPreview] = useState("");
+  const [pendingEmail, setPendingEmail] = useState("");
+
   const [loading, setLoading] = useState(false);
-  const { login, register, continueAsGuest } = useAuth();
+
+  const { login, register, verifyOtp, resendOtp, continueAsGuest, googleLogin } = useAuth();
   const insets = useSafeAreaInsets();
 
-  const handleSubmit = async () => {
+  const handleLogin = async () => {
+    if (!email.trim() || !password) {
+      return Alert.alert("Error", "Please enter your email and password.");
+    }
     setLoading(true);
     try {
-      if (mode === "login") {
-        await login(email, password);
-      } else {
-        await register(email, password, name);
-      }
+      await login(email.trim(), password);
       router.replace("/(tabs)");
     } catch (e: any) {
-      Alert.alert("Error", e.message || "Something went wrong");
+      Alert.alert("Login Failed", e.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGuest = async () => {
+  const handleRegister = async () => {
+    if (!firstName.trim() || !email.trim() || !password) {
+      return Alert.alert("Error", "First name, email and password are required.");
+    }
+    setLoading(true);
+    try {
+      const result = await register(email.trim(), password, firstName.trim(), lastName.trim(), mobile.trim());
+      setPendingEmail(email.trim().toLowerCase());
+      setOtpPreview(result.otpPreview || "");
+      setMode("verify");
+    } catch (e: any) {
+      Alert.alert("Sign Up Failed", e.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerify = async () => {
+    if (otp.length !== 6) {
+      return Alert.alert("Error", "Please enter the 6-digit OTP.");
+    }
+    setLoading(true);
+    try {
+      await verifyOtp(pendingEmail, otp);
+      router.replace("/(tabs)");
+    } catch (e: any) {
+      Alert.alert("Verification Failed", e.message || "Invalid OTP.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    setLoading(true);
+    try {
+      const result = await resendOtp(pendingEmail);
+      setOtpPreview(result.otpPreview || "");
+      Alert.alert("Sent", "A new OTP has been sent to your email.");
+    } catch (e: any) {
+      Alert.alert("Error", e.message || "Failed to resend OTP.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGuest = () => {
     continueAsGuest();
     router.replace("/(tabs)");
   };
+
+  const handleGoogle = async () => {
+    Alert.alert(
+      "Google Sign-In",
+      "To enable Google Sign-In, please set up FIREBASE_WEB_CLIENT_ID in your environment and configure Firebase in app.json."
+    );
+  };
+
+  if (mode === "verify") {
+    return (
+      <KeyboardAvoidingView
+        style={[styles.container, { paddingTop: insets.top }]}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+          <Animated.View entering={FadeInDown.delay(100).springify()} style={styles.logoSection}>
+            <View style={styles.logoIcon}>
+              <Ionicons name="mail-open-outline" size={36} color={COLORS.primary} />
+            </View>
+            <Text style={styles.logoText}>Verify Email</Text>
+            <Text style={styles.tagline}>We sent a code to {pendingEmail}</Text>
+          </Animated.View>
+
+          <Animated.View entering={FadeInUp.delay(200).springify()} style={styles.card}>
+            {otpPreview ? (
+              <View style={styles.otpPreviewBox}>
+                <Text style={styles.otpPreviewText}>Demo OTP: {otpPreview}</Text>
+              </View>
+            ) : null}
+
+            <View style={styles.inputWrapper}>
+              <Ionicons name="keypad-outline" size={18} color={COLORS.textMuted} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="6-digit OTP"
+                placeholderTextColor={COLORS.textMuted}
+                value={otp}
+                onChangeText={(v) => setOtp(v.replace(/\D/g, "").slice(0, 6))}
+                keyboardType="number-pad"
+                maxLength={6}
+              />
+            </View>
+
+            <TouchableOpacity style={styles.primaryBtn} onPress={handleVerify} disabled={loading}>
+              {loading ? (
+                <ActivityIndicator color={COLORS.background} />
+              ) : (
+                <Text style={styles.primaryBtnText}>Verify & Continue</Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.linkBtn} onPress={handleResend} disabled={loading}>
+              <Text style={styles.linkBtnText}>Resend OTP</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.linkBtn} onPress={() => setMode("register")}>
+              <Text style={[styles.linkBtnText, { color: COLORS.textMuted }]}>← Back to Sign Up</Text>
+            </TouchableOpacity>
+          </Animated.View>
+
+          <Text style={[styles.footer, { marginBottom: insets.bottom + SPACING.base }]}>
+            By continuing, you agree to our Terms & Privacy Policy
+          </Text>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
@@ -62,7 +181,6 @@ export default function AuthScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Logo */}
         <Animated.View entering={FadeInDown.delay(100).springify()} style={styles.logoSection}>
           <View style={styles.logoIcon}>
             <Ionicons name="barbell" size={36} color={COLORS.primary} />
@@ -71,9 +189,7 @@ export default function AuthScreen() {
           <Text style={styles.tagline}>Your AI-powered trainer</Text>
         </Animated.View>
 
-        {/* Card */}
         <Animated.View entering={FadeInUp.delay(200).springify()} style={styles.card}>
-          {/* Toggle */}
           <View style={styles.toggle}>
             <TouchableOpacity
               style={[styles.toggleBtn, mode === "login" && styles.toggleActive]}
@@ -93,22 +209,44 @@ export default function AuthScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Name field (register only) */}
           {mode === "register" && (
-            <View style={styles.inputWrapper}>
-              <Ionicons name="person-outline" size={18} color={COLORS.textMuted} style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                placeholder="Full Name"
-                placeholderTextColor={COLORS.textMuted}
-                value={name}
-                onChangeText={setName}
-                autoCapitalize="words"
-              />
-            </View>
+            <>
+              <View style={styles.inputWrapper}>
+                <Ionicons name="person-outline" size={18} color={COLORS.textMuted} style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="First Name"
+                  placeholderTextColor={COLORS.textMuted}
+                  value={firstName}
+                  onChangeText={setFirstName}
+                  autoCapitalize="words"
+                />
+              </View>
+              <View style={styles.inputWrapper}>
+                <Ionicons name="person-outline" size={18} color={COLORS.textMuted} style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Last Name"
+                  placeholderTextColor={COLORS.textMuted}
+                  value={lastName}
+                  onChangeText={setLastName}
+                  autoCapitalize="words"
+                />
+              </View>
+              <View style={styles.inputWrapper}>
+                <Ionicons name="call-outline" size={18} color={COLORS.textMuted} style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Mobile Number"
+                  placeholderTextColor={COLORS.textMuted}
+                  value={mobile}
+                  onChangeText={setMobile}
+                  keyboardType="phone-pad"
+                />
+              </View>
+            </>
           )}
 
-          {/* Email */}
           <View style={styles.inputWrapper}>
             <Ionicons name="mail-outline" size={18} color={COLORS.textMuted} style={styles.inputIcon} />
             <TextInput
@@ -122,7 +260,6 @@ export default function AuthScreen() {
             />
           </View>
 
-          {/* Password */}
           <View style={styles.inputWrapper}>
             <Ionicons name="lock-closed-outline" size={18} color={COLORS.textMuted} style={styles.inputIcon} />
             <TextInput
@@ -134,12 +271,19 @@ export default function AuthScreen() {
               secureTextEntry={!showPass}
             />
             <TouchableOpacity onPress={() => setShowPass(!showPass)} style={styles.eyeBtn}>
-              <Ionicons name={showPass ? "eye-off-outline" : "eye-outline"} size={18} color={COLORS.textMuted} />
+              <Ionicons
+                name={showPass ? "eye-off-outline" : "eye-outline"}
+                size={18}
+                color={COLORS.textMuted}
+              />
             </TouchableOpacity>
           </View>
 
-          {/* Primary CTA */}
-          <TouchableOpacity style={styles.primaryBtn} onPress={handleSubmit} disabled={loading}>
+          <TouchableOpacity
+            style={styles.primaryBtn}
+            onPress={mode === "login" ? handleLogin : handleRegister}
+            disabled={loading}
+          >
             {loading ? (
               <ActivityIndicator color={COLORS.background} />
             ) : (
@@ -149,15 +293,18 @@ export default function AuthScreen() {
             )}
           </TouchableOpacity>
 
-          {/* Divider */}
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
             <Text style={styles.dividerText}>or</Text>
             <View style={styles.dividerLine} />
           </View>
 
-          {/* Guest */}
-          <TouchableOpacity style={styles.guestBtn} onPress={handleGuest}>
+          <TouchableOpacity style={styles.googleBtn} onPress={handleGoogle} disabled={loading}>
+            <Text style={styles.googleIcon}>G</Text>
+            <Text style={styles.googleBtnText}>Continue with Google</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.guestBtn, { marginTop: SPACING.sm }]} onPress={handleGuest}>
             <Ionicons name="flash-outline" size={18} color={COLORS.textSecondary} />
             <Text style={styles.guestBtnText}>Continue as Guest</Text>
           </TouchableOpacity>
@@ -208,6 +355,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.regular,
     color: COLORS.textSecondary,
     marginTop: SPACING.xs,
+    textAlign: "center",
   },
   card: {
     backgroundColor: COLORS.surface,
@@ -300,6 +448,28 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     marginHorizontal: SPACING.md,
   },
+  googleBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: SPACING.md,
+    gap: SPACING.sm,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.surfaceLight,
+    marginBottom: SPACING.sm,
+  },
+  googleIcon: {
+    fontSize: 16,
+    fontFamily: FONTS.bold,
+    color: "#4285F4",
+  },
+  googleBtnText: {
+    fontFamily: FONTS.medium,
+    fontSize: SIZES.base,
+    color: COLORS.text,
+  },
   guestBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -321,5 +491,29 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.regular,
     color: COLORS.textMuted,
     marginTop: SPACING.xl,
+  },
+  otpPreviewBox: {
+    backgroundColor: "#F0FDF4",
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
+    marginBottom: SPACING.md,
+    borderWidth: 1,
+    borderColor: "#BBF7D0",
+  },
+  otpPreviewText: {
+    fontFamily: FONTS.medium,
+    fontSize: SIZES.sm,
+    color: "#15803D",
+    textAlign: "center",
+  },
+  linkBtn: {
+    paddingVertical: SPACING.sm,
+    alignItems: "center",
+    marginTop: SPACING.xs,
+  },
+  linkBtnText: {
+    fontFamily: FONTS.medium,
+    fontSize: SIZES.sm,
+    color: COLORS.primary,
   },
 });

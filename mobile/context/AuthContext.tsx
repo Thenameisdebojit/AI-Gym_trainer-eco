@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const API_BASE = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000";
+
 export interface UserProfile {
   uid: string;
   email: string;
@@ -10,14 +12,31 @@ export interface UserProfile {
   height?: number;
   goal?: "lose" | "gain" | "maintain";
   fitnessLevel?: "beginner" | "intermediate" | "advanced";
+  token?: string;
 }
 
 interface AuthContextType {
   user: UserProfile | null;
   isLoading: boolean;
   isGuest: boolean;
+  pendingVerifyEmail: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
+  register: (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+    mobile: string
+  ) => Promise<{ otpPreview?: string }>;
+  verifyOtp: (email: string, otp: string) => Promise<void>;
+  resendOtp: (email: string) => Promise<{ otpPreview?: string }>;
+  googleLogin: (
+    idToken: string,
+    email: string,
+    firstName: string,
+    lastName: string,
+    photoUrl?: string
+  ) => Promise<void>;
   logout: () => Promise<void>;
   continueAsGuest: () => void;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
@@ -35,10 +54,24 @@ const GUEST_USER: UserProfile = {
   fitnessLevel: "beginner",
 };
 
+async function apiFetch(path: string, body: object): Promise<any> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.detail || "Request failed");
+  }
+  return data;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isGuest, setIsGuest] = useState(false);
+  const [pendingVerifyEmail, setPendingVerifyEmail] = useState<string | null>(null);
 
   useEffect(() => {
     loadStoredUser();
@@ -63,41 +96,101 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     if (!email || !password) throw new Error("Email and password required");
-    const mockUser: UserProfile = {
-      uid: "user_" + Date.now().toString(),
-      email,
-      displayName: email.split("@")[0],
-      weight: 75,
-      height: 175,
-      goal: "maintain",
-      fitnessLevel: "beginner",
+    const data = await apiFetch("/auth/login", { email, password });
+    const profile: UserProfile = {
+      uid: data.user.email,
+      email: data.user.email,
+      displayName: `${data.user.first_name} ${data.user.last_name}`.trim(),
+      token: data.token,
     };
-    await AsyncStorage.setItem("fitai_user", JSON.stringify(mockUser));
+    await AsyncStorage.setItem("fitai_user", JSON.stringify(profile));
+    await AsyncStorage.setItem("fitai_token", data.token);
     await AsyncStorage.removeItem("fitai_guest");
-    setUser(mockUser);
+    setUser(profile);
     setIsGuest(false);
   };
 
-  const register = async (email: string, password: string, name: string) => {
-    if (!email || !password || !name) throw new Error("All fields required");
-    const newUser: UserProfile = {
-      uid: "user_" + Date.now().toString(),
+  const register = async (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+    mobile: string
+  ): Promise<{ otpPreview?: string }> => {
+    if (!email || !password || !firstName)
+      throw new Error("All fields required");
+    const data = await apiFetch("/auth/register", {
       email,
-      displayName: name,
-      weight: 75,
-      height: 175,
-      goal: "maintain",
-      fitnessLevel: "beginner",
+      password,
+      first_name: firstName,
+      last_name: lastName,
+      mobile,
+    });
+    setPendingVerifyEmail(email.toLowerCase().trim());
+    return { otpPreview: data.otp_preview };
+  };
+
+  const verifyOtp = async (email: string, otp: string) => {
+    const data = await apiFetch("/auth/verify-otp", { email, otp });
+    const profile: UserProfile = {
+      uid: data.user.email,
+      email: data.user.email,
+      displayName: `${data.user.first_name} ${data.user.last_name}`.trim(),
+      token: data.token,
     };
-    await AsyncStorage.setItem("fitai_user", JSON.stringify(newUser));
+    await AsyncStorage.setItem("fitai_user", JSON.stringify(profile));
+    await AsyncStorage.setItem("fitai_token", data.token);
     await AsyncStorage.removeItem("fitai_guest");
-    setUser(newUser);
+    setPendingVerifyEmail(null);
+    setUser(profile);
+    setIsGuest(false);
+  };
+
+  const resendOtp = async (email: string): Promise<{ otpPreview?: string }> => {
+    const data = await apiFetch("/auth/resend-otp", { email });
+    return { otpPreview: data.otp_preview };
+  };
+
+  const googleLogin = async (
+    idToken: string,
+    email: string,
+    firstName: string,
+    lastName: string,
+    photoUrl?: string
+  ) => {
+    const data = await apiFetch("/auth/google", {
+      id_token: idToken,
+      email,
+      first_name: firstName,
+      last_name: lastName,
+      photo_url: photoUrl || "",
+    });
+    const profile: UserProfile = {
+      uid: data.user.email,
+      email: data.user.email,
+      displayName: `${data.user.first_name} ${data.user.last_name}`.trim(),
+      photoURL: photoUrl,
+      token: data.token,
+    };
+    await AsyncStorage.setItem("fitai_user", JSON.stringify(profile));
+    await AsyncStorage.setItem("fitai_token", data.token);
+    await AsyncStorage.removeItem("fitai_guest");
+    setUser(profile);
     setIsGuest(false);
   };
 
   const logout = async () => {
+    try {
+      const token = await AsyncStorage.getItem("fitai_token");
+      if (token) {
+        await fetch(`${API_BASE}/auth/logout?token=${encodeURIComponent(token)}`, {
+          method: "POST",
+        }).catch(() => {});
+      }
+    } catch {}
     await AsyncStorage.removeItem("fitai_user");
     await AsyncStorage.removeItem("fitai_guest");
+    await AsyncStorage.removeItem("fitai_token");
     setUser(null);
     setIsGuest(false);
   };
@@ -116,7 +209,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isGuest, login, register, logout, continueAsGuest, updateProfile }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        isGuest,
+        pendingVerifyEmail,
+        login,
+        register,
+        verifyOtp,
+        resendOtp,
+        googleLogin,
+        logout,
+        continueAsGuest,
+        updateProfile,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

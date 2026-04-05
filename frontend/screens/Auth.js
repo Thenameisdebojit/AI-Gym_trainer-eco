@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { signInWithGoogle } from '../lib/firebase';
 
 const PRIMARY = '#2563EB';
 const PURPLE = '#7C3AED';
@@ -165,6 +166,28 @@ export default function Auth({ onAuth }) {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    clearError();
+    setLoading(true);
+    try {
+      const { idToken, email, firstName, lastName, photoUrl } = await signInWithGoogle();
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_token: idToken, email, first_name: firstName, last_name: lastName, photo_url: photoUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok) return setError(data.detail || 'Google sign-in failed.');
+      localStorage.setItem('fitai_token', data.token);
+      localStorage.setItem('fitai_user', JSON.stringify(data.user));
+      onAuth(data.user);
+    } catch (err) {
+      setError(err.message || 'Google sign-in failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogin = async () => {
     clearError();
     if (!loginEmail.trim()) return setError('Enter your email address.');
@@ -268,15 +291,16 @@ export default function Auth({ onAuth }) {
                 {loading ? 'Signing in…' : 'Sign In'}
               </button>
 
-              {/* Google sign in — UI only for now */}
+              {/* Google sign in */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '20px 0' }}>
                 <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
                 <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 500 }}>or continue with</span>
                 <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
               </div>
               <button
-                onClick={() => setError('Google sign-in coming soon! Use email & password for now.')}
-                style={{ width: '100%', padding: '13px', borderRadius: 14, border: '1.5px solid #E2E8F0', background: '#FAFAFA', color: '#374151', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, fontFamily: 'inherit' }}>
+                onClick={handleGoogleSignIn}
+                disabled={loading}
+                style={{ width: '100%', padding: '13px', borderRadius: 14, border: '1.5px solid #E2E8F0', background: '#FAFAFA', color: '#374151', fontSize: 14, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, fontFamily: 'inherit', opacity: loading ? 0.7 : 1 }}>
                 <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#4285F4" d="M47.5 24.6c0-1.6-.1-3.1-.4-4.6H24v8.7h13.2c-.6 3-2.4 5.5-5.1 7.2v6h8.3c4.8-4.4 7.6-10.9 7.6-17.3z"/><path fill="#34A853" d="M24 48c6.5 0 12-2.1 16-5.8l-8.3-6c-2.2 1.5-5 2.4-7.7 2.4-5.9 0-10.9-4-12.7-9.3H2.7v6.2C6.7 42.9 14.9 48 24 48z"/><path fill="#FBBC04" d="M11.3 29.3c-.5-1.5-.7-3-.7-4.6s.2-3.1.7-4.6v-6.2H2.7C1 17.1 0 20.4 0 24s1 6.9 2.7 9.5l8.6-4.2z"/><path fill="#EA4335" d="M24 9.5c3.3 0 6.3 1.1 8.6 3.3l6.4-6.4C35 2.1 29.5 0 24 0 14.9 0 6.7 5.1 2.7 12.9l8.6 6.2C13.1 13.4 18.1 9.5 24 9.5z"/></svg>
                 Continue with Google
               </button>
