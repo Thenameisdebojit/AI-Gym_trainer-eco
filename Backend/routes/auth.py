@@ -76,17 +76,20 @@ def generate_token(email: str) -> str:
 
 
 def _allowed_google_client_ids() -> list[str]:
-    """Return list of expected OAuth client IDs from environment."""
+    """
+    Return list of expected Google OAuth client IDs for aud/azp validation.
+    Only includes genuine Google OAuth client IDs (*.apps.googleusercontent.com)
+    sourced from explicit env vars, plus any extras in GOOGLE_EXPECTED_CLIENT_IDS.
+    """
     raw = os.environ.get("GOOGLE_EXPECTED_CLIENT_IDS", "")
     ids = [c.strip() for c in raw.split(",") if c.strip()]
     for var in (
-        "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
         "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID",
         "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID",
         "EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID",
     ):
         v = os.environ.get(var, "").strip()
-        if v and v not in ids:
+        if v and v.endswith(".apps.googleusercontent.com") and v not in ids:
             ids.append(v)
     return ids
 
