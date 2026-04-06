@@ -1,0 +1,47 @@
+[32mINFO[0m:     Will watch for changes in these directories: ['/home/runner/workspace/Backend']
+[32mINFO[0m:     Uvicorn running on [1mhttp://localhost:8000[0m (Press CTRL+C to quit)
+[32mINFO[0m:     Started reloader process [[36m[1m1008[0m] using [36m[1mStatReload[0m
+[32mINFO[0m:     Started server process [[36m1020[0m]
+[32mINFO[0m:     Waiting for application startup.
+[32mINFO[0m:     Application startup complete.
+[32mINFO[0m:     127.0.0.1:59720 - "[1mGET / HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:59720 - "[1mGET /favicon.ico HTTP/1.1[0m" [31m404 Not Found[0m
+[32mINFO[0m:     127.0.0.1:48360 - "[1mPOST /auth/login HTTP/1.1[0m" [31m401 Unauthorized[0m
+[FitAI] OTP for debojitmishra03@gmail.com: 182449  (set SMTP_USER & SMTP_PASS to send real emails)
+[32mINFO[0m:     127.0.0.1:39964 - "[1mPOST /auth/register HTTP/1.1[0m" [32m200 OK[0m
+[FitAI] OTP for debojitmishra03@gmail.com: 707483  (set SMTP_USER & SMTP_PASS to send real emails)
+[32mINFO[0m:     127.0.0.1:41668 - "[1mPOST /auth/resend-otp HTTP/1.1[0m" [32m200 OK[0m
+[FitAI] OTP for debojitmishra03@gmail.com: 222455  (set SMTP_USER & SMTP_PASS to send real emails)
+[32mINFO[0m:     127.0.0.1:50584 - "[1mPOST /auth/register HTTP/1.1[0m" [32m200 OK[0m
+[FitAI] OTP for debojitmishra03@gmail.com: 745975  (set SMTP_USER & SMTP_PASS to send real emails)
+[32mINFO[0m:     127.0.0.1:40876 - "[1mPOST /auth/register HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:33102 - "[1mPOST /auth/verify-otp HTTP/1.1[0m" [31m400 Bad Request[0m
+[33mWARNING[0m:  StatReload detected changes in 'routes/auth.py'. Reloading...
+[32mINFO[0m:     Shutting down
+[32mINFO[0m:     Waiting for application shutdown.
+[32mINFO[0m:     Application shutdown complete.
+[32mINFO[0m:     Finished server process [[36m1020[0m]
+[32mINFO[0m:     Started server process [[36m2168[0m]
+[32mINFO[0m:     Waiting for application startup.
+[32mINFO[0m:     Application startup complete.
+[33mWARNING[0m:  StatReload detected changes in 'routes/auth.py'. Reloading...
+[32mINFO[0m:     Shutting down
+[32mINFO[0m:     Waiting for application shutdown.
+[32mINFO[0m:     Application shutdown complete.
+[32mINFO[0m:     Finished server process [[36m2168[0m]
+[32mINFO[0m:     Started server process [[36m2200[0m]
+[32mINFO[0m:     Waiting for application startup.
+[32mINFO[0m:     Application startup complete.
+[33mWARNING[0m:  StatReload detected changes in 'routes/auth.py'. Reloading...
+[32mINFO[0m:     Shutting down
+[32mINFO[0m:     Waiting for application shutdown.
+[32mINFO[0m:     Application shutdown complete.
+[32mINFO[0m:     Finished server process [[36m2200[0m]
+[32mINFO[0m:     Started server process [[36m2254[0m]
+[32mINFO[0m:     Waiting for application startup.
+[32mINFO[0m:     Application startup complete.
+[32mINFO[0m:     Shutting down
+[32mINFO[0m:     Waiting for application shutdown.
+[32mINFO[0m:     Application shutdown complete.
+[32mINFO[0m:     Finished server process [[36m2254[0m]
+[32mINFO[0m:     Stopping reloader process [[36m[1m1008[0m]

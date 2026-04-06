@@ -12,6 +12,7 @@
       "backgroundColor": "#0A0A0F"
     },
     "assetBundlePatterns": ["**/*"],
+
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.fitai.assistant",
@@ -20,18 +21,21 @@
         "NSMicrophoneUsageDescription": "FitAI uses the microphone for voice feedback during workouts."
       }
     },
+
     "android": {
+      "package": "com.fitai.assistant",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0A0A0F"
       },
-      "package": "com.fitai.assistant",
       "permissions": ["CAMERA", "RECORD_AUDIO"]
     },
+
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
+
     "plugins": [
       "expo-router",
       [
@@ -41,7 +45,9 @@
         }
       ]
     ],
+
     "scheme": "fitai",
+
     "experiments": {
       "typedRoutes": true
     }

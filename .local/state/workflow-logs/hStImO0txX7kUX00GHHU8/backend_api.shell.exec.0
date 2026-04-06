@@ -1,0 +1,17 @@
+[32mINFO[0m:     Will watch for changes in these directories: ['/home/runner/workspace/Backend']
+[32mINFO[0m:     Uvicorn running on [1mhttp://localhost:8000[0m (Press CTRL+C to quit)
+[32mINFO[0m:     Started reloader process [[36m[1m5136[0m] using [36m[1mStatReload[0m
+[32mINFO[0m:     Started server process [[36m5148[0m]
+[32mINFO[0m:     Waiting for application startup.
+[CONFIG] SMTP_USER / SMTP_PASS not set — OTP emails will NOT be delivered. The OTP will be returned in the API response instead (dev/demo mode). Set these secrets for production email delivery.
+[CONFIG] ELEVENLABS_API_KEY not set — AI voice responses disabled.
+[32mINFO[0m:     Application startup complete.
+[32mINFO[0m:     127.0.0.1:42954 - "[1mGET / HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42954 - "[1mGET /favicon.ico HTTP/1.1[0m" [31m404 Not Found[0m
+[32mINFO[0m:     127.0.0.1:34612 - "[1mPOST /auth/google HTTP/1.1[0m" [31m401 Unauthorized[0m
+[32mINFO[0m:     127.0.0.1:34622 - "[1mPOST /auth/login HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     Shutting down
+[32mINFO[0m:     Waiting for application shutdown.
+[32mINFO[0m:     Application shutdown complete.
+[32mINFO[0m:     Finished server process [[36m5148[0m]
+[32mINFO[0m:     Stopping reloader process [[36m[1m5136[0m]

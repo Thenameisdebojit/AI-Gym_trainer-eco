@@ -1,0 +1,43 @@
+VERDICT: REJECTED
+
+The diff makes substantial progress (SQLite-backed auth persistence, real mobile auth API wiring, OTP verify flow, and Google auth plumbing), but it has a blocking functional defect in Google sign-in verification that likely preventsVERDICT: REJECTED
+ the core Google requirement from working in normal configuration.
+
+Critica
+l findings:
+- **Blocking: backend Google audience validation is misThe diff makes substantial progress (SQLite-backed auth persistence, real mobile auth API wiring, OTP verify flow, and Google auth plumbing), but it has a blocking functional defect in Google sign-in verification that likely prevents the core Google requirement from working in normal configuration.
+configured.** In `Backend/routes/auth.py`, `_allowed_go
+ogle_client_ids()` includes `NEXT_PUBLIC_FIREBASE_MESSAGINGCritical findings:
+_SENDER_ID` as an allowed OAuth client ID. That value is not a Google OAuth client ID. Because validation runs whenever `allowed_ids` is non-empty, this can cause valid Google ID tokens to be rejected with “audience does not match.”
+- The task expects web Google sign-in using Firebase env (`NEXT_PUBLIC_FIREBASE_*`). With this implementation, unless additional correct client IDs are also set (e.g., `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` or `GOOGLE_EXPECTED_CLIENT_IDS`), `/auth/google` can fail even for valid sign-ins.
+- This is a core acceptance criterion failure (“Continue with Google” should trigger real login and succeed), so approval is not justified.
+
+What is working / strong:
+- In-memory auth stores were replaced with SQLite-backed SQLAlchemy models (`AuthUser`, `OTPRecord`, `AuthSession`) and committed across auth routes, which addresses restart persistence.
+- Mobile `AuthContext` now calls real backend endpoints for register/login/verify/resend.
+- Web and mobile UI now include wired Google sign-in triggers.
+
+Security:
+- **Serious issue directly relevant:** mis-audience validation can break auth correctness; not an exploit, but an auth integrity/availability bug.
+- No additional critical secret leakage observed in code paths reviewed.
+
+Next actions (high impact):
+1. Fix `_allowed_google_client_ids()` to only include true OAuth client IDs (remove `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`; include proper web client ID env(s), e.g., explicit `GOOGLE_EXPECTED_CLIENT_IDS` or `GOOGLE_WEB_CLIENT_ID`).
+2. Add/verify an integration test for `/auth/google` with a token whose `aud` matches configured client IDs to prevent regressions.
+3. Re-run end-to-end web + mobile Google sign-in with production-like env vars to confirm successful token verification and session issuance.- **Blocking: backend Google audience validation is misconfigured.** In `Backend/routes/auth.py`, `_allowed_google_client_ids()` includes `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` as an allowed OAuth client ID. That value is not a Google OAuth client ID. Because validation runs whenever `allowed_ids` is non-empty, this can cause valid Google ID tokens to be rejected with “audience does not match.”
+- The task expects web Google sign-in using Firebase env (`NEXT_PUBLIC_FIREBASE_*`). With this implementation, unless additional correct client IDs are also set (e.g., `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` or `GOOGLE_EXPECTED_CLIENT_IDS`), `/auth/google` can fail even for valid sign-ins.
+- This is a core acceptance criterion failure (“Continue with Google” should trigger real login and succeed), so approval is not justified.
+
+What is working / strong:
+- In-memory auth stores were replaced with SQLite-backed SQLAlchemy models (`AuthUser`, `OTPRecord`, `AuthSession`) and committed across auth routes, which addresses restart persistence.
+- Mobile `AuthContext` now calls real backend endpoints for register/login/verify/resend.
+- Web and mobile UI now include wired Google sign-in triggers.
+
+Security:
+- **Serious issue directly relevant:** mis-audience validation can break auth correctness; not an exploit, but an auth integrity/availability bug.
+- No additional critical secret leakage observed in code paths reviewed.
+
+Next actions (high impact):
+1. Fix `_allowed_google_client_ids()` to only include true OAuth client IDs (remove `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`; include proper web client ID env(s), e.g., explicit `GOOGLE_EXPECTED_CLIENT_IDS` or `GOOGLE_WEB_CLIENT_ID`).
+2. Add/verify an integration test for `/auth/google` with a token whose `aud` matches configured client IDs to prevent regressions.
+3. Re-run end-to-end web + mobile Google sign-in with production-like env vars to confirm successful token verification and session issuance.

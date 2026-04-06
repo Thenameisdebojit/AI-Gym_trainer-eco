@@ -1,0 +1,31 @@
+VERDICT: REJECTED
+The diff makes meaningful progress (SQLite-backed auth, web Google button, mobile OTP flow), but it does not satisfy key task requirements and introduces a serious auth security flaw.
+
+Critical findings / analysis:
+- **Blocking: MVERDICT: REJECTED
+obile Google Sign-In is not implemented.** In `mobile/app/auth/index.tsx`, the GoogleThe diff makes meaningful progress (SQLite-backed auth, web Google button, mobile OTP flow), but it does not satisfy key task requirements and introduces a serious auth security flaw.
+ button only shows an alert (`handleGoogle`
+) and never performs Firebase/Expo OAuth. This failsCritical findings / analysis:
+ the required outcome: “mobile Google sign-in button exists and triggers Firebase Google auth.”
+- **Blocking security issue: backend trusts unverified Google identity.** `Backend/routes/auth.py` `/auth/google` accepts `id_token` but never verifies it with Google/Firebase. Any client can POST arbitrary `{email, first_name, last_name}` and receive a valid app session token for that email (account takeover/impersonation risk).
+- **Task incompleteness around secrets setup.** The diff adds `.env.production_example` and startup scripts, but no actual runtime secret configuration or prompting flow in-app/agent for missing `SMTP_USER`/`SMTP_PASS`. Since SMTP delivery depends on runtime secrets, this part is only partially addressed.
+- **What is correctly implemented:** backend auth persistence moved from in-memory dicts to SQLite tables (`auth_users`, `auth_otps`, `auth_sessions`), web Google popup wiring is present (`frontend/lib/firebase.js`, `frontend/screens/Auth.js`), and mobile register/login now call backend with OTP verification path in `AuthContext` + auth screen.
+
+Security:
+- **Serious violation observed:** broken authentication on `/auth/google` due to missing ID token verification (high severity).
+
+Next actions:
+1. Implement real mobile Google auth (Expo Auth Session or Firebase Auth for React Native), obtain a real Google/Firebase ID token, and call `googleLogin` in `AuthContext`.
+2. Enforce backend token verification in `/auth/google` (validate `id_token` against Firebase Admin/Google certs, verify issuer/audience/email), reject invalid tokens.
+3. Ensure deployment/runtime secret setup is explicit (Replit secrets or env validation at startup) so SMTP credentials are actually provided and OTP email delivery is guaranteed in non-dev environments.- **Blocking: Mobile Google Sign-In is not implemented.** In `mobile/app/auth/index.tsx`, the Google button only shows an alert (`handleGoogle`) and never performs Firebase/Expo OAuth. This fails the required outcome: “mobile Google sign-in button exists and triggers Firebase Google auth.”
+- **Blocking security issue: backend trusts unverified Google identity.** `Backend/routes/auth.py` `/auth/google` accepts `id_token` but never verifies it with Google/Firebase. Any client can POST arbitrary `{email, first_name, last_name}` and receive a valid app session token for that email (account takeover/impersonation risk).
+- **Task incompleteness around secrets setup.** The diff adds `.env.production_example` and startup scripts, but no actual runtime secret configuration or prompting flow in-app/agent for missing `SMTP_USER`/`SMTP_PASS`. Since SMTP delivery depends on runtime secrets, this part is only partially addressed.
+- **What is correctly implemented:** backend auth persistence moved from in-memory dicts to SQLite tables (`auth_users`, `auth_otps`, `auth_sessions`), web Google popup wiring is present (`frontend/lib/firebase.js`, `frontend/screens/Auth.js`), and mobile register/login now call backend with OTP verification path in `AuthContext` + auth screen.
+
+Security:
+- **Serious violation observed:** broken authentication on `/auth/google` due to missing ID token verification (high severity).
+
+Next actions:
+1. Implement real mobile Google auth (Expo Auth Session or Firebase Auth for React Native), obtain a real Google/Firebase ID token, and call `googleLogin` in `AuthContext`.
+2. Enforce backend token verification in `/auth/google` (validate `id_token` against Firebase Admin/Google certs, verify issuer/audience/email), reject invalid tokens.
+3. Ensure deployment/runtime secret setup is explicit (Replit secrets or env validation at startup) so SMTP credentials are actually provided and OTP email delivery is guaranteed in non-dev environments.
