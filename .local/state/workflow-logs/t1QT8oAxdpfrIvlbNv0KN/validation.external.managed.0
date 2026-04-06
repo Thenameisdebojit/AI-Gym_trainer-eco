@@ -1,0 +1,33 @@
+VERDICT: REJECTED
+The diff makes substantial progress, but it does not fully satisfy core task requirements due to a blocking mobile Google Sign-In implementation issue.
+
+Critical findings:
+- **Blocking: Mobile Google Sign-In is implemented with `sVERDICT: REJECTED
+ignInWithPopup` from `firebase/auth`** (`mobile/lib/firebase.ts`), which is a web popuThe diff makes substantial progress, but it does not fully satisfy core task requirements due to a blocking mobile Google Sign-In implementation issue.
+p flow and is not valid for native Expo iOS/Android app contexts. Th
+is means the “Continue with Google” path is not reliablyCritical findings:
+ functional on mobile devices, which is a core requirement.
+- Backend auth persistence is correctly moved from in-memory dicts to SQLite-backed SQLAlchemy tables (`AuthUser`, `OTPRecord`, `AuthSession`) and should persist across restarts.
+- Mobile `AuthContext` stubs were correctly replaced with real backend calls for register/verify/login/resend; OTP verify flow was added to `mobile/app/auth/index.tsx`.
+- Web Google Sign-In is now wired end-to-end (Firebase popup + backend `/auth/google` exchange) and is functionally aligned with the task.
+- SMTP secret handling is only partially addressed (warnings/docs/stub env files). This is reasonable from code perspective, but it still depends on external secret provisioning to actually deliver OTP emails.
+
+Security:
+- **Serious auth hardening gap observed:** backend Google token verification (`/auth/google`) calls Google tokeninfo but does not validate `aud`/`azp` against expected client IDs. Tokens from unintended clients/projects may be accepted. This is a meaningful auth trust-boundary weakness.
+
+Next actions:
+1. Replace mobile Google flow with a native-compatible approach (`expo-auth-session` + Google provider, or Firebase RN-compatible credential flow), and verify on iOS/Android (not just web).
+2. In backend Google verification, enforce audience/client checks (`aud` against configured web/mobile client IDs) and reject mismatches.
+3. Ensure deployment/runtime secrets are actually set (`SMTP_USER`, `SMTP_PASS`, Firebase envs) and validate with an end-to-end OTP inbox test and Google login test.- **Blocking: Mobile Google Sign-In is implemented with `signInWithPopup` from `firebase/auth`** (`mobile/lib/firebase.ts`), which is a web popup flow and is not valid for native Expo iOS/Android app contexts. This means the “Continue with Google” path is not reliably functional on mobile devices, which is a core requirement.
+- Backend auth persistence is correctly moved from in-memory dicts to SQLite-backed SQLAlchemy tables (`AuthUser`, `OTPRecord`, `AuthSession`) and should persist across restarts.
+- Mobile `AuthContext` stubs were correctly replaced with real backend calls for register/verify/login/resend; OTP verify flow was added to `mobile/app/auth/index.tsx`.
+- Web Google Sign-In is now wired end-to-end (Firebase popup + backend `/auth/google` exchange) and is functionally aligned with the task.
+- SMTP secret handling is only partially addressed (warnings/docs/stub env files). This is reasonable from code perspective, but it still depends on external secret provisioning to actually deliver OTP emails.
+
+Security:
+- **Serious auth hardening gap observed:** backend Google token verification (`/auth/google`) calls Google tokeninfo but does not validate `aud`/`azp` against expected client IDs. Tokens from unintended clients/projects may be accepted. This is a meaningful auth trust-boundary weakness.
+
+Next actions:
+1. Replace mobile Google flow with a native-compatible approach (`expo-auth-session` + Google provider, or Firebase RN-compatible credential flow), and verify on iOS/Android (not just web).
+2. In backend Google verification, enforce audience/client checks (`aud` against configured web/mobile client IDs) and reject mismatches.
+3. Ensure deployment/runtime secrets are actually set (`SMTP_USER`, `SMTP_PASS`, Firebase envs) and validate with an end-to-end OTP inbox test and Google login test.
