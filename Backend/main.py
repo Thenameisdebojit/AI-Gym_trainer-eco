@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -67,12 +68,20 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+_CORS_ORIGINS = [
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
+]
+_replit_domain = os.environ.get("REPLIT_DEV_DOMAIN")
+if _replit_domain:
+    _CORS_ORIGINS.append(f"https://{_replit_domain}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
 )
 
 app.include_router(workout.router)
