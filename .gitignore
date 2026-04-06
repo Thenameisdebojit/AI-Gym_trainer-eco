@@ -36,3 +36,8 @@ Thumbs.db
 
 # Replit
 .replit.nix
+
+
+.local/
+node_modules/
+.env
