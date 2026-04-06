@@ -1,0 +1,45 @@
+VERDICT: APPROVED_WITH_COMMENTS
+
+The diff materially delivers the auth-fix objectives (SQLite-backed auth persistence, real mobile auth API wiring + OTP flow, and Google sign-in on web/mobile), with only non-blocking gaps around environment/config hardVERDICT: APPROVED_WITH_COMMENTS
+ening.
+
+Critical findings / analysis:
+- Backend auth persistence is corr
+ectly moved off in-memory dicts to SQLite via SQLAlchemy models (`auth_The diff materially delivers the auth-fix objectives (SQLite-backed auth persistence, real mobile auth API wiring + OTP flow, and Google sign-in on web/mobile), with only non-blocking gaps around environment/config hardening.
+users`, `auth_otps`, `auth_sessions`) in `Backend/routes/au
+th.py`, and all core auth endpoints now read/write persistent storCritical findings / analysis:
+age.
+- Web Google sign-in is now implemented end-to-end: Fire- Backend auth persistence is correctly moved off in-memory dicts to SQLite via SQLAlchemy models (`auth_users`, `auth_otps`, `auth_sessions`) in `Backend/routes/auth.py`, and all core auth endpoints now read/write persistent storage.
+base popup (`frontend/lib/firebase.js`) + frontend API proxy (`frontend/app/api/auth/google/route.js`) + backend `/auth/google` token handling.
+- Mobile auth is no longer mocked: `AuthContext.tsx` now calls real backend endpoints for register/login/verify/resend; mobile auth screen includes OTP verification mode and Google button flow.
+- OTP email behavior remains functionally dependent on env secrets, but the commit adds explicit setup guidance (`.env.production_example`) and startup/config warnings (`Backend/main.py`).
+
+Comments (non-blocking):
+1) SMTP task is only partially operational in-repo: secrets are documented/warned but not truly “set” (which is expected for security), so successful inbox delivery still depends on external secret provisioning.
+2) `Backend/models/user.py` was not updated with the new auth user schema despite task wording; auth model lives in `routes/auth.py` instead. Functionality works, but model placement is less clean.
+3) Frontend auth API proxies remain hardcoded to `http://localhost:8000` (including new Google route), limiting deploy portability unless environment-based URLs are introduced.
+
+Security:
+- No serious direct vulnerability introduced in the implemented paths.
+- Note: `GOOGLE_VERIFY_TOKENS=false` disables verification (explicitly warned in code); acceptable for dev only, as documented.
+
+Next actions (high impact):
+1) Ensure runtime secrets are actually configured in the target environment (`SMTP_USER`, `SMTP_PASS`, Firebase + Google client IDs).
+2) Move backend auth model definitions into `Backend/models/user.py` (or dedicated auth models module) for maintainability consistency.
+3) Replace hardcoded localhost in frontend API routes with env-driven backend URL to avoid deployment breakage.- Web Google sign-in is now implemented end-to-end: Firebase popup (`frontend/lib/firebase.js`) + frontend API proxy (`frontend/app/api/auth/google/route.js`) + backend `/auth/google` token handling.
+- Mobile auth is no longer mocked: `AuthContext.tsx` now calls real backend endpoints for register/login/verify/resend; mobile auth screen includes OTP verification mode and Google button flow.
+- OTP email behavior remains functionally dependent on env secrets, but the commit adds explicit setup guidance (`.env.production_example`) and startup/config warnings (`Backend/main.py`).
+
+Comments (non-blocking):
+1) SMTP task is only partially operational in-repo: secrets are documented/warned but not truly “set” (which is expected for security), so successful inbox delivery still depends on external secret provisioning.
+2) `Backend/models/user.py` was not updated with the new auth user schema despite task wording; auth model lives in `routes/auth.py` instead. Functionality works, but model placement is less clean.
+3) Frontend auth API proxies remain hardcoded to `http://localhost:8000` (including new Google route), limiting deploy portability unless environment-based URLs are introduced.
+
+Security:
+- No serious direct vulnerability introduced in the implemented paths.
+- Note: `GOOGLE_VERIFY_TOKENS=false` disables verification (explicitly warned in code); acceptable for dev only, as documented.
+
+Next actions (high impact):
+1) Ensure runtime secrets are actually configured in the target environment (`SMTP_USER`, `SMTP_PASS`, Firebase + Google client IDs).
+2) Move backend auth model definitions into `Backend/models/user.py` (or dedicated auth models module) for maintainability consistency.
+3) Replace hardcoded localhost in frontend API routes with env-driven backend URL to avoid deployment breakage.

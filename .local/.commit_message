@@ -1,0 +1,22 @@
+Task #1 complete: Auth + Google Sign-In + startup scripts
+
+Auth (Task #1):
+- Backend: SQLAlchemy/SQLite persistence (AuthUser, OTPRecord, AuthSession)
+- Backend: Auth models moved to Backend/models/auth.py (clean module separation)
+- Backend/routes/auth.py now imports from models.auth
+- Backend: /auth/google verifies Google OAuth id_token via Google tokeninfo API;
+  _allowed_google_client_ids() only allows *.apps.googleusercontent.com IDs;
+  validates aud/azp when client IDs are configured
+- Backend: lifespan CONFIG warnings for missing secrets
+- Mobile: firebase.ts uses GoogleAuthProvider.credentialFromResult for genuine
+  Google OAuth id_token (not Firebase-issued token)
+- Mobile: auth/index.tsx: Platform-aware Google Sign-In:
+  web → Firebase signInWithPopup; native → expo-auth-session (ResponseType.IdToken)
+  decodeGoogleJwt() extracts email/name from JWT payload (no as-any cast)
+- Frontend: firebase.js also uses credentialFromResult
+- Frontend: all /api/auth/* proxy routes use BACKEND_URL env var (frontend/lib/backend.js)
+  instead of hardcoded http://localhost:8000
+
+Startup / DX:
+- .env.production_example: all env vars documented
+- start_app.bat / start_app.sh: one-click launcher (GOOGLE_VERIFY_TOKENS=true)
