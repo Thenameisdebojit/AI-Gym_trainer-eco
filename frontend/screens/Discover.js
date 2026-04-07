@@ -331,6 +331,76 @@ function DetailView({ workout, catColor, levelColor, detailExercises, totalCalsP
   );
 }
 
+/* ─── PLAYLIST PANEL ────────────────────────────────────────────────── */
+function PlaylistPanel({ playlist, setPlaylist, estPlaylistMin, onStart, removeFromPlaylist }) {
+  const [collapsed, setCollapsed] = useState(false);
+  const totalCals = playlist.reduce((s, e) => s + (e.cals || 0), 0);
+
+  return (
+    <div style={{ marginBottom: 32 }}>
+      {/* Header row (always visible) */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: collapsed ? 0 : 14 }}>
+        <button onClick={() => setCollapsed(c => !c)} style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0 }}>
+          <div style={{ fontWeight: 800, fontSize: 17, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span>{collapsed ? '▶' : '▼'}</span>
+            <span>My Playlist 🎵</span>
+            {playlist.length > 0 && (
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-tertiary)', marginLeft: 4 }}>
+                {playlist.length} exercise{playlist.length !== 1 ? 's' : ''} · ~{estPlaylistMin} min · ~{Math.round(totalCals)} cal
+              </span>
+            )}
+          </div>
+        </button>
+        {playlist.length > 0 && !collapsed && (
+          <button onClick={() => setPlaylist([])} style={{ background: 'none', border: '1.5px solid var(--border)', borderRadius: 8, padding: '5px 10px', fontSize: 12, color: '#EF4444', cursor: 'pointer', fontWeight: 600 }}>
+            🗑 Clear all
+          </button>
+        )}
+      </div>
+
+      {!collapsed && (
+        <>
+          {playlist.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '28px 20px', background: 'var(--surface)', borderRadius: 16, border: '1.5px dashed var(--border)', marginBottom: 12 }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>🎵</div>
+              <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text-secondary)' }}>Your playlist is empty</div>
+              <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 6 }}>Tap + on any exercise above to add it here</div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
+              {playlist.map((ex, i) => {
+                const dc = EX_DIFF_COLORS[ex.difficulty] || '#64748B';
+                return (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'var(--surface)', borderRadius: 12, padding: '12px 14px', border: '1px solid var(--border)' }}>
+                    <div style={{ width: 30, height: 30, borderRadius: 8, background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#fff', flexShrink: 0 }}>{i + 1}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ex.name}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>{ex.reps} reps · ~{ex.cals} cal</div>
+                    </div>
+                    {ex.difficulty && (
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99, background: `${dc}18`, color: dc, flexShrink: 0 }}>
+                        {ex.difficulty.charAt(0).toUpperCase() + ex.difficulty.slice(1)}
+                      </span>
+                    )}
+                    <button onClick={() => removeFromPlaylist(ex.name)} style={{ background: 'none', border: 'none', color: '#94A3B8', fontSize: 16, cursor: 'pointer', padding: '0 2px', flexShrink: 0 }} title="Remove">✕</button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {playlist.length >= 30 && (
+            <div style={{ textAlign: 'center', fontSize: 12, color: '#F59E0B', marginBottom: 10 }}>Max 30 exercises reached</div>
+          )}
+          <button onClick={onStart} disabled={playlist.length === 0}
+            style={{ width: '100%', padding: 16, borderRadius: 14, background: playlist.length === 0 ? 'var(--surface-2)' : 'linear-gradient(135deg,#2563EB,#7C3AED)', border: '1.5px solid var(--border)', color: playlist.length === 0 ? 'var(--text-tertiary)' : '#fff', fontSize: 16, fontWeight: 800, cursor: playlist.length === 0 ? 'not-allowed' : 'pointer', boxShadow: playlist.length === 0 ? 'none' : '0 8px 28px rgba(37,99,235,0.35)', transition: 'all 0.2s' }}>
+            {playlist.length === 0 ? 'Add exercises to start' : '▶ Start Playlist Workout'}
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
 /* ─── SEARCH VIEW ───────────────────────────────────────────────────── */
 const EX_CATS = ['all','gym','freehand','calisthenics','cardio','yoga','martial_arts','rehab'];
 const EX_DIFFS = ['all','beginner','intermediate','advanced'];
@@ -636,60 +706,13 @@ function SearchView({ onBack, onOpenWorkout, onStartCustomWorkout }) {
         </div>
 
         {/* ── Custom Workout Playlist ── */}
-        <div style={{ marginBottom: 32 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: 17, color: 'var(--text)' }}>My Playlist 🎵</div>
-              {playlist.length > 0 && (
-                <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>
-                  {playlist.length} exercise{playlist.length !== 1 ? 's' : ''} · ~{estPlaylistMin} min
-                </div>
-              )}
-            </div>
-            {playlist.length > 0 && (
-              <button onClick={() => setPlaylist([])} style={{ background: 'none', border: '1.5px solid var(--border)', borderRadius: 8, padding: '5px 10px', fontSize: 12, color: '#EF4444', cursor: 'pointer', fontWeight: 600 }}>
-                🗑 Clear all
-              </button>
-            )}
-          </div>
-          {playlist.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '32px 20px', background: 'var(--surface)', borderRadius: 16, border: '1.5px dashed var(--border)' }}>
-              <div style={{ fontSize: 36, marginBottom: 10 }}>🎵</div>
-              <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text-secondary)' }}>Your playlist is empty</div>
-              <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 6 }}>Tap + on any exercise above to add it here</div>
-            </div>
-          ) : (
-            <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
-                {playlist.map((ex, i) => {
-                  const dc = EX_DIFF_COLORS[ex.difficulty] || '#64748B';
-                  return (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'var(--surface)', borderRadius: 12, padding: '12px 14px', border: '1px solid var(--border)' }}>
-                      <div style={{ width: 30, height: 30, borderRadius: 8, background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#fff', flexShrink: 0 }}>{i + 1}</div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ex.name}</div>
-                        <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>{ex.reps} reps · ~{ex.cals} cal</div>
-                      </div>
-                      {ex.difficulty && (
-                        <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99, background: `${dc}18`, color: dc, flexShrink: 0 }}>
-                          {ex.difficulty.charAt(0).toUpperCase() + ex.difficulty.slice(1)}
-                        </span>
-                      )}
-                      <button onClick={() => removeFromPlaylist(ex.name)} style={{ background: 'none', border: 'none', color: '#94A3B8', fontSize: 16, cursor: 'pointer', padding: '0 2px', flexShrink: 0 }} title="Remove">✕</button>
-                    </div>
-                  );
-                })}
-              </div>
-              {playlist.length >= 30 && (
-                <div style={{ textAlign: 'center', fontSize: 12, color: '#F59E0B', marginBottom: 10 }}>Max 30 exercises reached</div>
-              )}
-              <button onClick={handleStartPlaylist}
-                style={{ width: '100%', padding: 16, borderRadius: 14, background: 'linear-gradient(135deg,#2563EB,#7C3AED)', border: 'none', color: '#fff', fontSize: 16, fontWeight: 800, cursor: 'pointer', boxShadow: '0 8px 28px rgba(37,99,235,0.35)' }}>
-                ▶ Start Playlist Workout
-              </button>
-            </>
-          )}
-        </div>
+        <PlaylistPanel
+          playlist={playlist}
+          setPlaylist={setPlaylist}
+          estPlaylistMin={estPlaylistMin}
+          onStart={handleStartPlaylist}
+          removeFromPlaylist={removeFromPlaylist}
+        />
       </div>
       <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
     </div>
@@ -923,7 +946,7 @@ export default function Discover() {
     const catColor = CAT_COLORS[selectedWorkout.category] || '#2563EB';
     const levelColor = LEVEL_COLORS[selectedWorkout.level] || '#10B981';
     const detailExercises = selectedWorkout.exercises || [];
-    const totalCalsPreview = detailExercises.slice(0, 12).reduce((s, e) => s + (e.cals || 0), 0);
+    const totalCalsPreview = detailExercises.reduce((s, e) => s + (e.cals || 0), 0);
     const DIFF_COLORS = { beginner: '#10B981', intermediate: '#F59E0B', advanced: '#EF4444' };
     return (
       <DetailView
