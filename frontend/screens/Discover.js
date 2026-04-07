@@ -18,6 +18,8 @@ function normalizeEx(ex) {
     duration: 30,
     type: (ex.subcategory || ex.domain || '').toLowerCase(),
     cals: Math.round((ex.caloriesPerRep || 0.5) * reps),
+    difficulty: ex.difficulty || 'beginner',
+    muscle_groups: ex.muscle_groups || [],
   };
 }
 
@@ -285,15 +287,28 @@ function DetailView({ workout, catColor, levelColor, detailExercises, totalCalsP
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 18 }}>
             {visible.map((ex, i) => {
-              const diffColor = DIFF_COLORS[ex.type?.toLowerCase()] || catColor;
+              const dc = DIFF_COLORS[ex.difficulty] || '#64748B';
               return (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'var(--surface)', borderRadius: 12, padding: '14px 16px', border: '1px solid var(--border-light)' }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 10, background: `${catColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: catColor, flexShrink: 0 }}>{i + 1}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{ex.name}</div>
-                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{ex.reps} reps · ~{ex.cals} cal</div>
+                <div key={i} style={{ background: 'var(--surface)', borderRadius: 12, padding: '14px 16px', border: '1px solid var(--border-light)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 10, background: `${catColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: catColor, flexShrink: 0 }}>{i + 1}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{ex.name}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{ex.reps} reps · ~{ex.cals} cal</div>
+                    </div>
+                    {ex.difficulty && (
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 99, background: `${dc}18`, color: dc, flexShrink: 0 }}>
+                        {ex.difficulty.charAt(0).toUpperCase() + ex.difficulty.slice(1)}
+                      </span>
+                    )}
                   </div>
-                  {ex.type && <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 99, background: `${catColor}15`, color: catColor, flexShrink: 0 }}>{ex.type}</span>}
+                  {ex.muscle_groups && ex.muscle_groups.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8, paddingLeft: 50 }}>
+                      {ex.muscle_groups.slice(0, 3).map((m, mi) => (
+                        <span key={mi} style={{ fontSize: 10, padding: '2px 7px', borderRadius: 6, background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}>{m}</span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -796,7 +811,7 @@ export default function Discover() {
   if (view === 'search') {
     return <SearchView
       onBack={() => setView('browse')}
-      onOpenWorkout={(w) => { setSelectedWorkout(w); setView('detail'); }}
+      onOpenWorkout={openDetail}
       onStartCustomWorkout={(customWorkout) => {
         setSelectedWorkout(customWorkout);
         setCatalogExercises(customWorkout.exercises || []);
