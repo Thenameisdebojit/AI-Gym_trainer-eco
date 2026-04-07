@@ -21,20 +21,53 @@ function get(url) {
 }
 
 function normalize(name) {
-  return name.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+  return name.toLowerCase()
+    .replace(/[^a-z0-9 ]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
-function words(str) {
-  return new Set(normalize(str).split(' ').filter(w => w.length > 2));
+function tokenize(str) {
+  const STOP = new Set(['the','and','with','from','your','each','than','this','that','both',
+    'using','use','side','left','right','back','front','low','high','hold','one','two']);
+  return normalize(str).split(' ').filter(w => w.length > 2 && !STOP.has(w));
+}
+
+function wordsSet(str) {
+  return new Set(tokenize(str));
+}
+
+// Primary movement words — at least one must match between our name and candidate
+const MOVEMENT_WORDS = new Set([
+  'press','curl','row','squat','lunge','deadlift','fly','raise','pulldown','pullup',
+  'push','dip','extension','flexion','pullover','shrug','crunch','situp','plank',
+  'bridge','thrust','kick','swing','snatch','clean','jerk','pull','jump','hop',
+  'run','walk','step','skip','climb','drag','carry','throw','slam','roll','twist',
+  'rotation','hold','stretch','bend','lift','lower','squeeze','cross',
+]);
+
+function primaryWord(name) {
+  const toks = tokenize(name);
+  return toks.find(t => MOVEMENT_WORDS.has(t)) || null;
 }
 
 function score(ourName, theirName) {
-  const ow = words(ourName);
-  const tw = words(theirName);
+  const ourPrimary  = primaryWord(ourName);
+  const theirPrimary = primaryWord(theirName);
+
+  // If our name has a movement word, the match MUST share it
+  if (ourPrimary && theirPrimary !== ourPrimary) return 0;
+
+  const ow = wordsSet(ourName);
+  const tw = wordsSet(theirName);
   if (ow.size === 0) return 0;
+
   let overlap = 0;
   ow.forEach(w => { if (tw.has(w)) overlap++; });
-  return overlap / Math.max(ow.size, tw.size);
+
+  // Jaccard similarity
+  const union = new Set([...ow, ...tw]).size;
+  return overlap / union;
 }
 
 async function main() {
@@ -55,7 +88,8 @@ async function main() {
       const s = score(ex.name, free.name);
       if (s > bestScore) { bestScore = s; best = free; }
     }
-    if (bestScore >= 0.45 && best && best.images && best.images.length >= 2) {
+    // Require: score ≥ 0.40, must have both image poses
+    if (bestScore >= 0.40 && best && best.images && best.images.length >= 2) {
       const id = best.images[0].split('/')[0];
       result[ex.id] = {
         img0: `${FREE_DB_IMAGE_BASE}/${encodeURIComponent(id)}/0.jpg`,

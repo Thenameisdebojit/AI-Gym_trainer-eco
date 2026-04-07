@@ -498,6 +498,8 @@ function SearchView({ onBack, onOpenWorkout, onStartCustomWorkout }) {
       type: (ex.subcategory || ex.domain || '').toLowerCase(),
       cals: Math.round((ex.caloriesPerRep || 0.5) * reps),
       difficulty: ex.difficulty,
+      img0: ex.img0 || null,
+      img1: ex.img1 || null,
     }]);
   };
 
@@ -769,7 +771,9 @@ export default function Discover() {
   const [completedCount, setCompletedCount] = useState(0);
   const [sessionStart, setSessionStart] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [fadingExercise, setFadingExercise] = useState(null);
   const timerRef = useRef(null);
+  const fadeTimerRef = useRef(null);
 
   useEffect(() => {
     if (navTarget?.tab === 'discover') {
@@ -813,6 +817,18 @@ export default function Discover() {
 
   const exercises = selectedWorkout?.exercises || [];
   const currentExercise = exercises[exIdx];
+  const prevExIdxRef = useRef(exIdx);
+  useEffect(() => {
+    if (exIdx !== prevExIdxRef.current) {
+      const outgoing = exercises[prevExIdxRef.current];
+      if (outgoing) {
+        setFadingExercise(outgoing);
+        clearTimeout(fadeTimerRef.current);
+        fadeTimerRef.current = setTimeout(() => setFadingExercise(null), 400);
+      }
+      prevExIdxRef.current = exIdx;
+    }
+  }, [exIdx]);
 
   const markDone = useCallback(() => {
     clearInterval(timerRef.current);
@@ -919,20 +935,38 @@ export default function Discover() {
                 <button onClick={() => { clearInterval(timerRef.current); setExIdx(i => i + 1); setPhase('exercise'); setExerciseTimer(30); }} style={{ background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', color: '#10B981', padding: '12px 28px', borderRadius: 14, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>Skip Rest →</button>
               </div>
             ) : (
-              <div key={`ex-${exIdx}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, animation: 'fadeIn 0.35s ease' }}>
-                <ExerciseThumb
-                  img0={currentExercise.img0}
-                  img1={currentExercise.img1}
-                  name={currentExercise.name}
-                  size={200}
-                  radius={24}
-                  paused={paused}
-                  bg="rgba(37,99,235,0.15)"
-                  fallbackColor="#2563EB"
-                  fallback={
-                    <div style={{ width: 200, height: 200, borderRadius: 24, background: 'linear-gradient(135deg,#2563EB,#7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 64 }}>🏋️</div>
-                  }
-                />
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
+                {/* Two-layer cross-fade: outgoing fades out, incoming fades in */}
+                <div style={{ position: 'relative', width: 200, height: 200 }}>
+                  {fadingExercise && (
+                    <div key={`fading-${exIdx - 1}`} style={{ position: 'absolute', inset: 0, animation: 'et-xfade-out 0.4s ease forwards', pointerEvents: 'none' }}>
+                      <ExerciseThumb
+                        img0={fadingExercise.img0}
+                        img1={fadingExercise.img1}
+                        name={fadingExercise.name}
+                        size={200}
+                        radius={24}
+                        paused
+                        bg="rgba(37,99,235,0.15)"
+                        fallbackColor="#2563EB"
+                        fallback={<div style={{ width: 200, height: 200, borderRadius: 24, background: 'linear-gradient(135deg,#2563EB,#7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 64 }}>🏋️</div>}
+                      />
+                    </div>
+                  )}
+                  <div key={`cur-${exIdx}`} style={{ position: 'absolute', inset: 0, animation: 'et-xfade-in 0.4s ease forwards' }}>
+                    <ExerciseThumb
+                      img0={currentExercise.img0}
+                      img1={currentExercise.img1}
+                      name={currentExercise.name}
+                      size={200}
+                      radius={24}
+                      paused={paused}
+                      bg="rgba(37,99,235,0.15)"
+                      fallbackColor="#2563EB"
+                      fallback={<div style={{ width: 200, height: 200, borderRadius: 24, background: 'linear-gradient(135deg,#2563EB,#7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 64 }}>🏋️</div>}
+                    />
+                  </div>
+                </div>
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: 28, fontWeight: 900, marginBottom: 8 }}>{currentExercise.name}</div>
                   <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -977,6 +1011,10 @@ export default function Discover() {
             </div>
           </div>
         )}
+      <style>{`
+        @keyframes et-xfade-in { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes et-xfade-out { from { opacity: 1; } to { opacity: 0; } }
+      `}</style>
       </div>
     );
   }
