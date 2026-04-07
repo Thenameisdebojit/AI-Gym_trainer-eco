@@ -321,7 +321,10 @@ function DetailView({ workout, catColor, levelColor, detailExercises, totalCalsP
             </button>
           </div>
         )}
-        <button onClick={onStart} style={{ width: '100%', padding: 18, borderRadius: 14, background: `linear-gradient(135deg,${catColor},#7C3AED)`, border: 'none', color: '#fff', fontSize: 18, fontWeight: 800, cursor: 'pointer', boxShadow: `0 12px 36px ${catColor}40` }}>▶ Start Workout</button>
+        <button onClick={onStart} disabled={catalogLoading}
+          style={{ width: '100%', padding: 18, borderRadius: 14, background: catalogLoading ? 'var(--surface-2)' : `linear-gradient(135deg,${catColor},#7C3AED)`, border: 'none', color: catalogLoading ? 'var(--text-tertiary)' : '#fff', fontSize: 18, fontWeight: 800, cursor: catalogLoading ? 'wait' : 'pointer', boxShadow: catalogLoading ? 'none' : `0 12px 36px ${catColor}40`, transition: 'all 0.2s' }}>
+          {catalogLoading ? '⏳ Loading exercises…' : '▶ Start Workout'}
+        </button>
       </div>
       <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
     </div>
@@ -701,8 +704,8 @@ export default function Discover() {
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [hoveredCard, setHoveredCard] = useState(null);
 
-  const [catalogExercises, setCatalogExercises] = useState([]);
   const [catalogLoading, setCatalogLoading] = useState(false);
+  const fetchControllerRef = useRef(null);
 
   const [phase, setPhase] = useState('countdown');
   const [countdown, setCountdown] = useState(5);
@@ -725,23 +728,23 @@ export default function Discover() {
   }, [navTarget]);
 
   const openDetail = useCallback((workout) => {
+    if (fetchControllerRef.current) fetchControllerRef.current.abort();
     const domain = CATALOG_DOMAIN_MAP[workout.category];
-    setCatalogExercises([]);
-    setCatalogLoading(true);
-    if (domain) {
-      fetch(`/api/exercises?domain=${domain}`)
-        .then(r => r.json())
-        .then(data => {
-          const list = Array.isArray(data) ? data : [];
-          setCatalogExercises(list.map(normalizeEx));
-        })
-        .catch(() => setCatalogExercises([]))
-        .finally(() => setCatalogLoading(false));
-    } else {
-      setCatalogLoading(false);
-    }
+    setCatalogLoading(!!domain);
     setSelectedWorkout(workout);
     setView('detail');
+    if (domain) {
+      const ctrl = new AbortController();
+      fetchControllerRef.current = ctrl;
+      fetch(`/api/exercises?domain=${domain}`, { signal: ctrl.signal })
+        .then(r => r.json())
+        .then(data => {
+          const normalized = (Array.isArray(data) ? data : []).map(normalizeEx);
+          setSelectedWorkout(prev => ({ ...prev, exercises: normalized }));
+        })
+        .catch(err => { if (err.name !== 'AbortError') { /* keep seed exercises */ } })
+        .finally(() => { if (!ctrl.signal.aborted) setCatalogLoading(false); });
+    }
   }, []);
   const openById = useCallback((id) => { const w = WORKOUT_CATALOG.find(x => x.id === id); if (w) openDetail(w); }, [openDetail]);
 
@@ -757,7 +760,7 @@ export default function Discover() {
     else { setSelectedWorkout(null); setView('browse'); }
   };
 
-  const exercises = catalogExercises.length > 0 ? catalogExercises : (selectedWorkout?.exercises || []);
+  const exercises = selectedWorkout?.exercises || [];
   const currentExercise = exercises[exIdx];
 
   const markDone = useCallback(() => {
@@ -814,7 +817,6 @@ export default function Discover() {
       onOpenWorkout={openDetail}
       onStartCustomWorkout={(customWorkout) => {
         setSelectedWorkout(customWorkout);
-        setCatalogExercises(customWorkout.exercises || []);
         setExIdx(0); setPhase('countdown'); setCountdown(5); setExerciseTimer(30); setRestTimer(15);
         setPaused(false); setTotalCals(0); setTotalReps(0); setCompletedCount(0); setSessionStart(Date.now());
         setView('session');
@@ -920,7 +922,7 @@ export default function Discover() {
   if (view === 'detail' && selectedWorkout) {
     const catColor = CAT_COLORS[selectedWorkout.category] || '#2563EB';
     const levelColor = LEVEL_COLORS[selectedWorkout.level] || '#10B981';
-    const detailExercises = catalogExercises.length > 0 ? catalogExercises : (selectedWorkout.exercises || []);
+    const detailExercises = selectedWorkout.exercises || [];
     const totalCalsPreview = detailExercises.slice(0, 12).reduce((s, e) => s + (e.cals || 0), 0);
     const DIFF_COLORS = { beginner: '#10B981', intermediate: '#F59E0B', advanced: '#EF4444' };
     return (
