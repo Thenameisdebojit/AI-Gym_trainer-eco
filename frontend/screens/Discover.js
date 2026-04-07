@@ -382,6 +382,7 @@ export default function Discover() {
   const [exLibCat, setExLibCat] = useState('all');
   const [exLibDiff, setExLibDiff] = useState('all');
   const [exLibExpanded, setExLibExpanded] = useState(false);
+  const [exLibSearch, setExLibSearch] = useState('');
 
   const [phase, setPhase] = useState('countdown');
   const [countdown, setCountdown] = useState(5);
@@ -724,13 +725,28 @@ export default function Discover() {
         const EX_DIFFS = ['all','beginner','intermediate','advanced'];
         const DIFF_COLORS = { beginner: '#10B981', intermediate: '#F59E0B', advanced: '#EF4444' };
         const CAT_ICONS = { gym:'🏋️', freehand:'🤸', calisthenics:'💪', cardio:'🏃', yoga:'🧘', martial_arts:'🥊', rehab:'🩹', all:'✦' };
+        const searchLow = exLibSearch.toLowerCase();
         const filtered = exLib.filter(ex =>
           (exLibCat === 'all' || ex.domain === exLibCat) &&
-          (exLibDiff === 'all' || ex.difficulty === exLibDiff)
+          (exLibDiff === 'all' || ex.difficulty === exLibDiff) &&
+          (!searchLow || ex.name.toLowerCase().includes(searchLow) || (ex.muscle_groups || []).some(m => m.toLowerCase().includes(searchLow)))
         );
         const visible = exLibExpanded ? filtered : filtered.slice(0, 12);
         return (
           <Section label="Exercise Library 📚" pad={false}>
+            {/* Search */}
+            <div style={{ position: 'relative', paddingLeft: 24, paddingRight: 24, paddingBottom: 12 }}>
+              <div style={{ position: 'absolute', left: 40, top: '50%', transform: 'translateY(-50%)', fontSize: 16, color: 'var(--text-tertiary)', pointerEvents: 'none' }}>🔍</div>
+              <input
+                type="text"
+                placeholder="Search exercises, muscles..."
+                value={exLibSearch}
+                onChange={e => { setExLibSearch(e.target.value); setExLibExpanded(false); }}
+                style={{ width: '100%', boxSizing: 'border-box', padding: '11px 16px 11px 44px', borderRadius: 12, border: '1.5px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', fontSize: 13, outline: 'none' }}
+                onFocus={e => e.target.style.borderColor = 'var(--primary)'}
+                onBlur={e => e.target.style.borderColor = 'var(--border)'}
+              />
+            </div>
             {/* Category filter */}
             <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingLeft: 24, paddingRight: 24, paddingBottom: 10 }} className="hide-scroll">
               {EX_CATS.map(cat => (

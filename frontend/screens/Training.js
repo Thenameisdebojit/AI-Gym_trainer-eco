@@ -1816,6 +1816,53 @@ export default function Training() {
                   ))}
                 </div>
 
+                {/* ── Live exercises from backend matching this selection ── */}
+                {liveExercises.length > 0 && (() => {
+                  const domainMap = { gym: ['gym'], home: ['freehand', 'calisthenics'] };
+                  const allowedDomains = domainMap[selectedMode?.id] || [];
+                  const levelId = selectedLevel?.id || 'beginner';
+                  const DIFF_C = { beginner: '#10B981', intermediate: '#F59E0B', advanced: '#EF4444' };
+                  const matched = liveExercises.filter(ex =>
+                    allowedDomains.includes(ex.domain) && ex.difficulty === levelId
+                  );
+                  if (matched.length === 0) return null;
+                  return (
+                    <div style={{ marginBottom: '24px' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '14px' }}>
+                        Exercise Library · {selectedMode.label} · {selectedLevel.label} ({matched.length})
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {matched.slice(0, 8).map((ex, i) => {
+                          const dc = DIFF_C[ex.difficulty] || '#64748B';
+                          return (
+                            <div key={ex.id || i} style={{ display: 'flex', alignItems: 'center', gap: '14px', background: 'var(--surface)', borderRadius: '12px', padding: '12px 16px', border: '1px solid var(--border-light)' }}>
+                              <div style={{ width: 36, height: 36, borderRadius: '10px', background: `${selectedBody.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>
+                                {selectedMode.id === 'gym' ? '🏋️' : '🤸'}
+                              </div>
+                              <div style={{ flex: 1 }}>
+                                <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)', marginBottom: '2px' }}>{ex.name}</div>
+                                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                  {(ex.muscle_groups || []).slice(0, 2).map((m, mi) => (
+                                    <span key={mi} style={{ background: 'var(--surface-2)', padding: '1px 6px', borderRadius: '5px', border: '1px solid var(--border)' }}>{m}</span>
+                                  ))}
+                                </div>
+                              </div>
+                              <span style={{ fontSize: '10px', fontWeight: 700, padding: '3px 8px', borderRadius: '99px', background: `${dc}18`, color: dc, flexShrink: 0 }}>
+                                {ex.difficulty.charAt(0).toUpperCase() + ex.difficulty.slice(1)}
+                              </span>
+                            </div>
+                          );
+                        })}
+                        {matched.length > 8 && (
+                          <div style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-tertiary)', fontWeight: 600, padding: '6px 0' }}>
+                            +{matched.length - 8} more in this category
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 <button
                   onClick={startWorkout}
                   disabled={exList.length === 0}
