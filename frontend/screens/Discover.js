@@ -693,8 +693,16 @@ function SearchView({ onBack, onOpenWorkout, onStartCustomWorkout }) {
                         width="100%"
                         height={110}
                         radius={0}
-                        fallbackColor={dc}
-                        bg="var(--surface-2, #1E293B)"
+                        fallbackColor={cc}
+                        bg={`${cc}18`}
+                        fallback={
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                            <div style={{ fontSize: 36, lineHeight: 1 }}>{EX_CAT_ICONS[ex.domain] || '💪'}</div>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: cc, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                              {(ex.domain || '').replace('_', ' ')}
+                            </div>
+                          </div>
+                        }
                       />
                       <div style={{ padding: '10px 14px 0', display: 'flex', flexDirection: 'column', gap: 5 }}>
                       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>

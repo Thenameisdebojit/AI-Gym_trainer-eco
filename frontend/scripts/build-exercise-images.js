@@ -94,8 +94,6 @@ async function main() {
       result[ex.id] = {
         img0: `${FREE_DB_IMAGE_BASE}/${encodeURIComponent(id)}/0.jpg`,
         img1: `${FREE_DB_IMAGE_BASE}/${encodeURIComponent(id)}/1.jpg`,
-        match: best.name,
-        score: Math.round(bestScore * 100),
       };
       matched++;
     }
