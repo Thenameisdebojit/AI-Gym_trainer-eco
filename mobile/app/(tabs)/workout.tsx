@@ -88,7 +88,7 @@ export default function WorkoutScreen() {
   const [goal, setGoal] = useState<Goal>("general");
   const [equipment, setEquipment] = useState<EquipmentLevel>("none");
   const [level, setLevel] = useState<Level>("beginner");
-  const [duration, setDuration] = useState<10 | 20 | 35 | 60>(20);
+  const [duration, setDuration] = useState<8 | 20 | 35 | 60>(20);
   const [loading, setLoading] = useState(false);
   const [generatedWorkout, setGeneratedWorkout] = useState<GeneratedWorkout | null>(null);
   const [showGenerator, setShowGenerator] = useState(false);
@@ -334,7 +334,7 @@ export default function WorkoutScreen() {
             <Text style={styles.genSectionLabel}>Duration</Text>
             <View style={styles.durationRow}>
               {([
-                { value: 10, label: "Quick", sub: "~10 min" },
+                { value: 8, label: "Quick", sub: "~8 min" },
                 { value: 20, label: "Medium", sub: "~20 min" },
                 { value: 35, label: "Long", sub: "~35 min" },
                 { value: 60, label: "Epic", sub: "~60 min" },

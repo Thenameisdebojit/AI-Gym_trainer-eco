@@ -127,7 +127,7 @@ export default function WorkoutSessionScreen() {
     "Keep your core tight!",
     "Perfect tempo!",
   ];
-  const REST_DURATION = 45;
+  const DEFAULT_REST = 45;
 
   const exercises: WorkoutExercise[] = currentPlan?.exercises ?? [];
   const currentExercise = exercises[exerciseIndex];
@@ -191,7 +191,7 @@ export default function WorkoutSessionScreen() {
 
   const startRest = useCallback(() => {
     setPhase("rest");
-    setRestSeconds(REST_DURATION);
+    setRestSeconds(currentExercise?.restSeconds ?? DEFAULT_REST);
     restRef.current = setInterval(() => {
       setRestSeconds(s => {
         if (s <= 1) {
@@ -476,7 +476,8 @@ export default function WorkoutSessionScreen() {
   }
 
   if (phase === "rest") {
-    const restProgress = restSeconds / REST_DURATION;
+    const totalRest = currentExercise?.restSeconds ?? DEFAULT_REST;
+    const restProgress = restSeconds / totalRest;
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <View style={styles.topBar}>
