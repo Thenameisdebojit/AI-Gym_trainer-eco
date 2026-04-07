@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -22,6 +22,7 @@ import {
   LANGUAGE_OPTIONS,
   Language,
 } from "@/context/LanguageContext";
+import { useApp } from "@/context/AppContext";
 
 const GOAL_LABELS = { lose: "Lose Weight", gain: "Build Muscle", maintain: "Stay Fit" };
 const LEVEL_LABELS = { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" };
@@ -183,10 +184,19 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user, logout, isGuest } = useAuth();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
-  const { settings, setLanguage, updateSettings, language } = useLanguage();
+  const { settings, updateSettings, language } = useLanguage();
+  const { setLanguage } = useApp();
   const { t } = useTranslation();
   const [langModalVisible, setLangModalVisible] = useState(false);
   const [unitsModalVisible, setUnitsModalVisible] = useState(false);
+
+  useEffect(() => {
+    console.log("SETTINGS ACTIVE");
+  }, []);
+
+  useEffect(() => {
+    console.log("LANG CHANGED:", language);
+  }, [language]);
 
   const currentLang = LANGUAGE_OPTIONS.find((o) => o.code === language);
   const unitsLabel = settings.units === "metric" ? "Metric (kg/cm)" : "Imperial (lbs/ft)";

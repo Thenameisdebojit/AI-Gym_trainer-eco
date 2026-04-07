@@ -12,6 +12,7 @@ import {
 import * as SplashScreen from "expo-splash-screen";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { AppProvider } from "@/context/AppContext";
 import { COLORS } from "@/constants/theme";
 
 SplashScreen.preventAutoHideAsync();
@@ -41,6 +42,7 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
+        <AppProvider>
         <AuthProvider>
           <StatusBar style="light" />
           <Stack
@@ -60,6 +62,7 @@ export default function RootLayout() {
             <Stack.Screen name="search" options={{ headerShown: false, animation: "slide_from_right" }} />
           </Stack>
         </AuthProvider>
+        </AppProvider>
       </LanguageProvider>
     </QueryClientProvider>
   );

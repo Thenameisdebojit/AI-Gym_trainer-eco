@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -21,6 +21,7 @@ import {
 } from "@/constants/exercises";
 import { generateWorkout } from "@/lib/api";
 import { useWorkoutStore, WorkoutPlan } from "@/store/useWorkoutStore";
+import { useApp } from "@/context/AppContext";
 
 type Goal = "muscle_gain" | "fat_loss" | "flexibility" | "mma" | "general";
 type EquipmentLevel = "none" | "minimal" | "full_gym";
@@ -66,12 +67,21 @@ export default function WorkoutScreen() {
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const { setCurrentPlan } = useWorkoutStore();
 
+  const { language } = useApp();
   const [goal, setGoal] = useState<Goal>("general");
   const [equipment, setEquipment] = useState<EquipmentLevel>("none");
   const [level, setLevel] = useState<Level>("beginner");
   const [loading, setLoading] = useState(false);
   const [generatedWorkout, setGeneratedWorkout] = useState<GeneratedWorkout | null>(null);
   const [showGenerator, setShowGenerator] = useState(false);
+
+  useEffect(() => {
+    console.log("WORKOUT ACTIVE");
+  }, []);
+
+  useEffect(() => {
+    console.log("LANG CHANGED:", language);
+  }, [language]);
 
   const handleGenerate = useCallback(async () => {
     setLoading(true);

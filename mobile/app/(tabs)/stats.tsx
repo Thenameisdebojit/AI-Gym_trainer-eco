@@ -15,6 +15,7 @@ import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useWorkoutStore, WorkoutHistory } from "@/store/useWorkoutStore";
 import { useTranslation } from "@/context/LanguageContext";
+import { useApp } from "@/context/AppContext";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -110,8 +111,17 @@ export default function StatsScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const { history, loadHistory } = useWorkoutStore();
+  const { language } = useApp();
   const [streak, setStreak] = useState(0);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    console.log("REPORT ACTIVE");
+  }, []);
+
+  useEffect(() => {
+    console.log("LANG CHANGED:", language);
+  }, [language]);
 
   useEffect(() => {
     loadHistory();

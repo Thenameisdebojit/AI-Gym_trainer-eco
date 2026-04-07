@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import { router } from "expo-router";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { COLORS, FONTS, SIZES, RADIUS, SPACING } from "@/constants/theme";
 import { useTranslation } from "@/context/LanguageContext";
+import { useApp } from "@/context/AppContext";
 
 const FEATURED = [
   {
@@ -77,6 +78,15 @@ export default function ExploreScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const { t } = useTranslation();
+  const { language } = useApp();
+
+  useEffect(() => {
+    console.log("DISCOVER ACTIVE");
+  }, []);
+
+  useEffect(() => {
+    console.log("LANG CHANGED:", language);
+  }, [language]);
 
   return (
     <View style={[styles.container, { paddingTop: topPad }]}>

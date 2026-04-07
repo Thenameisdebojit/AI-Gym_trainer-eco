@@ -23,6 +23,7 @@ import {
 } from "@/constants/exercises";
 import { BODY_FOCUS_CATEGORIES } from "@/utils/getCategoryImage";
 import { useTranslation } from "@/context/LanguageContext";
+import { useApp } from "@/context/AppContext";
 
 const WORKOUT_TYPES = [
   { key: "muscle", label: "Build Muscle", icon: "💪" },
@@ -50,6 +51,7 @@ export default function SearchScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const { t } = useTranslation();
+  const { language } = useApp();
   const inputRef = useRef<TextInput>(null);
 
   const params = useLocalSearchParams<{ q?: string }>();
@@ -58,6 +60,14 @@ export default function SearchScreen() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<string | null>(null);
   const [selectedBody, setSelectedBody] = useState<string | null>(null);
+
+  useEffect(() => {
+    console.log("SEARCH ACTIVE");
+  }, []);
+
+  useEffect(() => {
+    console.log("LANG CHANGED:", language);
+  }, [language]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

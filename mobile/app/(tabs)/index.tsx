@@ -32,6 +32,7 @@ import {
   getCategoryIcon,
 } from "@/constants/exercises";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useApp } from "@/context/AppContext";
 
 const { width } = Dimensions.get("window");
 
@@ -114,14 +115,20 @@ export default function HomeScreen() {
   const { data: stats } = useQuery({ queryKey: ["/workout/stats"], queryFn: fetchStats, retry: false });
   const [streak, setStreak] = useState(0);
   const topPad = Platform.OS === "web" ? 67 : insets.top;
+  const { language } = useApp();
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   useEffect(() => {
+    console.log("HOME ACTIVE");
     loadStreak();
     updateStreak();
   }, []);
+
+  useEffect(() => {
+    console.log("LANG CHANGED:", language);
+  }, [language]);
 
   const loadStreak = async () => {
     try {
