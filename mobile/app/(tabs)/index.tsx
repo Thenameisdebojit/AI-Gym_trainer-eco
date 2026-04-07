@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import type { ComponentProps } from "react";
+type IoniconsName = ComponentProps<typeof Ionicons>["name"];
 import { router } from "expo-router";
 import Animated, {
   FadeInDown,
@@ -47,9 +49,9 @@ const CATEGORY_ROWS: { id: ExerciseCategory; label: string }[] = [
 ];
 
 const QUICK_EXERCISES = [
-  { id: "pushup_normal", name: "Push-up", category: "freehand" as ExerciseCategory },
-  { id: "squat_bodyweight", name: "Squat", category: "freehand" as ExerciseCategory },
-  { id: "pullup", name: "Pull-up", category: "calisthenics" as ExerciseCategory },
+  { id: "push_up", name: "Push-up", category: "freehand" as ExerciseCategory },
+  { id: "squat_bw", name: "Squat", category: "freehand" as ExerciseCategory },
+  { id: "pull_up_calis", name: "Pull-up", category: "calisthenics" as ExerciseCategory },
   { id: "burpee", name: "Burpee", category: "cardio" as ExerciseCategory },
 ];
 
@@ -100,7 +102,7 @@ function QuickItem({ item, index }: { item: typeof QUICK_EXERCISES[0]; index: nu
         activeOpacity={0.8}
       >
         <View style={[styles.quickIcon, { backgroundColor: color + "25" }]}>
-          <Ionicons name={icon as any} size={22} color={color} />
+          <Ionicons name={icon as IoniconsName} size={22} color={color} />
         </View>
         <Text style={styles.quickName}>{item.name}</Text>
         <Ionicons name="chevron-forward" size={14} color={color} />
@@ -214,7 +216,7 @@ export default function HomeScreen() {
                   onPress={() => router.push({ pathname: "/exercise/[category]", params: { category: cat.id } })}
                   activeOpacity={0.75}
                 >
-                  <Ionicons name={icon as any} size={20} color={color} />
+                  <Ionicons name={icon as IoniconsName} size={20} color={color} />
                   <Text style={[styles.categoryChipName, { color }]}>{cat.label}</Text>
                   <Text style={[styles.categoryChipCount, { color: color + "99" }]}>{count}</Text>
                 </TouchableOpacity>

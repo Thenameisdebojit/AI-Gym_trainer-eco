@@ -11,7 +11,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { COLORS, FONTS, SIZES, RADIUS, SPACING } from "@/constants/theme";
-import { EXERCISES, ExerciseCategory, getCategoryColor, DifficultyLevel } from "@/constants/exercises";
+import { EXERCISES, ExerciseCategory, getCategoryColor, getCategoryIcon, DifficultyLevel } from "@/constants/exercises";
+import type { ComponentProps } from "react";
+type IoniconsName = ComponentProps<typeof Ionicons>["name"];
 
 const DIFFICULTY_COLORS: Record<DifficultyLevel, string> = {
   beginner: COLORS.primary,
@@ -24,7 +26,17 @@ export default function ExerciseDetail() {
   const insets = useSafeAreaInsets();
 
   const exercise = EXERCISES.find(e => e.id === id);
-  if (!exercise) return null;
+  if (!exercise) {
+    return (
+      <View style={{ flex: 1, backgroundColor: COLORS.background, alignItems: "center", justifyContent: "center", gap: 12 }}>
+        <Ionicons name="alert-circle-outline" size={48} color={COLORS.textMuted} />
+        <Text style={{ fontFamily: FONTS.bold, fontSize: SIZES.base, color: COLORS.textSecondary }}>Exercise not found</Text>
+        <TouchableOpacity onPress={() => router.back()} style={{ paddingHorizontal: 24, paddingVertical: 10, backgroundColor: COLORS.primary, borderRadius: 12 }}>
+          <Text style={{ fontFamily: FONTS.semiBold, fontSize: SIZES.sm, color: COLORS.background }}>Go Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   const color = getCategoryColor(exercise.category);
   const diffColor = DIFFICULTY_COLORS[exercise.difficulty];
@@ -44,7 +56,7 @@ export default function ExerciseDetail() {
         {/* Hero Card */}
         <Animated.View entering={FadeInDown.delay(0).springify()} style={[styles.heroCard, { borderColor: color + "30" }]}>
           <View style={[styles.heroIcon, { backgroundColor: color + "20" }]}>
-            <Ionicons name={exercise.icon as any} size={56} color={color} />
+            <Ionicons name={exercise.icon as IoniconsName} size={56} color={color} />
           </View>
           <Text style={styles.exerciseName}>{exercise.name}</Text>
           <Text style={styles.exerciseDesc}>{exercise.description}</Text>
