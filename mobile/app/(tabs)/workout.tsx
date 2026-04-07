@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import type { ComponentProps } from "react";
+type IoniconsName = ComponentProps<typeof Ionicons>["name"];
 import { router } from "expo-router";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { COLORS, FONTS, SIZES, RADIUS, SPACING } from "@/constants/theme";
@@ -66,7 +68,7 @@ interface GeneratedWorkout {
     name: string;
     sets: number;
     reps: number;
-    category: string;
+    category: ExerciseCategory;
     muscleGroups?: string[];
     caloriesPerRep?: number;
     phase?: "warmup" | "main" | "finisher";
@@ -294,7 +296,7 @@ export default function WorkoutScreen() {
                   style={[styles.goalCard, goal === g.id && { borderColor: g.color, backgroundColor: g.color + "15" }]}
                   onPress={() => setGoal(g.id)}
                 >
-                  <Ionicons name={g.icon as any} size={20} color={g.color} />
+                  <Ionicons name={g.icon as IoniconsName} size={20} color={g.color} />
                   <Text style={[styles.goalLabel, goal === g.id && { color: g.color }]}>{g.label}</Text>
                   <Text style={styles.goalDesc}>{g.desc}</Text>
                 </TouchableOpacity>
@@ -309,7 +311,7 @@ export default function WorkoutScreen() {
                   style={[styles.optionBtn, equipment === o.id && { borderColor: COLORS.primary, backgroundColor: COLORS.primaryDim }]}
                   onPress={() => setEquipment(o.id)}
                 >
-                  <Ionicons name={o.icon as any} size={18} color={equipment === o.id ? COLORS.primary : COLORS.textSecondary} />
+                  <Ionicons name={o.icon as IoniconsName} size={18} color={equipment === o.id ? COLORS.primary : COLORS.textSecondary} />
                   <Text style={[styles.optionLabel, equipment === o.id && { color: COLORS.primary }]}>{o.label}</Text>
                   <Text style={styles.optionDesc}>{o.desc}</Text>
                 </TouchableOpacity>
@@ -467,7 +469,7 @@ export default function WorkoutScreen() {
                   activeOpacity={0.75}
                 >
                   <View style={[styles.featuredIcon, { backgroundColor: color + "20" }]}>
-                    <Ionicons name={icon as any} size={26} color={color} />
+                    <Ionicons name={icon as IoniconsName} size={26} color={color} />
                   </View>
                   <Text style={styles.featuredName}>{item.label}</Text>
                   <View style={[styles.startBtn, { backgroundColor: color }]}>
@@ -503,7 +505,7 @@ export default function WorkoutScreen() {
                 activeOpacity={0.8}
               >
                 <View style={[styles.catIcon, { backgroundColor: color + "20" }]}>
-                  <Ionicons name={icon as any} size={22} color={color} />
+                  <Ionicons name={icon as IoniconsName} size={22} color={color} />
                 </View>
                 <View style={styles.catInfo}>
                   <Text style={styles.catName}>{labels[cat]}</Text>

@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import type { ComponentProps } from "react";
+type IoniconsName = ComponentProps<typeof Ionicons>["name"];
 import { router } from "expo-router";
 import Animated, {
   FadeInDown,
@@ -366,8 +368,8 @@ export default function WorkoutSessionScreen() {
                     <Text style={[styles.phaseSectionLabel, { color: phaseColor }]}>{phaseLabel}</Text>
                   </View>
                   {phaseExs.map((ex, i) => {
-                    const color = getCategoryColor(ex.category as any);
-                    const icon = getCategoryIcon(ex.category as any);
+                    const color = getCategoryColor(ex.category);
+                    const icon = getCategoryIcon(ex.category);
                     const primaryMuscle = ex.muscleGroups?.[0] ?? ex.category.replace("_", " ");
                     const calDisplay = ex.calories ?? (ex.reps ? Math.round(ex.sets * ex.reps * 0.5) : null);
                     return (
@@ -376,11 +378,15 @@ export default function WorkoutSessionScreen() {
                           <Text style={[styles.exNumText, { color }]}>{i + 1}</Text>
                         </View>
                         <View style={[styles.exIconSmall, { backgroundColor: color + "15" }]}>
-                          <Ionicons name={icon as any} size={18} color={color} />
+                          <Ionicons name={icon as IoniconsName} size={18} color={color} />
                         </View>
                         <View style={{ flex: 1 }}>
                           <Text style={styles.exName}>{ex.name}</Text>
-                          <Text style={styles.exSets}>{ex.sets} sets × {ex.reps} reps</Text>
+                          <Text style={styles.exSets}>
+                            {ex.durationSeconds
+                              ? `${ex.sets} × ${ex.durationSeconds}s`
+                              : `${ex.sets} sets × ${ex.reps} reps`}
+                          </Text>
                           <View style={styles.exMetaRow}>
                             <View style={[styles.muscleTag, { backgroundColor: color + "18" }]}>
                               <Text style={[styles.muscleTagText, { color }]}>{primaryMuscle}</Text>
@@ -443,7 +449,7 @@ export default function WorkoutSessionScreen() {
               { label: "Time", value: formatTime(durationSec), icon: "time", color: COLORS.blue },
             ].map(({ label, value, icon, color }) => (
               <View key={label} style={[styles.doneStat, { borderColor: color + "30" }]}>
-                <Ionicons name={icon as any} size={20} color={color} />
+                <Ionicons name={icon as IoniconsName} size={20} color={color} />
                 <Text style={styles.doneStatVal}>{value}</Text>
                 <Text style={styles.doneStatLbl}>{label}</Text>
               </View>
@@ -513,8 +519,8 @@ export default function WorkoutSessionScreen() {
     );
   }
 
-  const exerciseColor = getCategoryColor(currentExercise?.category as any) || COLORS.primary;
-  const exerciseIcon = getCategoryIcon(currentExercise?.category as any) || "barbell";
+  const exerciseColor = currentExercise ? getCategoryColor(currentExercise.category) : COLORS.primary;
+  const exerciseIcon = currentExercise ? getCategoryIcon(currentExercise.category) : "barbell";
   const setProgress = (currentSet - 1) / (currentExercise?.sets ?? 1);
   const overallProgress = (exerciseIndex + setProgress) / exercises.length;
   const targetReps = currentExercise?.reps ?? 12;
@@ -577,7 +583,7 @@ export default function WorkoutSessionScreen() {
 
         <Animated.View entering={FadeInDown.delay(80).springify()} style={styles.mainControlArea}>
           <View style={[styles.exerciseIconLg, { backgroundColor: exerciseColor + "15", borderColor: exerciseColor + "30" }]}>
-            <Ionicons name={exerciseIcon as any} size={52} color={exerciseColor} />
+            <Ionicons name={exerciseIcon as IoniconsName} size={52} color={exerciseColor} />
           </View>
 
           <View style={styles.exerciseMetaBadges}>
@@ -605,7 +611,11 @@ export default function WorkoutSessionScreen() {
               </View>
             ) : null}
           </View>
-          <Text style={[styles.targetText, { color: exerciseColor }]}>Target: {targetReps} reps</Text>
+          <Text style={[styles.targetText, { color: exerciseColor }]}>
+            {currentExercise?.durationSeconds
+              ? `Target: ${currentExercise.durationSeconds}s`
+              : `Target: ${targetReps} reps`}
+          </Text>
 
           <RepCounterBig count={reps} color={exerciseColor} />
 

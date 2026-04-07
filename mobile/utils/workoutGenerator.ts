@@ -1,4 +1,5 @@
 import { EXERCISES, Exercise, ExerciseCategory, DifficultyLevel, Equipment, MovementPattern } from "@/constants/exercises";
+export type { ExerciseCategory };
 import {
   shuffleExercises,
   pickUnique,
@@ -15,7 +16,7 @@ export type EquipmentLevel = "none" | "minimal" | "full_gym";
 export interface GeneratedExercise {
   id: string;
   name: string;
-  category: string;
+  category: ExerciseCategory;
   sets: number;
   reps: number;
   durationSeconds?: number;

@@ -1,12 +1,13 @@
 import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ExerciseCategory } from "@/constants/exercises";
 
 export interface WorkoutExercise {
   id: string;
   name: string;
   sets: number;
   reps: number;
-  category: string;
+  category: ExerciseCategory;
   restSeconds?: number;
   calories?: number;
   muscleGroups?: string[];
