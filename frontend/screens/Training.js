@@ -1760,13 +1760,13 @@ export default function Training() {
                   const bodyMusclekwMap = {
                     full_body: [],
                     chest: ['Chest', 'Pec', 'Serratus'],
-                    arms:  ['Biceps', 'Triceps', 'Forearm', 'Brachialis'],
-                    legs:  ['Quad', 'Hamstring', 'Glute', 'Calf', 'Adductor', 'Abductor'],
-                    back:  ['Lat', 'Rhomboid', 'Trap', 'Erector', 'Teres', 'Rear Deltoid'],
-                    abs:   ['Abs', 'Oblique', 'Hip Flexor'],
+                    arms:  ['Biceps', 'Triceps', 'Forearm', 'Brachialis', 'Bicep', 'Tricep'],
+                    legs:  ['Quad', 'Hamstring', 'Glute', 'Calf', 'Hip', 'Knee', 'Leg', 'Adductor', 'Abductor'],
+                    back:  ['Lat', 'Back', 'Rhomboid', 'Trap', 'Erector', 'Teres', 'Rear Deltoid'],
+                    abs:   ['Abs', 'Core', 'Oblique', 'Hip Flexor'],
                   };
-                  // Generic subcategories where muscle-keyword fallback applies
-                  const genericSubs = new Set(['Upper Body','Full Body','Skills','Cardio','Standing','Prone','Seated','Supine','Kneeling','Inversion','Flow']);
+                  // All dedicated subcategories — exercises NOT in this set are eligible for keyword fallback
+                  const allPrimarySubs = new Set(Object.values(bodySubcategoryMap).flat().map(s => s.toLowerCase()));
                   const bodySubs = bodySubcategoryMap[selectedBody?.id] || [];
                   const bodyKws  = bodyMusclekwMap[selectedBody?.id] || [];
                   const matched = liveExercises.filter(ex => {
@@ -1776,8 +1776,9 @@ export default function Training() {
                     const exSub = (ex.subcategory || '');
                     // Primary: exact subcategory match
                     if (bodySubs.some(s => exSub.toLowerCase() === s.toLowerCase())) return true;
-                    // Fallback for generic / cross-category subcategories: use muscle keyword
-                    if (genericSubs.has(exSub) && bodyKws.length > 0) {
+                    // Keyword fallback: only for exercises whose subcategory isn't another body part's
+                    // dedicated subcategory (prevents chest exercises leaking into arms, etc.)
+                    if (!allPrimarySubs.has(exSub.toLowerCase()) && bodyKws.length > 0) {
                       return (ex.muscle_groups || []).some(m => bodyKws.some(kw => m.toLowerCase().includes(kw.toLowerCase())));
                     }
                     return false;
