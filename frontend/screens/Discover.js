@@ -300,8 +300,13 @@ function DetailView({ workout, catColor, levelColor, detailExercises, totalCalsP
                       name={ex.name}
                       size={64}
                       radius={10}
-                      number={i + 1}
+                      number={ex.img0 ? i + 1 : null}
                       fallbackColor={catColor}
+                      fallback={
+                        <div style={{ width: 64, height: 64, borderRadius: 10, background: `${catColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: catColor }}>
+                          {i + 1}
+                        </div>
+                      }
                     />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{ex.name}</div>
@@ -914,7 +919,7 @@ export default function Discover() {
                 <button onClick={() => { clearInterval(timerRef.current); setExIdx(i => i + 1); setPhase('exercise'); setExerciseTimer(30); }} style={{ background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', color: '#10B981', padding: '12px 28px', borderRadius: 14, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>Skip Rest →</button>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
+              <div key={`ex-${exIdx}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, animation: 'fadeIn 0.35s ease' }}>
                 <ExerciseThumb
                   img0={currentExercise.img0}
                   img1={currentExercise.img1}
@@ -924,6 +929,9 @@ export default function Discover() {
                   paused={paused}
                   bg="rgba(37,99,235,0.15)"
                   fallbackColor="#2563EB"
+                  fallback={
+                    <div style={{ width: 200, height: 200, borderRadius: 24, background: 'linear-gradient(135deg,#2563EB,#7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 64 }}>🏋️</div>
+                  }
                 />
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: 28, fontWeight: 900, marginBottom: 8 }}>{currentExercise.name}</div>

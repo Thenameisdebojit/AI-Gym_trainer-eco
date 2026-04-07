@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 const THUMB_CSS_ID = 'exercise-thumb-css';
 const THUMB_CSS = `
@@ -13,8 +13,12 @@ const THUMB_CSS = `
   50%, 95%  { opacity: 1; }
   100%      { opacity: 0; }
 }
-.et-img0 { animation: et-flip 2.2s ease-in-out infinite; }
-.et-img1 { animation: et-flip2 2.2s ease-in-out infinite; position: absolute; inset: 0; }
+@keyframes et-skeleton {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+.et-img0 { animation: et-flip 1.2s ease-in-out infinite; }
+.et-img1 { animation: et-flip2 1.2s ease-in-out infinite; position: absolute; inset: 0; }
 .et-img0.et-paused, .et-img1.et-paused { animation-play-state: paused; }
 `;
 
@@ -39,12 +43,19 @@ export default function ExerciseThumb({
   paused = false,
   bg = 'var(--surface-2, #1E293B)',
   fallbackColor = '#2563EB',
+  fallback = null,
 }) {
   useEffect(() => { injectCss(); }, []);
 
-  const [img0Ok, setImg0Ok] = useState(true);
-  const [img1Ok, setImg1Ok] = useState(true);
+  const [img0Ok, setImg0Ok]     = useState(true);
+  const [img1Ok, setImg1Ok]     = useState(true);
+  const [img0Loaded, setImg0Loaded] = useState(false);
+  const [img1Loaded, setImg1Loaded] = useState(false);
+
   const hasImages = img0 && img1 && img0Ok && img1Ok;
+  const imagesReady = hasImages && img0Loaded && img1Loaded;
+  const showSkeleton = hasImages && !imagesReady;
+  const showFallback = !hasImages;
 
   const initials = name
     .split(' ')
@@ -71,28 +82,58 @@ export default function ExerciseThumb({
         justifyContent: 'center',
       }}
     >
-      {hasImages ? (
+      {/* Skeleton shimmer while loading */}
+      {showSkeleton && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.04) 75%)',
+          backgroundSize: '200% 100%',
+          animation: 'et-skeleton 1.4s ease-in-out infinite',
+        }} />
+      )}
+
+      {/* Real images (hidden until both loaded) */}
+      {hasImages && (
         <>
           <img
             src={img0}
             alt={name}
+            loading="lazy"
             className={`et-img0${paused ? ' et-paused' : ''}`}
+            onLoad={() => setImg0Loaded(true)}
             onError={() => setImg0Ok(false)}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            style={{
+              width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+              opacity: imagesReady ? undefined : 0,
+              transition: 'opacity 0.3s',
+            }}
           />
           <img
             src={img1}
             alt=""
+            loading="lazy"
             className={`et-img1${paused ? ' et-paused' : ''}`}
+            onLoad={() => setImg1Loaded(true)}
             onError={() => setImg1Ok(false)}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            style={{
+              width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+              opacity: imagesReady ? undefined : 0,
+              transition: 'opacity 0.3s',
+            }}
           />
         </>
-      ) : (
-        <span style={{ fontSize: size * 0.3, fontWeight: 800, color: fallbackColor }}>
-          {initials || '?'}
-        </span>
       )}
+
+      {/* Fallback: custom node > initials */}
+      {showFallback && (
+        fallback
+          ? <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{fallback}</div>
+          : <span style={{ fontSize: size * 0.3, fontWeight: 800, color: fallbackColor, userSelect: 'none' }}>
+              {initials || '?'}
+            </span>
+      )}
+
+      {/* Number badge overlay */}
       {number !== null && (
         <div
           style={{

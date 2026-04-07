@@ -55,22 +55,11 @@ async function main() {
       const s = score(ex.name, free.name);
       if (s > bestScore) { bestScore = s; best = free; }
     }
-    if (bestScore >= 0.35 && best && best.images && best.images.length >= 2) {
+    if (bestScore >= 0.45 && best && best.images && best.images.length >= 2) {
       const id = best.images[0].split('/')[0];
       result[ex.id] = {
         img0: `${FREE_DB_IMAGE_BASE}/${encodeURIComponent(id)}/0.jpg`,
         img1: `${FREE_DB_IMAGE_BASE}/${encodeURIComponent(id)}/1.jpg`,
-        match: best.name,
-        score: Math.round(bestScore * 100),
-      };
-      matched++;
-    } else if (bestScore >= 0.25 && best && best.images && best.images.length >= 1) {
-      const id = best.images[0].split('/')[0];
-      result[ex.id] = {
-        img0: `${FREE_DB_IMAGE_BASE}/${encodeURIComponent(id)}/0.jpg`,
-        img1: best.images.length >= 2
-          ? `${FREE_DB_IMAGE_BASE}/${encodeURIComponent(id)}/1.jpg`
-          : `${FREE_DB_IMAGE_BASE}/${encodeURIComponent(id)}/0.jpg`,
         match: best.name,
         score: Math.round(bestScore * 100),
       };

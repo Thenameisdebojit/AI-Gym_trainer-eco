@@ -41,12 +41,6 @@
     "match": "Cable Chest Press",
     "score": 67
   },
-  "pec_deck": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/1.jpg",
-    "match": "Ab Crunch Machine",
-    "score": 33
-  },
   "dumbbell_fly": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Clean/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Clean/1.jpg",
@@ -203,12 +197,6 @@
     "match": "Cable Chest Press",
     "score": 50
   },
-  "ring_push_up_gym": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/1.jpg",
-    "match": "Clock Push-Up",
-    "score": 33
-  },
   "narrow_db_press": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Arnold_Dumbbell_Press/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Arnold_Dumbbell_Press/1.jpg",
@@ -317,12 +305,6 @@
     "match": "Clean Pull",
     "score": 50
   },
-  "chest_supported_row": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternating_Kettlebell_Row/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternating_Kettlebell_Row/1.jpg",
-    "match": "Alternating Kettlebell Row",
-    "score": 33
-  },
   "pendlay_row": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Inverted_Row/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Inverted_Row/1.jpg",
@@ -352,12 +334,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/1.jpg",
     "match": "Ab Crunch Machine",
     "score": 50
-  },
-  "iso_lateral_pulldown": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lateral_Bound/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lateral_Bound/1.jpg",
-    "match": "Lateral Bound",
-    "score": 33
   },
   "wide_grip_row": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Upright_Cable_Row/0.jpg",
@@ -1031,12 +1007,6 @@
     "match": "Weighted Bench Dip",
     "score": 67
   },
-  "long_head_pulldown": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Behind_Head_Chest_Stretch/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Behind_Head_Chest_Stretch/1.jpg",
-    "match": "Behind Head Chest Stretch",
-    "score": 25
-  },
   "two_arm_overhead_ext": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_One_Arm_Tricep_Extension/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_One_Arm_Tricep_Extension/1.jpg",
@@ -1217,12 +1187,6 @@
     "match": "Single-Arm Cable Crossover",
     "score": 75
   },
-  "lu_raises": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Donkey_Calf_Raises/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Donkey_Calf_Raises/1.jpg",
-    "match": "Donkey Calf Raises",
-    "score": 33
-  },
   "band_lateral_raise": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Seated_Lateral_Raise/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Seated_Lateral_Raise/1.jpg",
@@ -1319,12 +1283,6 @@
     "match": "Cable Russian Twists",
     "score": 67
   },
-  "hanging_windshield_wiper": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/1.jpg",
-    "match": "Hanging Leg Raise",
-    "score": 33
-  },
   "plank_cable": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/External_Rotation_with_Cable/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/External_Rotation_with_Cable/1.jpg",
@@ -1348,12 +1306,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/1.jpg",
     "match": "Ab Crunch Machine",
     "score": 50
-  },
-  "push_through_crunch": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/1.jpg",
-    "match": "Ab Crunch Machine",
-    "score": 33
   },
   "crunch": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/0.jpg",
@@ -1384,12 +1336,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Russian_Twist/1.jpg",
     "match": "Russian Twist",
     "score": 100
-  },
-  "hollow_body": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Body-Up/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Body-Up/1.jpg",
-    "match": "Body-Up",
-    "score": 33
   },
   "dead_bug": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dead_Bug/0.jpg",
@@ -1475,12 +1421,6 @@
     "match": "Cross-Body Crunch",
     "score": 100
   },
-  "windshield_wiper_floor": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternating_Floor_Press/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternating_Floor_Press/1.jpg",
-    "match": "Alternating Floor Press",
-    "score": 33
-  },
   "l_sit_floor": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/3_4_Sit-Up/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/3_4_Sit-Up/1.jpg",
@@ -1553,12 +1493,6 @@
     "match": "Band Good Morning",
     "score": 67
   },
-  "hip_hinge_bw": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Hip_Adductions/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Hip_Adductions/1.jpg",
-    "match": "Band Hip Adductions",
-    "score": 33
-  },
   "step_up_bw": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Flyes/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Flyes/1.jpg",
@@ -1588,12 +1522,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single-Leg_High_Box_Squat/1.jpg",
     "match": "Single-Leg High Box Squat",
     "score": 60
-  },
-  "hip_circle": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Hip_Adductions/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Hip_Adductions/1.jpg",
-    "match": "Band Hip Adductions",
-    "score": 33
   },
   "leg_swing_front": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Leg_Raises/0.jpg",
@@ -1673,12 +1601,6 @@
     "match": "Clock Push-Up",
     "score": 50
   },
-  "shoulder_tap": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shoulder_Press/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shoulder_Press/1.jpg",
-    "match": "Barbell Shoulder Press",
-    "score": 33
-  },
   "plank_push_up": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Push_Up_to_Side_Plank/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Push_Up_to_Side_Plank/1.jpg",
@@ -1697,23 +1619,11 @@
     "match": "Scapular Pull-Up",
     "score": 50
   },
-  "thoracic_ext": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chain_Handle_Extension/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chain_Handle_Extension/1.jpg",
-    "match": "Chain Handle Extension",
-    "score": 33
-  },
   "push_up_plus": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/1.jpg",
     "match": "Clock Push-Up",
     "score": 50
-  },
-  "prone_y_t_w": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hip_Circles_prone/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hip_Circles_prone/1.jpg",
-    "match": "Hip Circles (prone)",
-    "score": 33
   },
   "push_up_calis": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/0.jpg",
@@ -1750,12 +1660,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/1.jpg",
     "match": "Clock Push-Up",
     "score": 50
-  },
-  "pseudo_planche": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/1.jpg",
-    "match": "Clock Push-Up",
-    "score": 33
   },
   "close_push_up_calis": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/0.jpg",
@@ -1804,12 +1708,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Handstand_Push-Ups/1.jpg",
     "match": "Handstand Push-Ups",
     "score": 67
-  },
-  "wall_handstand": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Handstand_Push-Ups/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Handstand_Push-Ups/1.jpg",
-    "match": "Handstand Push-Ups",
-    "score": 33
   },
   "kick_to_handstand": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Scissor_Kick/0.jpg",
@@ -1889,12 +1787,6 @@
     "match": "Hang Clean",
     "score": 50
   },
-  "skin_the_cat": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ankle_On_The_Knee/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ankle_On_The_Knee/1.jpg",
-    "match": "Ankle On The Knee",
-    "score": 33
-  },
   "toes_to_bar": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/EZ-Bar_Curl/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/EZ-Bar_Curl/1.jpg",
@@ -1931,18 +1823,6 @@
     "match": "Kipping Muscle Up",
     "score": 50
   },
-  "ring_support_hold": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ring_Dips/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ring_Dips/1.jpg",
-    "match": "Ring Dips",
-    "score": 33
-  },
-  "l_sit_parallel": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Knee_Hip_Raise_On_Parallel_Bars/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Knee_Hip_Raise_On_Parallel_Bars/1.jpg",
-    "match": "Knee/Hip Raise On Parallel Bars",
-    "score": 40
-  },
   "pistol_squat": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/1.jpg",
@@ -1973,23 +1853,11 @@
     "match": "Elbows Back",
     "score": 50
   },
-  "front_lever_row": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternating_Kettlebell_Row/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternating_Kettlebell_Row/1.jpg",
-    "match": "Alternating Kettlebell Row",
-    "score": 33
-  },
   "tuck_planche": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Tuck_Crunch/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Tuck_Crunch/1.jpg",
     "match": "Tuck Crunch",
     "score": 50
-  },
-  "advanced_tuck_planche": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Advanced_Kettlebell_Windmill/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Advanced_Kettlebell_Windmill/1.jpg",
-    "match": "Advanced Kettlebell Windmill",
-    "score": 33
   },
   "inverted_hang": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hang_Clean/0.jpg",
@@ -2033,41 +1901,17 @@
     "match": "One Arm Chin-Up",
     "score": 67
   },
-  "windshield_wiper_bar": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/EZ-Bar_Curl/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/EZ-Bar_Curl/1.jpg",
-    "match": "EZ-Bar Curl",
-    "score": 33
-  },
-  "false_grip_hang": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternating_Hang_Clean/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternating_Hang_Clean/1.jpg",
-    "match": "Alternating Hang Clean",
-    "score": 33
-  },
   "planche_push_up": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/1.jpg",
     "match": "Clock Push-Up",
     "score": 50
   },
-  "front_lever": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Barbell_Squat/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Barbell_Squat/1.jpg",
-    "match": "Front Barbell Squat",
-    "score": 33
-  },
   "korean_dip": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dip_Machine/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dip_Machine/1.jpg",
     "match": "Dip Machine",
     "score": 50
-  },
-  "wall_walks": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Linear_Acceleration_Wall_Drill/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Linear_Acceleration_Wall_Drill/1.jpg",
-    "match": "Linear Acceleration Wall Drill",
-    "score": 25
   },
   "box_jump_calis": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Box_Jump/0.jpg",
@@ -2093,18 +1937,6 @@
     "match": "Shoulder Circles",
     "score": 50
   },
-  "half_lever": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Barbell_Squat/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Barbell_Squat/1.jpg",
-    "match": "Front Barbell Squat",
-    "score": 33
-  },
-  "tuck_back_lever": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dynamic_Back_Stretch/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dynamic_Back_Stretch/1.jpg",
-    "match": "Dynamic Back Stretch",
-    "score": 33
-  },
   "supinated_row": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Inverted_Row/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Inverted_Row/1.jpg",
@@ -2116,12 +1948,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clean_Pull/1.jpg",
     "match": "Clean Pull",
     "score": 50
-  },
-  "chest_to_bar_pull_up": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Assisted_Pull-Up/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Assisted_Pull-Up/1.jpg",
-    "match": "Band Assisted Pull-Up",
-    "score": 33
   },
   "negative_pull_up": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clean_Pull/0.jpg",
@@ -2146,12 +1972,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rope_Jumping/1.jpg",
     "match": "Rope Jumping",
     "score": 50
-  },
-  "high_knees": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Ab_Rollout_-_On_Knees/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Ab_Rollout_-_On_Knees/1.jpg",
-    "match": "Barbell Ab Rollout - On Knees",
-    "score": 33
   },
   "butt_kick": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Butt-Ups/0.jpg",
@@ -2195,12 +2015,6 @@
     "match": "Bear Crawl Sled Drags",
     "score": 50
   },
-  "mountain_climber_cardio": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Fast_Skipping/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Fast_Skipping/1.jpg",
-    "match": "Fast Skipping",
-    "score": 33
-  },
   "plyo_push_up": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plyo_Push-up/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plyo_Push-up/1.jpg",
@@ -2236,30 +2050,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ankle_Circles/1.jpg",
     "match": "Ankle Circles",
     "score": 50
-  },
-  "stair_climb": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Fast_Skipping/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Fast_Skipping/1.jpg",
-    "match": "Fast Skipping",
-    "score": 33
-  },
-  "battle_rope_waves": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rope_Climb/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rope_Climb/1.jpg",
-    "match": "Rope Climb",
-    "score": 33
-  },
-  "battle_rope_slam": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Overhead_Slam/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Overhead_Slam/1.jpg",
-    "match": "Overhead Slam",
-    "score": 33
-  },
-  "battle_rope_alternating": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternating_Deltoid_Raise/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternating_Deltoid_Raise/1.jpg",
-    "match": "Alternating Deltoid Raise",
-    "score": 33
   },
   "kettlebell_swing": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Figure_8/0.jpg",
@@ -2315,23 +2105,11 @@
     "match": "Hug A Ball",
     "score": 50
   },
-  "rowing_machine": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/1.jpg",
-    "match": "Ab Crunch Machine",
-    "score": 33
-  },
   "assault_bike": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Air_Bike/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Air_Bike/1.jpg",
     "match": "Air Bike",
     "score": 50
-  },
-  "bike_sprint": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Air_Bike/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Air_Bike/1.jpg",
-    "match": "Air Bike",
-    "score": 33
   },
   "elliptical_sprint": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Sprint/0.jpg",
@@ -2447,53 +2225,17 @@
     "match": "Box Skip",
     "score": 50
   },
-  "lateral_shuffle_quick": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Carioca_Quick_Step/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Carioca_Quick_Step/1.jpg",
-    "match": "Carioca Quick Step",
-    "score": 33
-  },
-  "cone_drills": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lateral_Cone_Hops/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lateral_Cone_Hops/1.jpg",
-    "match": "Lateral Cone Hops",
-    "score": 33
-  },
   "leap_frog": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Frog_Hops/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Frog_Hops/1.jpg",
     "match": "Frog Hops",
     "score": 50
   },
-  "frog_hop_power": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Frog_Hops/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Frog_Hops/1.jpg",
-    "match": "Frog Hops",
-    "score": 33
-  },
-  "rope_skipping_double_under": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Double_Kettlebell_Jerk/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Double_Kettlebell_Jerk/1.jpg",
-    "match": "Double Kettlebell Jerk",
-    "score": 33
-  },
   "sprint_45s": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Sprint/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Sprint/1.jpg",
     "match": "Bench Sprint",
     "score": 50
-  },
-  "rowing_sprint": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Sprint/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Sprint/1.jpg",
-    "match": "Bench Sprint",
-    "score": 33
-  },
-  "cycle_sprint_tabata": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Sprint/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Sprint/1.jpg",
-    "match": "Bench Sprint",
-    "score": 33
   },
   "kb_clean_press": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clean_and_Press/0.jpg",
@@ -2525,12 +2267,6 @@
     "match": "Clean Pull",
     "score": 50
   },
-  "step_up_cardio": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Step_Ups/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Step_Ups/1.jpg",
-    "match": "Barbell Step Ups",
-    "score": 33
-  },
   "cheerleader_jump": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Jump/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Jump/1.jpg",
@@ -2542,24 +2278,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Box_Jump_Multiple_Response/1.jpg",
     "match": "Box Jump (Multiple Response)",
     "score": 50
-  },
-  "triple_hop_cardio": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Hop-Sprint/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Hop-Sprint/1.jpg",
-    "match": "Side Hop-Sprint",
-    "score": 33
-  },
-  "duck_under_walk": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Farmers_Walk/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Farmers_Walk/1.jpg",
-    "match": "Farmer's Walk",
-    "score": 33
-  },
-  "turkish_getup": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Turkish_Get-Up_Lunge_style/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Turkish_Get-Up_Lunge_style/1.jpg",
-    "match": "Kettlebell Turkish Get-Up (Lunge style)",
-    "score": 40
   },
   "synchronized_squat_jump": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Freehand_Jump_Squat/0.jpg",
@@ -2603,12 +2321,6 @@
     "match": "Child's Pose",
     "score": 50
   },
-  "side_angle_pose": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Side_Bend/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Side_Bend/1.jpg",
-    "match": "Barbell Side Bend",
-    "score": 25
-  },
   "tree_pose": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/1.jpg",
@@ -2626,18 +2338,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chair_Squat/1.jpg",
     "match": "Chair Squat",
     "score": 50
-  },
-  "standing_forward_fold": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Biceps_Stretch/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Biceps_Stretch/1.jpg",
-    "match": "Standing Biceps Stretch",
-    "score": 33
-  },
-  "seated_forward_fold": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Seated_Crunch/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Seated_Crunch/1.jpg",
-    "match": "Cable Seated Crunch",
-    "score": 33
   },
   "bridge_pose": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/0.jpg",
@@ -2675,35 +2375,11 @@
     "match": "Child's Pose",
     "score": 50
   },
-  "half_moon": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/1.jpg",
-    "match": "Child's Pose",
-    "score": 33
-  },
   "crescent_lunge": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Lunge/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Lunge/1.jpg",
     "match": "Barbell Lunge",
     "score": 50
-  },
-  "upward_dog": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Downward_Facing_Balance/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Downward_Facing_Balance/1.jpg",
-    "match": "Downward Facing Balance",
-    "score": 33
-  },
-  "reclined_twist": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plate_Twist/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plate_Twist/1.jpg",
-    "match": "Plate Twist",
-    "score": 33
-  },
-  "happy_baby": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/1.jpg",
-    "match": "Child's Pose",
-    "score": 33
   },
   "garland_pose": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/0.jpg",
@@ -2723,18 +2399,6 @@
     "match": "Split Clean",
     "score": 50
   },
-  "half_lotus": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One_Half_Locust/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One_Half_Locust/1.jpg",
-    "match": "One Half Locust",
-    "score": 33
-  },
-  "full_lotus": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/1.jpg",
-    "match": "Barbell Full Squat",
-    "score": 33
-  },
   "shoulder_stand": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Shoulder_Circles/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Shoulder_Circles/1.jpg",
@@ -2752,12 +2416,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/1.jpg",
     "match": "Child's Pose",
     "score": 50
-  },
-  "side_crow": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Side_Bend/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Side_Bend/1.jpg",
-    "match": "Barbell Side Bend",
-    "score": 33
   },
   "wheel_pose": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/0.jpg",
@@ -2789,35 +2447,11 @@
     "match": "Child's Pose",
     "score": 50
   },
-  "cow_face_pose": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/1.jpg",
-    "match": "Child's Pose",
-    "score": 33
-  },
-  "supine_pigeon": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/1.jpg",
-    "match": "Child's Pose",
-    "score": 33
-  },
-  "wild_thing": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/1.jpg",
-    "match": "Child's Pose",
-    "score": 33
-  },
   "side_plank_yoga": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Push_Up_to_Side_Plank/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Push_Up_to_Side_Plank/1.jpg",
     "match": "Push Up to Side Plank",
     "score": 67
-  },
-  "mountain_pose": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/1.jpg",
-    "match": "Child's Pose",
-    "score": 33
   },
   "plank_yoga": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/0.jpg",
@@ -2837,71 +2471,17 @@
     "match": "Child's Pose",
     "score": 50
   },
-  "viparita_karani": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pass_Between_The_Legs/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pass_Between_The_Legs/1.jpg",
-    "match": "Kettlebell Pass Between The Legs",
-    "score": 40
-  },
-  "seated_wide_angle": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Seated_Calf_Raise/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Seated_Calf_Raise/1.jpg",
-    "match": "Barbell Seated Calf Raise",
-    "score": 25
-  },
-  "standing_half_forward_fold": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Forward_Drag_with_Press/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Forward_Drag_with_Press/1.jpg",
-    "match": "Forward Drag with Press",
-    "score": 25
-  },
-  "supta_baddha_konasana": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternate_Leg_Diagonal_Bound/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternate_Leg_Diagonal_Bound/1.jpg",
-    "match": "Alternate Leg Diagonal Bound",
-    "score": 25
-  },
-  "legs_crossed_forward": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Iron_Cross/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Iron_Cross/1.jpg",
-    "match": "Cable Iron Cross",
-    "score": 25
-  },
   "legs_wall_hamstring": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hamstring_Stretch/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hamstring_Stretch/1.jpg",
     "match": "Hamstring Stretch",
     "score": 50
   },
-  "supine_twist_yoga": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plate_Twist/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plate_Twist/1.jpg",
-    "match": "Plate Twist",
-    "score": 33
-  },
   "dolphin_pose": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/1.jpg",
     "match": "Child's Pose",
     "score": 50
-  },
-  "half_pigeon": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/1.jpg",
-    "match": "Child's Pose",
-    "score": 33
-  },
-  "yin_hip_opener": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Hip_Adductions/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Hip_Adductions/1.jpg",
-    "match": "Band Hip Adductions",
-    "score": 33
-  },
-  "reclined_hero": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Childs_Pose/1.jpg",
-    "match": "Child's Pose",
-    "score": 33
   },
   "marichi": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Barbell_Twist/0.jpg",
@@ -2933,29 +2513,11 @@
     "match": "Iron Cross",
     "score": 50
   },
-  "jab_cross": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Iron_Cross/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Iron_Cross/1.jpg",
-    "match": "Cable Iron Cross",
-    "score": 33
-  },
-  "jab_cross_hook": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Iron_Cross/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Iron_Cross/1.jpg",
-    "match": "Cable Iron Cross",
-    "score": 33
-  },
   "roundhouse_kick": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Scissor_Kick/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Scissor_Kick/1.jpg",
     "match": "Scissor Kick",
     "score": 50
-  },
-  "front_kick": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Barbell_Squat/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Barbell_Squat/1.jpg",
-    "match": "Front Barbell Squat",
-    "score": 33
   },
   "side_kick": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Scissor_Kick/0.jpg",
@@ -2968,12 +2530,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Elbows_Back/1.jpg",
     "match": "Elbows Back",
     "score": 50
-  },
-  "spinning_back_kick": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dynamic_Back_Stretch/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dynamic_Back_Stretch/1.jpg",
-    "match": "Dynamic Back Stretch",
-    "score": 33
   },
   "axe_kick": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Scissor_Kick/0.jpg",
@@ -2993,29 +2549,11 @@
     "match": "Elbow Circles",
     "score": 50
   },
-  "lead_low_kick": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Low_Cable_Crossover/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Low_Cable_Crossover/1.jpg",
-    "match": "Low Cable Crossover",
-    "score": 33
-  },
-  "rear_low_kick": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Rear_Lunge/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Rear_Lunge/1.jpg",
-    "match": "Dumbbell Rear Lunge",
-    "score": 33
-  },
   "jumping_knee": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Elbow_to_Knee/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Elbow_to_Knee/1.jpg",
     "match": "Elbow to Knee",
     "score": 50
-  },
-  "spinning_hook_kick": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Scissor_Kick/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Scissor_Kick/1.jpg",
-    "match": "Scissor Kick",
-    "score": 33
   },
   "superman_punch": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Superman/0.jpg",
@@ -3035,12 +2573,6 @@
     "match": "Single-Leg Leg Extension",
     "score": 67
   },
-  "sprawl": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/1.jpg",
-    "match": "Kneeling Arm Drill",
-    "score": 33
-  },
   "heavy_bag_straights": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Heavy_Bag_Thrust/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Heavy_Bag_Thrust/1.jpg",
@@ -3059,119 +2591,17 @@
     "match": "Heavy Bag Thrust",
     "score": 50
   },
-  "thai_clinch": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/1.jpg",
-    "match": "Kneeling Arm Drill",
-    "score": 33
-  },
-  "bob_and_weave": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clean_and_Jerk/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clean_and_Jerk/1.jpg",
-    "match": "Clean and Jerk",
-    "score": 33
-  },
-  "uchi_komi": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/1.jpg",
-    "match": "Kneeling Arm Drill",
-    "score": 25
-  },
-  "shoot_drill": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/1.jpg",
-    "match": "Kneeling Arm Drill",
-    "score": 33
-  },
-  "hip_escape": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Hip_Adductions/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Hip_Adductions/1.jpg",
-    "match": "Band Hip Adductions",
-    "score": 33
-  },
-  "guard_pass_drill": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/1.jpg",
-    "match": "Kneeling Arm Drill",
-    "score": 33
-  },
-  "takedown_defense": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/1.jpg",
-    "match": "Kneeling Arm Drill",
-    "score": 33
-  },
-  "muay_thai_combo_2": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Elbow_to_Knee/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Elbow_to_Knee/1.jpg",
-    "match": "Elbow to Knee",
-    "score": 40
-  },
-  "boxing_footwork": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/1.jpg",
-    "match": "Kneeling Arm Drill",
-    "score": 33
-  },
-  "clinch_knees": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ankle_On_The_Knee/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ankle_On_The_Knee/1.jpg",
-    "match": "Ankle On The Knee",
-    "score": 33
-  },
   "speed_bag": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Speed_Squats/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Speed_Squats/1.jpg",
     "match": "Speed Squats",
     "score": 50
   },
-  "double_end_bag": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Double_Kettlebell_Jerk/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Double_Kettlebell_Jerk/1.jpg",
-    "match": "Double Kettlebell Jerk",
-    "score": 33
-  },
-  "bag_blitz": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/1.jpg",
-    "match": "Barbell Full Squat",
-    "score": 25
-  },
-  "wrestling_level_change": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/1.jpg",
-    "match": "Kneeling Arm Drill",
-    "score": 33
-  },
-  "judo_throw_drill": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Judo_Flip/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Judo_Flip/1.jpg",
-    "match": "Cable Judo Flip",
-    "score": 33
-  },
   "jump_kick": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Jump/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Jump/1.jpg",
     "match": "Bench Jump",
     "score": 50
-  },
-  "spinning_back_elbow": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dynamic_Back_Stretch/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dynamic_Back_Stretch/1.jpg",
-    "match": "Dynamic Back Stretch",
-    "score": 33
-  },
-  "teep_timing_drill": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Arm_Drill/1.jpg",
-    "match": "Kneeling Arm Drill",
-    "score": 33
-  },
-  "cover_and_counter": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clean_and_Jerk/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clean_and_Jerk/1.jpg",
-    "match": "Clean and Jerk",
-    "score": 33
   },
   "round_kick_wall": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Linear_Acceleration_Wall_Drill/0.jpg",
@@ -3184,18 +2614,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Neck-SMR/1.jpg",
     "match": "Neck-SMR",
     "score": 50
-  },
-  "sprawl_to_back_take": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dynamic_Back_Stretch/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dynamic_Back_Stretch/1.jpg",
-    "match": "Dynamic Back Stretch",
-    "score": 33
-  },
-  "thai_stepping": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Step_Ups/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Step_Ups/1.jpg",
-    "match": "Barbell Step Ups",
-    "score": 25
   },
   "pull_counter": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clean_Pull/0.jpg",
@@ -3245,12 +2663,6 @@
     "match": "Ankle Circles",
     "score": 100
   },
-  "foam_roll_it_band": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Assisted_Pull-Up/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Assisted_Pull-Up/1.jpg",
-    "match": "Band Assisted Pull-Up",
-    "score": 33
-  },
   "cat_camel": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cat_Stretch/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cat_Stretch/1.jpg",
@@ -3263,12 +2675,6 @@
     "match": "Chin To Chest Stretch",
     "score": 67
   },
-  "figure_four_stretch": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cat_Stretch/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cat_Stretch/1.jpg",
-    "match": "Cat Stretch",
-    "score": 33
-  },
   "doorway_chest_stretch": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chin_To_Chest_Stretch/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chin_To_Chest_Stretch/1.jpg",
@@ -3280,12 +2686,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chair_Upper_Body_Stretch/1.jpg",
     "match": "Chair Upper Body Stretch",
     "score": 50
-  },
-  "neck_lateral_flexion": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lateral_Bound/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lateral_Bound/1.jpg",
-    "match": "Lateral Bound",
-    "score": 33
   },
   "pelvic_tilt_rehab": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Pelvic_Tilt/0.jpg",
@@ -3323,53 +2723,17 @@
     "match": "Balance Board",
     "score": 67
   },
-  "prone_press_up": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternating_Floor_Press/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternating_Floor_Press/1.jpg",
-    "match": "Alternating Floor Press",
-    "score": 33
-  },
-  "wall_angel": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Linear_Acceleration_Wall_Drill/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Linear_Acceleration_Wall_Drill/1.jpg",
-    "match": "Linear Acceleration Wall Drill",
-    "score": 25
-  },
-  "y_t_w_exercise": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Exercise_Ball_Crunch/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Exercise_Ball_Crunch/1.jpg",
-    "match": "Exercise Ball Crunch",
-    "score": 33
-  },
   "side_lying_shoulder": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side-Lying_Floor_Stretch/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side-Lying_Floor_Stretch/1.jpg",
     "match": "Side-Lying Floor Stretch",
     "score": 50
   },
-  "supine_piriformis": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cat_Stretch/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cat_Stretch/1.jpg",
-    "match": "Cat Stretch",
-    "score": 33
-  },
   "hip_ir_er": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Internal_Rotation/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Internal_Rotation/1.jpg",
     "match": "Cable Internal Rotation",
     "score": 50
-  },
-  "ankle_dorsiflexion": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ankle_Circles/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ankle_Circles/1.jpg",
-    "match": "Ankle Circles",
-    "score": 33
-  },
-  "heel_drop_eccentric": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternate_Heel_Touchers/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternate_Heel_Touchers/1.jpg",
-    "match": "Alternate Heel Touchers",
-    "score": 33
   },
   "tibialis_raises_rehab": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Anterior_Tibialis-SMR/0.jpg",
@@ -3389,35 +2753,11 @@
     "match": "Quad Stretch",
     "score": 50
   },
-  "terminal_knee_ext": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ankle_On_The_Knee/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ankle_On_The_Knee/1.jpg",
-    "match": "Ankle On The Knee",
-    "score": 33
-  },
-  "mini_squat_rehab": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/1.jpg",
-    "match": "Barbell Full Squat",
-    "score": 33
-  },
   "shoulder_shrug_wall": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf-Machine_Shoulder_Shrug/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf-Machine_Shoulder_Shrug/1.jpg",
     "match": "Calf-Machine Shoulder Shrug",
     "score": 50
-  },
-  "neck_retraction": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chin-Up/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chin-Up/1.jpg",
-    "match": "Chin-Up",
-    "score": 25
-  },
-  "thoracic_extension_foam": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/1.jpg",
-    "match": "Bent Over Barbell Row",
-    "score": 25
   },
   "hip_circles_rehab": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hip_Circles_prone/0.jpg",
@@ -3425,35 +2765,11 @@
     "match": "Hip Circles (prone)",
     "score": 67
   },
-  "ankle_abc_drill": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ankle_Circles/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ankle_Circles/1.jpg",
-    "match": "Ankle Circles",
-    "score": 33
-  },
   "seated_march": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Biceps/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Biceps/1.jpg",
     "match": "Seated Biceps",
     "score": 50
-  },
-  "bridge_with_abduction": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Glute_Bridge/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Glute_Bridge/1.jpg",
-    "match": "Barbell Glute Bridge",
-    "score": 33
-  },
-  "step_over_rehab": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Step_Ups/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Step_Ups/1.jpg",
-    "match": "Barbell Step Ups",
-    "score": 33
-  },
-  "isometric_squat": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/1.jpg",
-    "match": "Barbell Full Squat",
-    "score": 33
   },
   "hip_thrust_rehab": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg",
@@ -3527,23 +2843,11 @@
     "match": "Elevated Back Lunge",
     "score": 50
   },
-  "heel_elevated_squat": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternate_Heel_Touchers/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternate_Heel_Touchers/1.jpg",
-    "match": "Alternate Heel Touchers",
-    "score": 33
-  },
   "single_leg_rdl": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/1.jpg",
     "match": "Romanian Deadlift",
     "score": 50
-  },
-  "glute_bridge_single_machine": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/1.jpg",
-    "match": "Barbell Hip Thrust",
-    "score": 40
   },
   "dumbbell_snatch": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Clean/0.jpg",
@@ -3713,12 +3017,6 @@
     "match": "Barbell Lunge",
     "score": 50
   },
-  "lateral_step_squat": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/1.jpg",
-    "match": "Barbell Full Squat",
-    "score": 33
-  },
   "reverse_nordic_bw": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Barbell_Curl/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Barbell_Curl/1.jpg",
@@ -3743,18 +3041,6 @@
     "match": "Push Up to Side Plank",
     "score": 50
   },
-  "hand_release_push_up": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chest_Push_with_Run_Release/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chest_Push_with_Run_Release/1.jpg",
-    "match": "Chest Push with Run Release",
-    "score": 40
-  },
-  "squat_hold": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/1.jpg",
-    "match": "Barbell Full Squat",
-    "score": 33
-  },
   "plank_leg_lift": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Lift/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Lift/1.jpg",
@@ -3772,12 +3058,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Squat/1.jpg",
     "match": "Barbell Squat",
     "score": 50
-  },
-  "lateral_band_walk": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Assisted_Pull-Up/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Assisted_Pull-Up/1.jpg",
-    "match": "Band Assisted Pull-Up",
-    "score": 33
   },
   "monster_walk": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Monster_Walk/0.jpg",
@@ -3803,12 +3083,6 @@
     "match": "Alternating Cable Shoulder Press",
     "score": 50
   },
-  "jump_rope_double": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Jump/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Jump/1.jpg",
-    "match": "Bench Jump",
-    "score": 25
-  },
   "tabata_squat": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Squat/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Squat/1.jpg",
@@ -3820,18 +3094,6 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/1.jpg",
     "match": "Clock Push-Up",
     "score": 50
-  },
-  "kb_swing_two_hand": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Vertical_Swing/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Vertical_Swing/1.jpg",
-    "match": "Vertical Swing",
-    "score": 33
-  },
-  "kb_swing_single": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single-Arm_Push-Up/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single-Arm_Push-Up/1.jpg",
-    "match": "Single-Arm Push-Up",
-    "score": 33
   },
   "wall_ball_squat": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Backward_Medicine_Ball_Throw/0.jpg",
@@ -3857,12 +3119,6 @@
     "match": "Freehand Jump Squat",
     "score": 67
   },
-  "fast_feet": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Fast_Skipping/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Fast_Skipping/1.jpg",
-    "match": "Fast Skipping",
-    "score": 33
-  },
   "crossbody_mt_climber": {
     "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cross-Body_Crunch/0.jpg",
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cross-Body_Crunch/1.jpg",
@@ -3874,17 +3130,5 @@
     "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Knee_Tuck_Jump/1.jpg",
     "match": "Knee Tuck Jump",
     "score": 67
-  },
-  "broad_jump_burpee": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Jump/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Jump/1.jpg",
-    "match": "Bench Jump",
-    "score": 33
-  },
-  "sprint_rest_interval": {
-    "img0": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Sprint/0.jpg",
-    "img1": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Sprint/1.jpg",
-    "match": "Bench Sprint",
-    "score": 33
   }
 }
