@@ -5,7 +5,7 @@ A production-grade AI-powered fitness ecosystem with a **Next.js web dashboard**
 ## Frontend Architecture (Reconstructed)
 
 ### Component System (`/frontend/components/`)
-- **`ExerciseAnimation.js`** — CSS-animated SVG stick figure with 12 exercise-specific animations (push_up, squat, jumping_jacks, plank, crunch, run, lunge, dip, curl, row, pull_up, jump). Used in both the session player (220px) and exercise list thumbnails (54px).
+- **`ExerciseAnimation.js`** — CSS-animated flat-design SVG human character (skin-tone, blue tank top, dark shorts, dark shoes) with 13 exercise-specific animations (push_up, squat, jumping_jacks, plank, crunch, run, lunge, dip, curl, row, pull_up, jump, default). Used in both the session player (220px) and exercise list thumbnails (54px). Props: `animationKey`, `size`, `paused`, `bg`.
 - **`cards/WorkoutCard.js`** — Reusable workout card (compact + full variants, gradient domain icons)
 - **`cards/StatCard.js`** — Stats card with 8 color variants (blue, green, orange, purple, light variants)
 - **`cards/BannerCard.js`** — Hero banner with gradient, badge, icon, CTA
