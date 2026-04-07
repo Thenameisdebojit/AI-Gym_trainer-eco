@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useAppSettings } from '../context/AppSettingsContext.js';
+import ExerciseThumb from '../components/ExerciseThumb.js';
 
 /* ─── DATA ─────────────────────────────────────────────────────────── */
 
@@ -20,6 +21,8 @@ function normalizeEx(ex) {
     cals: Math.round((ex.caloriesPerRep || 0.5) * reps),
     difficulty: ex.difficulty || 'beginner',
     muscle_groups: ex.muscle_groups || [],
+    img0: ex.img0 || null,
+    img1: ex.img1 || null,
   };
 }
 
@@ -291,10 +294,25 @@ function DetailView({ workout, catColor, levelColor, detailExercises, totalCalsP
               return (
                 <div key={i} style={{ background: 'var(--surface)', borderRadius: 12, padding: '14px 16px', border: '1px solid var(--border-light)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 10, background: `${catColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: catColor, flexShrink: 0 }}>{i + 1}</div>
+                    <ExerciseThumb
+                      img0={ex.img0}
+                      img1={ex.img1}
+                      name={ex.name}
+                      size={64}
+                      radius={10}
+                      number={i + 1}
+                      fallbackColor={catColor}
+                    />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{ex.name}</div>
                       <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{ex.reps} reps · ~{ex.cals} cal</div>
+                      {ex.muscle_groups && ex.muscle_groups.length > 0 && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 6 }}>
+                          {ex.muscle_groups.slice(0, 3).map((m, mi) => (
+                            <span key={mi} style={{ fontSize: 10, padding: '2px 7px', borderRadius: 6, background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}>{m}</span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     {ex.difficulty && (
                       <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 99, background: `${dc}18`, color: dc, flexShrink: 0 }}>
@@ -302,13 +320,6 @@ function DetailView({ workout, catColor, levelColor, detailExercises, totalCalsP
                       </span>
                     )}
                   </div>
-                  {ex.muscle_groups && ex.muscle_groups.length > 0 && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8, paddingLeft: 50 }}>
-                      {ex.muscle_groups.slice(0, 3).map((m, mi) => (
-                        <span key={mi} style={{ fontSize: 10, padding: '2px 7px', borderRadius: 6, background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}>{m}</span>
-                      ))}
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -667,7 +678,18 @@ function SearchView({ onBack, onOpenWorkout, onStartCustomWorkout }) {
                   const inPlaylist = playlist.some(p => p.name === ex.name);
                   const playlistFull = playlist.length >= 30;
                   return (
-                    <div key={ex.id || i} style={{ background: 'var(--surface)', borderRadius: 14, padding: '14px 14px 12px', border: `1px solid ${inPlaylist ? 'var(--primary)' : 'var(--border)'}`, display: 'flex', flexDirection: 'column', gap: 6, animation: 'fadeIn .25s ease', position: 'relative' }}>
+                    <div key={ex.id || i} style={{ background: 'var(--surface)', borderRadius: 14, padding: '0 0 12px', border: `1px solid ${inPlaylist ? 'var(--primary)' : 'var(--border)'}`, display: 'flex', flexDirection: 'column', gap: 0, animation: 'fadeIn .25s ease', position: 'relative', overflow: 'hidden' }}>
+                      <ExerciseThumb
+                        img0={ex.img0}
+                        img1={ex.img1}
+                        name={ex.name}
+                        width="100%"
+                        height={110}
+                        radius={0}
+                        fallbackColor={dc}
+                        bg="var(--surface-2, #1E293B)"
+                      />
+                      <div style={{ padding: '10px 14px 0', display: 'flex', flexDirection: 'column', gap: 5 }}>
                       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
                         <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--text)', lineHeight: '1.3', flex: 1 }}>{ex.name}</div>
                         <button
@@ -690,6 +712,7 @@ function SearchView({ onBack, onOpenWorkout, onStartCustomWorkout }) {
                           ))}
                         </div>
                       )}
+                      </div>
                     </div>
                   );
                 })}
@@ -892,7 +915,16 @@ export default function Discover() {
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
-                <div style={{ width: 128, height: 128, borderRadius: '50%', background: 'linear-gradient(135deg,#2563EB,#7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 52 }}>🏋️</div>
+                <ExerciseThumb
+                  img0={currentExercise.img0}
+                  img1={currentExercise.img1}
+                  name={currentExercise.name}
+                  size={200}
+                  radius={24}
+                  paused={paused}
+                  bg="rgba(37,99,235,0.15)"
+                  fallbackColor="#2563EB"
+                />
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: 28, fontWeight: 900, marginBottom: 8 }}>{currentExercise.name}</div>
                   <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
