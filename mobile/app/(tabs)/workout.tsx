@@ -60,6 +60,7 @@ const FEATURED: { id: string; label: string; category: ExerciseCategory }[] = [
 interface GeneratedWorkout {
   name: string;
   description: string;
+  hasSupersets?: boolean;
   exercises: {
     id: string;
     name: string;
@@ -71,6 +72,8 @@ interface GeneratedWorkout {
     phase?: "warmup" | "main" | "finisher";
     restSeconds?: number;
     durationSeconds?: number;
+    supersetGroup?: number;
+    isExplosive?: boolean;
   }[];
 }
 
@@ -83,6 +86,7 @@ export default function WorkoutScreen() {
   const [goal, setGoal] = useState<Goal>("general");
   const [equipment, setEquipment] = useState<EquipmentLevel>("none");
   const [level, setLevel] = useState<Level>("beginner");
+  const [duration, setDuration] = useState<20 | 30 | 45 | 60>(30);
   const [loading, setLoading] = useState(false);
   const [generatedWorkout, setGeneratedWorkout] = useState<GeneratedWorkout | null>(null);
   const [showGenerator, setShowGenerator] = useState(false);
@@ -99,10 +103,11 @@ export default function WorkoutScreen() {
     setLoading(true);
     setGeneratedWorkout(null);
     try {
-      const plan = localGenerateWorkout({ goal: goal as WorkoutGoal, equipment: equipment as GenEquipLevel, level, durationMinutes: 30 });
+      const plan = localGenerateWorkout({ goal: goal as WorkoutGoal, equipment: equipment as GenEquipLevel, level, durationMinutes: duration });
       setGeneratedWorkout({
         name: plan.name,
         description: plan.description,
+        hasSupersets: plan.hasSupersets,
         exercises: plan.exercises.map((ex) => ({
           id: ex.id,
           name: ex.name,
@@ -114,11 +119,13 @@ export default function WorkoutScreen() {
           phase: ex.phase,
           restSeconds: ex.restSeconds,
           durationSeconds: ex.durationSeconds,
+          supersetGroup: ex.supersetGroup,
+          isExplosive: ex.isExplosive,
         })),
       });
     } catch {
       try {
-        const result = await apiGenerateWorkout({ goal, equipment, level, duration_minutes: 30 });
+        const result = await apiGenerateWorkout({ goal, equipment, level, duration_minutes: duration });
         setGeneratedWorkout(result);
       } catch {
         const fallback = generateLocalWorkout(goal, equipment, level);
@@ -127,7 +134,7 @@ export default function WorkoutScreen() {
     } finally {
       setLoading(false);
     }
-  }, [goal, equipment, level]);
+  }, [goal, equipment, level, duration]);
 
   const handleStartSession = useCallback((workout: GeneratedWorkout) => {
     const plan: WorkoutPlan = {
@@ -137,7 +144,7 @@ export default function WorkoutScreen() {
       goal,
       level,
       equipment,
-      duration_minutes: 30,
+      duration_minutes: duration,
       exercises: workout.exercises.map((ex) => ({
         id: ex.id,
         name: ex.name,
@@ -149,12 +156,14 @@ export default function WorkoutScreen() {
         muscleGroups: ex.muscleGroups,
         phase: ex.phase,
         durationSeconds: ex.durationSeconds,
+        supersetGroup: ex.supersetGroup,
+        isExplosive: ex.isExplosive,
       })),
       createdAt: Date.now(),
     };
     setCurrentPlan(plan);
     router.push("/workout/session");
-  }, [goal, level, equipment, setCurrentPlan]);
+  }, [goal, level, equipment, duration, setCurrentPlan]);
 
   const generateLocalWorkout = (
     g: Goal,
@@ -320,6 +329,19 @@ export default function WorkoutScreen() {
               ))}
             </View>
 
+            <Text style={styles.genSectionLabel}>Duration</Text>
+            <View style={styles.durationRow}>
+              {([20, 30, 45, 60] as const).map(d => (
+                <TouchableOpacity
+                  key={d}
+                  style={[styles.durationBtn, duration === d && { borderColor: COLORS.primary, backgroundColor: COLORS.primary + "20" }]}
+                  onPress={() => setDuration(d)}
+                >
+                  <Text style={[styles.durationLabel, duration === d && { color: COLORS.primary }]}>{d} min</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
             <TouchableOpacity
               style={[styles.generateBtn, loading && { opacity: 0.7 }]}
               onPress={handleGenerate}
@@ -345,6 +367,12 @@ export default function WorkoutScreen() {
                   <View style={{ flex: 1 }}>
                     <Text style={styles.resultName}>{generatedWorkout.name}</Text>
                     <Text style={styles.resultDesc}>{generatedWorkout.description}</Text>
+                    {generatedWorkout.hasSupersets && (
+                      <View style={styles.supersetBadge}>
+                        <Ionicons name="link" size={10} color={COLORS.secondary} />
+                        <Text style={styles.supersetBadgeText}>Includes Supersets</Text>
+                      </View>
+                    )}
                   </View>
                 </View>
                 {(["warmup", "main", "finisher"] as const).map((phase) => {
@@ -365,14 +393,23 @@ export default function WorkoutScreen() {
                         return (
                           <TouchableOpacity
                             key={ex.id}
-                            style={[styles.genExRow, { borderColor: color + "20" }]}
+                            style={[styles.genExRow, { borderColor: color + "20" }, ex.supersetGroup !== undefined && { borderLeftColor: COLORS.secondary, borderLeftWidth: 3 }]}
                             onPress={() => router.push({ pathname: "/exercise/detail", params: { id: ex.id, category: ex.category } })}
                           >
                             <View style={[styles.genExNum, { backgroundColor: color + "20" }]}>
-                              <Text style={[styles.genExNumText, { color }]}>{i + 1}</Text>
+                              {ex.supersetGroup !== undefined ? (
+                                <Ionicons name="link" size={12} color={COLORS.secondary} />
+                              ) : (
+                                <Text style={[styles.genExNumText, { color }]}>{i + 1}</Text>
+                              )}
                             </View>
                             <View style={{ flex: 1 }}>
-                              <Text style={styles.genExName}>{ex.name}</Text>
+                              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                                <Text style={styles.genExName}>{ex.name}</Text>
+                                {ex.isExplosive && (
+                                  <Ionicons name="flash" size={11} color={COLORS.amber} />
+                                )}
+                              </View>
                               <Text style={styles.genExSets}>{ex.sets} sets × {ex.reps} reps</Text>
                               <View style={styles.genExMeta}>
                                 {muscle ? (
@@ -572,6 +609,14 @@ const styles = StyleSheet.create({
   optionLabel: { fontFamily: FONTS.semiBold, fontSize: SIZES.xs, color: COLORS.text, textAlign: "center" },
   optionDesc: { fontFamily: FONTS.regular, fontSize: SIZES.xs, color: COLORS.textMuted, textAlign: "center" },
 
+  supersetBadge: { flexDirection: "row", alignItems: "center", gap: 3, marginTop: 4, alignSelf: "flex-start", backgroundColor: COLORS.secondary + "18", borderRadius: RADIUS.full, paddingHorizontal: 8, paddingVertical: 2 },
+  supersetBadgeText: { fontFamily: FONTS.semiBold, fontSize: 10, color: COLORS.secondary },
+  durationRow: { flexDirection: "row", gap: SPACING.sm, marginBottom: SPACING.xs },
+  durationBtn: {
+    flex: 1, paddingVertical: SPACING.sm, borderRadius: RADIUS.md,
+    borderWidth: 1.5, borderColor: COLORS.border, alignItems: "center",
+  },
+  durationLabel: { fontFamily: FONTS.semiBold, fontSize: SIZES.sm, color: COLORS.textSecondary },
   levelRow: { flexDirection: "row", gap: SPACING.sm },
   levelBtn: {
     flex: 1,

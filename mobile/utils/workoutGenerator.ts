@@ -23,6 +23,8 @@ export interface GeneratedExercise {
   caloriesPerRep: number;
   phase: "warmup" | "main" | "finisher";
   restSeconds: number;
+  supersetGroup?: number;
+  isExplosive?: boolean;
 }
 
 export interface GeneratedPlan {
@@ -34,6 +36,7 @@ export interface GeneratedPlan {
   duration_minutes: number;
   estimated_calories: number;
   exercises: GeneratedExercise[];
+  hasSupersets?: boolean;
 }
 
 const ALLOWED_EQUIP: Record<EquipmentLevel, Equipment[]> = {
@@ -66,15 +69,39 @@ const GOAL_DESCRIPTIONS: Record<WorkoutGoal, string> = {
   general: "Balanced training session hitting every major muscle group.",
 };
 
+/**
+ * Returns the number of MAIN exercises to pick (excluding warmup=2 and finisher=1).
+ * Total exercises = warmup(2) + main + finisher(1).
+ *
+ * Target total ranges:
+ *   beginner  <20 min  → 5-6 total → 2-3 main
+ *   beginner  20-39min → 6-8 total → 3-5 main
+ *   beginner  ≥40 min  → 7-8 total → 4-5 main
+ *   intermed  <20 min  → 6-8 total → 3-5 main
+ *   intermed  20-39min → 8-10 total → 5-7 main
+ *   intermed  ≥40 min  → 9-10 total → 6-7 main
+ *   advanced  <20 min  → 7-9 total → 4-6 main
+ *   advanced  20-39min → 9-12 total → 6-9 main
+ *   advanced  ≥40 min  → 10-12 total → 7-9 main
+ */
 function mainExerciseCount(level: DifficultyLevel, durationMinutes: number): number {
-  let base: number;
-  if (durationMinutes < 10) base = 4;
-  else if (durationMinutes < 25) base = 6;
-  else base = 9;
+  const short = durationMinutes < 20;
+  const medium = durationMinutes < 40;
 
-  if (level === "beginner") return Math.max(4, base - 1);
-  if (level === "intermediate") return base;
-  return Math.min(12, base + 2);
+  if (level === "beginner") {
+    if (short) return 3;
+    if (medium) return 4;
+    return 5;
+  }
+  if (level === "intermediate") {
+    if (short) return 4;
+    if (medium) return 6;
+    return 7;
+  }
+  // advanced
+  if (short) return 5;
+  if (medium) return 7;
+  return 9;
 }
 
 function setsForGoal(goal: WorkoutGoal, level: DifficultyLevel): number {
@@ -197,6 +224,48 @@ function pickFinisher(
   return pickUnique(pool, 1);
 }
 
+/**
+ * For advanced plans: pair main exercises into supersets (groups of 2).
+ * Pairs compound + isolation targeting different muscles.
+ * Returns the exercises with supersetGroup numbers assigned.
+ */
+function applyAdvancedSupersets(mainExercises: GeneratedExercise[]): GeneratedExercise[] {
+  if (mainExercises.length < 4) return mainExercises;
+  const result: GeneratedExercise[] = [];
+  let group = 1;
+  let i = 0;
+  while (i < mainExercises.length) {
+    const current = mainExercises[i];
+    const next = mainExercises[i + 1];
+    if (next) {
+      const sameMuscle = current.muscleGroups.some((m) => next.muscleGroups.includes(m));
+      if (!sameMuscle) {
+        result.push({ ...current, supersetGroup: group, restSeconds: 15 });
+        result.push({ ...next, supersetGroup: group, restSeconds: current.restSeconds });
+        group++;
+        i += 2;
+        continue;
+      }
+    }
+    result.push(current);
+    i++;
+  }
+  return result;
+}
+
+/**
+ * Mark explosive/high-intensity exercises for advanced plans.
+ */
+function markExplosiveExercises(exercises: GeneratedExercise[]): GeneratedExercise[] {
+  const explosiveKeywords = ["power", "jump", "explosive", "plyo", "snatch", "clean", "sprint", "thruster", "slam", "swing"];
+  return exercises.map((ex) => {
+    const isExplosive = explosiveKeywords.some((kw) =>
+      ex.name.toLowerCase().includes(kw) || ex.id.toLowerCase().includes(kw)
+    );
+    return isExplosive ? { ...ex, isExplosive: true } : ex;
+  });
+}
+
 export function generateWorkout(params: {
   goal: WorkoutGoal;
   equipment: EquipmentLevel;
@@ -232,7 +301,7 @@ export function generateWorkout(params: {
     restSeconds: 20,
   }));
 
-  const main: GeneratedExercise[] = mainRaw.map((e) => ({
+  let main: GeneratedExercise[] = mainRaw.map((e) => ({
     id: e.id,
     name: e.name,
     category: e.category,
@@ -243,6 +312,14 @@ export function generateWorkout(params: {
     phase: "main",
     restSeconds: rest,
   }));
+
+  main = markExplosiveExercises(main);
+
+  let hasSupersets = false;
+  if (level === "advanced" && main.length >= 4) {
+    main = applyAdvancedSupersets(main);
+    hasSupersets = main.some((ex) => ex.supersetGroup !== undefined);
+  }
 
   const finisher: GeneratedExercise[] = finisherRaw.map((e) => ({
     id: e.id,
@@ -275,5 +352,6 @@ export function generateWorkout(params: {
     duration_minutes: durationMinutes,
     estimated_calories: Math.round(estimated_calories),
     exercises: allExercises,
+    hasSupersets,
   };
 }

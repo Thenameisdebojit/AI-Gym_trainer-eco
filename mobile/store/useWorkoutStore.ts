@@ -12,6 +12,8 @@ export interface WorkoutExercise {
   muscleGroups?: string[];
   phase?: "warmup" | "main" | "finisher";
   durationSeconds?: number;
+  supersetGroup?: number;
+  isExplosive?: boolean;
 }
 
 export interface WorkoutPlan {

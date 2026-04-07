@@ -587,6 +587,18 @@ export default function WorkoutSessionScreen() {
                 <Text style={[styles.phaseBadgeText, { color: phaseColor }]}>{phaseLabel}</Text>
               </View>
             ) : null}
+            {currentExercise?.supersetGroup !== undefined ? (
+              <View style={[styles.phaseBadge, { backgroundColor: COLORS.secondary + "20" }]}>
+                <Ionicons name="link" size={10} color={COLORS.secondary} />
+                <Text style={[styles.phaseBadgeText, { color: COLORS.secondary }]}>Superset</Text>
+              </View>
+            ) : null}
+            {currentExercise?.isExplosive ? (
+              <View style={[styles.phaseBadge, { backgroundColor: COLORS.amber + "20" }]}>
+                <Ionicons name="flash" size={10} color={COLORS.amber} />
+                <Text style={[styles.phaseBadgeText, { color: COLORS.amber }]}>Explosive</Text>
+              </View>
+            ) : null}
             {primaryMuscle ? (
               <View style={[styles.muscleBadge, { backgroundColor: exerciseColor + "15" }]}>
                 <Text style={[styles.muscleBadgeText, { color: exerciseColor }]}>{primaryMuscle}</Text>
@@ -849,6 +861,12 @@ const styles = StyleSheet.create({
   phaseSectionLabel: { fontFamily: FONTS.bold, fontSize: SIZES.xs, textTransform: "uppercase", letterSpacing: 1 },
   catChip: { paddingHorizontal: SPACING.sm, paddingVertical: 2, borderRadius: RADIUS.full },
   catChipText: { fontFamily: FONTS.medium, fontSize: SIZES.xs, textTransform: "capitalize" },
+  exerciseMetaBadges: { flexDirection: "row", alignItems: "center", gap: SPACING.sm, flexWrap: "wrap", justifyContent: "center", marginVertical: SPACING.xs },
+  phaseBadge: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: SPACING.sm, paddingVertical: 3, borderRadius: RADIUS.full },
+  phaseBadgeDot: { width: 6, height: 6, borderRadius: 3 },
+  phaseBadgeText: { fontFamily: FONTS.semiBold, fontSize: SIZES.xs, textTransform: "uppercase", letterSpacing: 0.8 },
+  muscleBadge: { paddingHorizontal: SPACING.sm, paddingVertical: 3, borderRadius: RADIUS.full },
+  muscleBadgeText: { fontFamily: FONTS.medium, fontSize: SIZES.xs, textTransform: "capitalize" },
 
   ctaBar: {
     position: "absolute", bottom: 0, left: 0, right: 0,
