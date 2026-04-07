@@ -3,6 +3,24 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useAppSettings } from '../context/AppSettingsContext.js';
 
 /* ─── DATA ─────────────────────────────────────────────────────────── */
+
+const CATALOG_DOMAIN_MAP = {
+  gym: 'gym', cardio: 'cardio', yoga: 'yoga',
+  calisthenics: 'calisthenics', bodyweight: 'freehand',
+  rehab: 'rehab', 'martial arts': 'martial_arts',
+};
+
+function normalizeEx(ex) {
+  const reps = ex.difficulty === 'beginner' ? 10 : ex.difficulty === 'intermediate' ? 12 : 8;
+  return {
+    name: ex.name,
+    reps,
+    duration: 30,
+    type: (ex.subcategory || ex.domain || '').toLowerCase(),
+    cals: Math.round((ex.caloriesPerRep || 0.5) * reps),
+  };
+}
+
 const CAT_COLORS = {
   gym: '#1D4ED8', cardio: '#DC2626', yoga: '#0891B2',
   calisthenics: '#065F46', 'martial arts': '#92400E', rehab: '#5B21B6', bodyweight: '#1E40AF',
@@ -226,8 +244,83 @@ function HistoryView({ onBack }) {
   );
 }
 
+/* ─── DETAIL VIEW ───────────────────────────────────────────────────── */
+function DetailView({ workout, catColor, levelColor, detailExercises, totalCalsPreview, catalogLoading, DIFF_COLORS, onBack, onStart }) {
+  const [showAll, setShowAll] = useState(false);
+  const visible = showAll ? detailExercises : detailExercises.slice(0, 12);
+
+  return (
+    <div style={{ animation: 'fadeIn 0.3s ease', background: 'var(--bg)', minHeight: '100vh' }}>
+      <div style={{ position: 'relative', height: 260, overflow: 'hidden' }}>
+        <img src={workout.image} alt={workout.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.4)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(160deg,transparent 20%,${catColor}99)` }} />
+        <button onClick={onBack} style={{ position: 'absolute', top: 20, left: 20, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', border: 'none', color: '#fff', width: 42, height: 42, borderRadius: 12, fontSize: 18, cursor: 'pointer' }}>←</button>
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 28px 28px' }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+            <span style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(6px)', padding: '4px 12px', borderRadius: 99, fontSize: 12, fontWeight: 700, color: '#fff' }}>{workout.category}</span>
+            <span style={{ padding: '4px 12px', borderRadius: 99, fontSize: 12, fontWeight: 700, background: `${levelColor}cc`, color: '#fff' }}>{workout.level}</span>
+          </div>
+          <div style={{ fontSize: 30, fontWeight: 900, color: '#fff', lineHeight: 1.2 }}>{workout.title}</div>
+        </div>
+      </div>
+      <div style={{ padding: '24px 28px', maxWidth: 800 }}>
+        <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 24 }}>{workout.desc}</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 28 }}>
+          {[{ icon: '⏱', label: 'Duration', value: `${workout.duration} min` }, { icon: '💪', label: 'Exercises', value: detailExercises.length || '…' }, { icon: '🔥', label: 'Est. Cal', value: `~${totalCalsPreview}` }, { icon: '📊', label: 'Level', value: workout.level }].map((s, i) => (
+            <div key={i} style={{ background: 'var(--surface)', borderRadius: 12, padding: '16px 12px', textAlign: 'center', border: '1px solid var(--border-light)' }}>
+              <div style={{ fontSize: 22, marginBottom: 6 }}>{s.icon}</div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)' }}>{s.value}</div>
+              <div style={{ fontSize: 10, color: 'var(--text-secondary)', marginTop: 2 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+        <h3 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>Exercise List</h3>
+        {detailExercises.length > 0 && (
+          <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 14 }}>
+            {detailExercises.length} exercises · est. {Math.round(detailExercises.length * 0.75)} min
+          </div>
+        )}
+        {catalogLoading ? (
+          <div style={{ textAlign: 'center', padding: '28px 0', color: 'var(--text-tertiary)', fontSize: 14 }}>Loading exercises…</div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 18 }}>
+            {visible.map((ex, i) => {
+              const diffColor = DIFF_COLORS[ex.type?.toLowerCase()] || catColor;
+              return (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'var(--surface)', borderRadius: 12, padding: '14px 16px', border: '1px solid var(--border-light)' }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: `${catColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: catColor, flexShrink: 0 }}>{i + 1}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{ex.name}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{ex.reps} reps · ~{ex.cals} cal</div>
+                  </div>
+                  {ex.type && <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 99, background: `${catColor}15`, color: catColor, flexShrink: 0 }}>{ex.type}</span>}
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {!catalogLoading && detailExercises.length > 12 && (
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <button onClick={() => setShowAll(s => !s)} style={{ padding: '9px 28px', borderRadius: 99, border: '1.5px solid var(--border)', background: 'var(--surface)', color: 'var(--text-secondary)', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+              {showAll ? 'Show less' : `Show all ${detailExercises.length} exercises`}
+            </button>
+          </div>
+        )}
+        <button onClick={onStart} style={{ width: '100%', padding: 18, borderRadius: 14, background: `linear-gradient(135deg,${catColor},#7C3AED)`, border: 'none', color: '#fff', fontSize: 18, fontWeight: 800, cursor: 'pointer', boxShadow: `0 12px 36px ${catColor}40` }}>▶ Start Workout</button>
+      </div>
+      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
+    </div>
+  );
+}
+
 /* ─── SEARCH VIEW ───────────────────────────────────────────────────── */
-function SearchView({ onBack, onOpenWorkout }) {
+const EX_CATS = ['all','gym','freehand','calisthenics','cardio','yoga','martial_arts','rehab'];
+const EX_DIFFS = ['all','beginner','intermediate','advanced'];
+const EX_DIFF_COLORS = { beginner: '#10B981', intermediate: '#F59E0B', advanced: '#EF4444' };
+const EX_CAT_ICONS = { gym:'🏋️', freehand:'🤸', calisthenics:'💪', cardio:'🏃', yoga:'🧘', martial_arts:'🥊', rehab:'🩹', all:'✦' };
+const EX_CAT_COLORS = { gym:'#7C3AED', freehand:'#2563EB', calisthenics:'#0891B2', cardio:'#EF4444', yoga:'#10B981', martial_arts:'#F97316', rehab:'#EC4899' };
+
+function SearchView({ onBack, onOpenWorkout, onStartCustomWorkout }) {
   const { t } = useAppSettings();
   const [query, setQuery] = useState('');
   const [selectedLevel, setSelectedLevel] = useState(null);
@@ -235,7 +328,31 @@ function SearchView({ onBack, onOpenWorkout }) {
   const [selectedBody, setSelectedBody] = useState(null);
   const inputRef = useRef(null);
 
+  const [exLib, setExLib] = useState([]);
+  const [exLibLoading, setExLibLoading] = useState(true);
+  const [exLibCat, setExLibCat] = useState('all');
+  const [exLibDiff, setExLibDiff] = useState('all');
+  const [exLibExpanded, setExLibExpanded] = useState(false);
+  const [exLibSearch, setExLibSearch] = useState('');
+
+  const [playlist, setPlaylist] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('fitai_custom_playlist') || '[]'); }
+    catch { return []; }
+  });
+
   useEffect(() => { setTimeout(() => inputRef.current?.focus(), 100); }, []);
+
+  useEffect(() => {
+    fetch('/api/exercises')
+      .then(r => r.json())
+      .then(data => setExLib(Array.isArray(data) ? data : []))
+      .catch(() => setExLib([]))
+      .finally(() => setExLibLoading(false));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('fitai_custom_playlist', JSON.stringify(playlist));
+  }, [playlist]);
 
   const filtered = useMemo(() => {
     return WORKOUT_CATALOG.filter(w => {
@@ -255,8 +372,51 @@ function SearchView({ onBack, onOpenWorkout }) {
 
   const showResults = query.length > 1 || selectedLevel || selectedType || selectedBody;
 
+  const exLibFiltered = useMemo(() => {
+    const searchLow = exLibSearch.toLowerCase();
+    return exLib.filter(ex =>
+      (exLibCat === 'all' || ex.domain === exLibCat) &&
+      (exLibDiff === 'all' || ex.difficulty === exLibDiff) &&
+      (!searchLow || ex.name.toLowerCase().includes(searchLow) || (ex.muscle_groups || []).some(m => m.toLowerCase().includes(searchLow)))
+    );
+  }, [exLib, exLibCat, exLibDiff, exLibSearch]);
+
+  const exLibVisible = exLibExpanded ? exLibFiltered : exLibFiltered.slice(0, 12);
+
+  const addToPlaylist = (ex) => {
+    if (playlist.length >= 30) return;
+    if (playlist.some(p => p.name === ex.name)) return;
+    const reps = ex.difficulty === 'beginner' ? 10 : ex.difficulty === 'intermediate' ? 12 : 8;
+    setPlaylist(pl => [...pl, {
+      name: ex.name,
+      reps,
+      duration: 30,
+      type: (ex.subcategory || ex.domain || '').toLowerCase(),
+      cals: Math.round((ex.caloriesPerRep || 0.5) * reps),
+      difficulty: ex.difficulty,
+    }]);
+  };
+
+  const removeFromPlaylist = (name) => setPlaylist(pl => pl.filter(p => p.name !== name));
+
+  const handleStartPlaylist = () => {
+    if (playlist.length === 0) return;
+    const customWorkout = {
+      id: 'custom_playlist',
+      title: 'My Playlist',
+      category: 'custom',
+      level: 'Mixed',
+      image: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=900&h=500&fit=crop',
+      desc: `Your custom ${playlist.length}-exercise workout.`,
+      exercises: playlist,
+    };
+    onStartCustomWorkout(customWorkout);
+  };
+
+  const estPlaylistMin = Math.max(1, Math.round(playlist.length * 0.75));
+
   return (
-    <div style={{ background: 'var(--bg)', minHeight: '100vh', paddingBottom: 40 }}>
+    <div style={{ background: 'var(--bg)', minHeight: '100vh', paddingBottom: 60 }}>
       {/* Search bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 20px', background: 'var(--surface)', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ fontSize: 16, color: 'var(--text-tertiary)' }}>🔍</div>
@@ -334,9 +494,9 @@ function SearchView({ onBack, onOpenWorkout }) {
           </div>
         )}
 
-        {/* Results */}
+        {/* Workout Results */}
         {showResults && (
-          <div>
+          <div style={{ marginBottom: 32 }}>
             <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-secondary)', marginBottom: 14 }}>
               {filtered.length} result{filtered.length !== 1 ? 's' : ''}
             </div>
@@ -364,7 +524,156 @@ function SearchView({ onBack, onOpenWorkout }) {
             })}
           </div>
         )}
+
+        {/* Divider */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+          <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-tertiary)', whiteSpace: 'nowrap' }}>or browse exercises</span>
+          <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
+
+        {/* ── Exercise Library ── */}
+        <div style={{ marginBottom: 32 }}>
+          <div style={{ fontWeight: 800, fontSize: 17, color: 'var(--text)', marginBottom: 14 }}>Exercise Library 📚</div>
+          {/* Search */}
+          <div style={{ position: 'relative', marginBottom: 12 }}>
+            <div style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 15, color: 'var(--text-tertiary)', pointerEvents: 'none' }}>🔍</div>
+            <input type="text" placeholder="Search exercises, muscles..."
+              value={exLibSearch}
+              onChange={e => { setExLibSearch(e.target.value); setExLibExpanded(false); }}
+              style={{ width: '100%', boxSizing: 'border-box', padding: '11px 16px 11px 42px', borderRadius: 12, border: '1.5px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', fontSize: 13, outline: 'none' }}
+              onFocus={e => e.target.style.borderColor = 'var(--primary)'}
+              onBlur={e => e.target.style.borderColor = 'var(--border)'}
+            />
+          </div>
+          {/* Category chips */}
+          <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 10 }} className="hide-scroll">
+            {EX_CATS.map(cat => (
+              <button key={cat} onClick={() => { setExLibCat(cat); setExLibExpanded(false); }}
+                style={{ flexShrink: 0, padding: '6px 14px', borderRadius: 99, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', background: exLibCat === cat ? 'var(--primary)' : 'var(--surface)', color: exLibCat === cat ? '#fff' : 'var(--text-secondary)', transition: 'all .15s' }}>
+                {EX_CAT_ICONS[cat]} {cat === 'all' ? 'All' : cat.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              </button>
+            ))}
+          </div>
+          {/* Difficulty pills */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+            {EX_DIFFS.map(d => (
+              <button key={d} onClick={() => { setExLibDiff(d); setExLibExpanded(false); }}
+                style={{ padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: `1.5px solid ${d === 'all' ? (exLibDiff === 'all' ? 'var(--primary)' : 'var(--border)') : EX_DIFF_COLORS[d]}`, background: exLibDiff === d ? (d === 'all' ? 'var(--primary)' : EX_DIFF_COLORS[d] + '18') : 'transparent', color: exLibDiff === d ? (d === 'all' ? 'var(--primary)' : EX_DIFF_COLORS[d]) : 'var(--text-tertiary)', transition: 'all .15s' }}>
+                {d === 'all' ? 'All levels' : d.charAt(0).toUpperCase() + d.slice(1)}
+              </button>
+            ))}
+          </div>
+          {/* Grid */}
+          {exLibLoading ? (
+            <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-tertiary)', fontSize: 14 }}>Loading exercises…</div>
+          ) : exLibFiltered.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-tertiary)', fontSize: 14 }}>No exercises found</div>
+          ) : (
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
+                {exLibVisible.map((ex, i) => {
+                  const dc = EX_DIFF_COLORS[ex.difficulty] || '#64748B';
+                  const cc = EX_CAT_COLORS[ex.domain] || '#64748B';
+                  const catLabel = (ex.domain || '').replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                  const inPlaylist = playlist.some(p => p.name === ex.name);
+                  const playlistFull = playlist.length >= 30;
+                  return (
+                    <div key={ex.id || i} style={{ background: 'var(--surface)', borderRadius: 14, padding: '14px 14px 12px', border: `1px solid ${inPlaylist ? 'var(--primary)' : 'var(--border)'}`, display: 'flex', flexDirection: 'column', gap: 6, animation: 'fadeIn .25s ease', position: 'relative' }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+                        <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--text)', lineHeight: '1.3', flex: 1 }}>{ex.name}</div>
+                        <button
+                          onClick={() => inPlaylist ? removeFromPlaylist(ex.name) : addToPlaylist(ex)}
+                          disabled={!inPlaylist && playlistFull}
+                          style={{ width: 26, height: 26, borderRadius: 8, border: 'none', background: inPlaylist ? '#10B981' : playlistFull ? 'var(--surface-2)' : 'var(--primary)', color: '#fff', fontSize: 14, fontWeight: 800, cursor: inPlaylist || !playlistFull ? 'pointer' : 'not-allowed', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}
+                          title={inPlaylist ? 'Remove from playlist' : playlistFull ? 'Playlist full (30 max)' : 'Add to playlist'}
+                        >
+                          {inPlaylist ? '✓' : '+'}
+                        </button>
+                      </div>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 99, background: `${dc}18`, color: dc, alignSelf: 'flex-start' }}>
+                        {ex.difficulty.charAt(0).toUpperCase() + ex.difficulty.slice(1)}
+                      </span>
+                      <span style={{ alignSelf: 'flex-start', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 99, background: `${cc}18`, color: cc, border: `1px solid ${cc}30` }}>{catLabel}</span>
+                      {ex.muscle_groups && ex.muscle_groups.length > 0 && (
+                        <div style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 2 }}>
+                          {ex.muscle_groups.slice(0, 2).map((m, mi) => (
+                            <span key={mi} style={{ background: 'var(--surface-2)', padding: '2px 7px', borderRadius: 6, border: '1px solid var(--border)' }}>{m}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              {exLibFiltered.length > 12 && (
+                <div style={{ textAlign: 'center', marginTop: 18 }}>
+                  <button onClick={() => setExLibExpanded(e => !e)} style={{ padding: '9px 28px', borderRadius: 99, border: '1.5px solid var(--border)', background: 'var(--surface)', color: 'var(--text-secondary)', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                    {exLibExpanded ? 'Show less' : `Show all ${exLibFiltered.length} exercises`}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* ── Custom Workout Playlist ── */}
+        <div style={{ marginBottom: 32 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: 17, color: 'var(--text)' }}>My Playlist 🎵</div>
+              {playlist.length > 0 && (
+                <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>
+                  {playlist.length} exercise{playlist.length !== 1 ? 's' : ''} · ~{estPlaylistMin} min
+                </div>
+              )}
+            </div>
+            {playlist.length > 0 && (
+              <button onClick={() => setPlaylist([])} style={{ background: 'none', border: '1.5px solid var(--border)', borderRadius: 8, padding: '5px 10px', fontSize: 12, color: '#EF4444', cursor: 'pointer', fontWeight: 600 }}>
+                🗑 Clear all
+              </button>
+            )}
+          </div>
+          {playlist.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '32px 20px', background: 'var(--surface)', borderRadius: 16, border: '1.5px dashed var(--border)' }}>
+              <div style={{ fontSize: 36, marginBottom: 10 }}>🎵</div>
+              <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text-secondary)' }}>Your playlist is empty</div>
+              <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 6 }}>Tap + on any exercise above to add it here</div>
+            </div>
+          ) : (
+            <>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+                {playlist.map((ex, i) => {
+                  const dc = EX_DIFF_COLORS[ex.difficulty] || '#64748B';
+                  return (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'var(--surface)', borderRadius: 12, padding: '12px 14px', border: '1px solid var(--border)' }}>
+                      <div style={{ width: 30, height: 30, borderRadius: 8, background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#fff', flexShrink: 0 }}>{i + 1}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ex.name}</div>
+                        <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>{ex.reps} reps · ~{ex.cals} cal</div>
+                      </div>
+                      {ex.difficulty && (
+                        <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99, background: `${dc}18`, color: dc, flexShrink: 0 }}>
+                          {ex.difficulty.charAt(0).toUpperCase() + ex.difficulty.slice(1)}
+                        </span>
+                      )}
+                      <button onClick={() => removeFromPlaylist(ex.name)} style={{ background: 'none', border: 'none', color: '#94A3B8', fontSize: 16, cursor: 'pointer', padding: '0 2px', flexShrink: 0 }} title="Remove">✕</button>
+                    </div>
+                  );
+                })}
+              </div>
+              {playlist.length >= 30 && (
+                <div style={{ textAlign: 'center', fontSize: 12, color: '#F59E0B', marginBottom: 10 }}>Max 30 exercises reached</div>
+              )}
+              <button onClick={handleStartPlaylist}
+                style={{ width: '100%', padding: 16, borderRadius: 14, background: 'linear-gradient(135deg,#2563EB,#7C3AED)', border: 'none', color: '#fff', fontSize: 16, fontWeight: 800, cursor: 'pointer', boxShadow: '0 8px 28px rgba(37,99,235,0.35)' }}>
+                ▶ Start Playlist Workout
+              </button>
+            </>
+          )}
+        </div>
       </div>
+      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
     </div>
   );
 }
@@ -377,12 +686,8 @@ export default function Discover() {
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [hoveredCard, setHoveredCard] = useState(null);
 
-  const [exLib, setExLib] = useState([]);
-  const [exLibLoading, setExLibLoading] = useState(false);
-  const [exLibCat, setExLibCat] = useState('all');
-  const [exLibDiff, setExLibDiff] = useState('all');
-  const [exLibExpanded, setExLibExpanded] = useState(false);
-  const [exLibSearch, setExLibSearch] = useState('');
+  const [catalogExercises, setCatalogExercises] = useState([]);
+  const [catalogLoading, setCatalogLoading] = useState(false);
 
   const [phase, setPhase] = useState('countdown');
   const [countdown, setCountdown] = useState(5);
@@ -404,16 +709,25 @@ export default function Discover() {
     }
   }, [navTarget]);
 
-  useEffect(() => {
-    setExLibLoading(true);
-    fetch('/api/exercises')
-      .then(r => r.json())
-      .then(data => setExLib(Array.isArray(data) ? data : []))
-      .catch(() => setExLib([]))
-      .finally(() => setExLibLoading(false));
+  const openDetail = useCallback((workout) => {
+    const domain = CATALOG_DOMAIN_MAP[workout.category];
+    setCatalogExercises([]);
+    setCatalogLoading(true);
+    if (domain) {
+      fetch(`/api/exercises?domain=${domain}`)
+        .then(r => r.json())
+        .then(data => {
+          const list = Array.isArray(data) ? data : [];
+          setCatalogExercises(list.map(normalizeEx));
+        })
+        .catch(() => setCatalogExercises([]))
+        .finally(() => setCatalogLoading(false));
+    } else {
+      setCatalogLoading(false);
+    }
+    setSelectedWorkout(workout);
+    setView('detail');
   }, []);
-
-  const openDetail = useCallback((workout) => { setSelectedWorkout(workout); setView('detail'); }, []);
   const openById = useCallback((id) => { const w = WORKOUT_CATALOG.find(x => x.id === id); if (w) openDetail(w); }, [openDetail]);
 
   const startWorkout = () => {
@@ -428,7 +742,7 @@ export default function Discover() {
     else { setSelectedWorkout(null); setView('browse'); }
   };
 
-  const exercises = selectedWorkout?.exercises || [];
+  const exercises = catalogExercises.length > 0 ? catalogExercises : (selectedWorkout?.exercises || []);
   const currentExercise = exercises[exIdx];
 
   const markDone = useCallback(() => {
@@ -480,7 +794,17 @@ export default function Discover() {
 
   /* Search view */
   if (view === 'search') {
-    return <SearchView onBack={() => setView('browse')} onOpenWorkout={(w) => { setSelectedWorkout(w); setView('detail'); }} />;
+    return <SearchView
+      onBack={() => setView('browse')}
+      onOpenWorkout={(w) => { setSelectedWorkout(w); setView('detail'); }}
+      onStartCustomWorkout={(customWorkout) => {
+        setSelectedWorkout(customWorkout);
+        setCatalogExercises(customWorkout.exercises || []);
+        setExIdx(0); setPhase('countdown'); setCountdown(5); setExerciseTimer(30); setRestTimer(15);
+        setPaused(false); setTotalCals(0); setTotalReps(0); setCompletedCount(0); setSessionStart(Date.now());
+        setView('session');
+      }}
+    />;
   }
 
   /* History view */
@@ -581,48 +905,21 @@ export default function Discover() {
   if (view === 'detail' && selectedWorkout) {
     const catColor = CAT_COLORS[selectedWorkout.category] || '#2563EB';
     const levelColor = LEVEL_COLORS[selectedWorkout.level] || '#10B981';
-    const totalCalsPreview = selectedWorkout.exercises.reduce((s, e) => s + (e.cals || 0), 0);
+    const detailExercises = catalogExercises.length > 0 ? catalogExercises : (selectedWorkout.exercises || []);
+    const totalCalsPreview = detailExercises.slice(0, 12).reduce((s, e) => s + (e.cals || 0), 0);
+    const DIFF_COLORS = { beginner: '#10B981', intermediate: '#F59E0B', advanced: '#EF4444' };
     return (
-      <div style={{ animation: 'fadeIn 0.3s ease', background: 'var(--bg)', minHeight: '100vh' }}>
-        <div style={{ position: 'relative', height: 260, overflow: 'hidden' }}>
-          <img src={selectedWorkout.image} alt={selectedWorkout.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.4)' }} />
-          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(160deg,transparent 20%,${catColor}99)` }} />
-          <button onClick={goBack} style={{ position: 'absolute', top: 20, left: 20, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', border: 'none', color: '#fff', width: 42, height: 42, borderRadius: 12, fontSize: 18, cursor: 'pointer' }}>←</button>
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 28px 28px' }}>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-              <span style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(6px)', padding: '4px 12px', borderRadius: 99, fontSize: 12, fontWeight: 700, color: '#fff' }}>{selectedWorkout.category}</span>
-              <span style={{ padding: '4px 12px', borderRadius: 99, fontSize: 12, fontWeight: 700, background: `${levelColor}cc`, color: '#fff' }}>{selectedWorkout.level}</span>
-            </div>
-            <div style={{ fontSize: 30, fontWeight: 900, color: '#fff', lineHeight: 1.2 }}>{selectedWorkout.title}</div>
-          </div>
-        </div>
-        <div style={{ padding: '24px 28px', maxWidth: 800 }}>
-          <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 24 }}>{selectedWorkout.desc}</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 28 }}>
-            {[{ icon: '⏱', label: 'Duration', value: `${selectedWorkout.duration} min` }, { icon: '💪', label: 'Exercises', value: selectedWorkout.exercises.length }, { icon: '🔥', label: 'Est. Cal', value: `~${totalCalsPreview}` }, { icon: '📊', label: 'Level', value: selectedWorkout.level }].map((s, i) => (
-              <div key={i} style={{ background: 'var(--surface)', borderRadius: 12, padding: '16px 12px', textAlign: 'center', border: '1px solid var(--border-light)' }}>
-                <div style={{ fontSize: 22, marginBottom: 6 }}>{s.icon}</div>
-                <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)' }}>{s.value}</div>
-                <div style={{ fontSize: 10, color: 'var(--text-secondary)', marginTop: 2 }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-          <h3 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 14 }}>Exercise List</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 28 }}>
-            {selectedWorkout.exercises.map((ex, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'var(--surface)', borderRadius: 12, padding: '14px 16px', border: '1px solid var(--border-light)' }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: `${catColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: catColor, flexShrink: 0 }}>{i + 1}</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{ex.name}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{ex.reps} reps · ~{ex.cals} cal</div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <button onClick={startWorkout} style={{ width: '100%', padding: 18, borderRadius: 14, background: `linear-gradient(135deg,${catColor},#7C3AED)`, border: 'none', color: '#fff', fontSize: 18, fontWeight: 800, cursor: 'pointer', boxShadow: `0 12px 36px ${catColor}40` }}>▶ Start Workout</button>
-        </div>
-        <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
-      </div>
+      <DetailView
+        workout={selectedWorkout}
+        catColor={catColor}
+        levelColor={levelColor}
+        detailExercises={detailExercises}
+        totalCalsPreview={totalCalsPreview}
+        catalogLoading={catalogLoading}
+        DIFF_COLORS={DIFF_COLORS}
+        onBack={goBack}
+        onStart={startWorkout}
+      />
     );
   }
 
@@ -718,99 +1015,6 @@ export default function Discover() {
           {stretchRecovery.map(w => <HScrollCard key={w.id} workout={w} onOpen={openDetail} hovered={hoveredCard} setHovered={setHoveredCard} />)}
         </div>
       </Section>
-
-      {/* ── Exercise Library ── */}
-      {(() => {
-        const EX_CATS = ['all','gym','freehand','calisthenics','cardio','yoga','martial_arts','rehab'];
-        const EX_DIFFS = ['all','beginner','intermediate','advanced'];
-        const DIFF_COLORS = { beginner: '#10B981', intermediate: '#F59E0B', advanced: '#EF4444' };
-        const CAT_ICONS = { gym:'🏋️', freehand:'🤸', calisthenics:'💪', cardio:'🏃', yoga:'🧘', martial_arts:'🥊', rehab:'🩹', all:'✦' };
-        const CAT_COLORS = { gym:'#7C3AED', freehand:'#2563EB', calisthenics:'#0891B2', cardio:'#EF4444', yoga:'#10B981', martial_arts:'#F97316', rehab:'#EC4899' };
-        const searchLow = exLibSearch.toLowerCase();
-        const filtered = exLib.filter(ex =>
-          (exLibCat === 'all' || ex.domain === exLibCat) &&
-          (exLibDiff === 'all' || ex.difficulty === exLibDiff) &&
-          (!searchLow || ex.name.toLowerCase().includes(searchLow) || (ex.muscle_groups || []).some(m => m.toLowerCase().includes(searchLow)))
-        );
-        const visible = exLibExpanded ? filtered : filtered.slice(0, 12);
-        return (
-          <Section label="Exercise Library 📚" pad={false}>
-            {/* Search */}
-            <div style={{ position: 'relative', paddingLeft: 24, paddingRight: 24, paddingBottom: 12 }}>
-              <div style={{ position: 'absolute', left: 40, top: '50%', transform: 'translateY(-50%)', fontSize: 16, color: 'var(--text-tertiary)', pointerEvents: 'none' }}>🔍</div>
-              <input
-                type="text"
-                placeholder="Search exercises, muscles..."
-                value={exLibSearch}
-                onChange={e => { setExLibSearch(e.target.value); setExLibExpanded(false); }}
-                style={{ width: '100%', boxSizing: 'border-box', padding: '11px 16px 11px 44px', borderRadius: 12, border: '1.5px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', fontSize: 13, outline: 'none' }}
-                onFocus={e => e.target.style.borderColor = 'var(--primary)'}
-                onBlur={e => e.target.style.borderColor = 'var(--border)'}
-              />
-            </div>
-            {/* Category filter */}
-            <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingLeft: 24, paddingRight: 24, paddingBottom: 10 }} className="hide-scroll">
-              {EX_CATS.map(cat => (
-                <button key={cat} onClick={() => { setExLibCat(cat); setExLibExpanded(false); }}
-                  style={{ flexShrink: 0, padding: '6px 14px', borderRadius: 99, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', background: exLibCat === cat ? 'var(--primary)' : 'var(--surface)', color: exLibCat === cat ? '#fff' : 'var(--text-secondary)', transition: 'all .15s' }}>
-                  {CAT_ICONS[cat]} {cat === 'all' ? 'All' : cat.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                </button>
-              ))}
-            </div>
-            {/* Difficulty filter */}
-            <div style={{ display: 'flex', gap: 8, paddingLeft: 24, paddingRight: 24, paddingBottom: 14 }}>
-              {EX_DIFFS.map(d => (
-                <button key={d} onClick={() => { setExLibDiff(d); setExLibExpanded(false); }}
-                  style={{ padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: `1.5px solid ${d === 'all' ? (exLibDiff === 'all' ? 'var(--primary)' : 'var(--border)') : DIFF_COLORS[d]}`, background: exLibDiff === d ? (d === 'all' ? 'var(--primary)' : DIFF_COLORS[d] + '18') : 'transparent', color: exLibDiff === d ? (d === 'all' ? 'var(--primary)' : DIFF_COLORS[d]) : 'var(--text-tertiary)', transition: 'all .15s' }}>
-                  {d === 'all' ? 'All levels' : d.charAt(0).toUpperCase() + d.slice(1)}
-                </button>
-              ))}
-            </div>
-            {/* Grid */}
-            <div style={{ padding: '0 24px' }}>
-              {exLibLoading ? (
-                <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-tertiary)', fontSize: 14 }}>Loading exercises…</div>
-              ) : filtered.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-tertiary)', fontSize: 14 }}>No exercises found</div>
-              ) : (
-                <>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
-                    {visible.map((ex, i) => {
-                      const dc = DIFF_COLORS[ex.difficulty] || '#64748B';
-                      const cat = (ex.domain || '').replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-                      return (
-                        <div key={ex.id || i} style={{ background: 'var(--surface)', borderRadius: 14, padding: '14px 14px 12px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 6, animation: 'fadeIn .25s ease' }}>
-                          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
-                            <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text)', lineHeight: '1.3', flex: 1 }}>{ex.name}</div>
-                            <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 99, background: `${dc}18`, color: dc, flexShrink: 0, marginTop: 2 }}>
-                              {ex.difficulty.charAt(0).toUpperCase() + ex.difficulty.slice(1)}
-                            </span>
-                          </div>
-                          <span style={{ alignSelf: 'flex-start', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 99, background: `${CAT_COLORS[ex.domain] || '#64748B'}18`, color: CAT_COLORS[ex.domain] || '#64748B', border: `1px solid ${CAT_COLORS[ex.domain] || '#64748B'}30` }}>{cat}</span>
-                          {ex.muscle_groups && ex.muscle_groups.length > 0 && (
-                            <div style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 2 }}>
-                              {ex.muscle_groups.slice(0, 2).map((m, mi) => (
-                                <span key={mi} style={{ background: 'var(--surface-2)', padding: '2px 7px', borderRadius: 6, border: '1px solid var(--border)' }}>{m}</span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  {filtered.length > 12 && (
-                    <div style={{ textAlign: 'center', marginTop: 18 }}>
-                      <button onClick={() => setExLibExpanded(e => !e)} style={{ padding: '9px 28px', borderRadius: 99, border: '1.5px solid var(--border)', background: 'var(--surface)', color: 'var(--text-secondary)', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
-                        {exLibExpanded ? `Show less` : `Show all ${filtered.length} exercises`}
-                      </button>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          </Section>
-        );
-      })()}
 
       <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
     </div>
