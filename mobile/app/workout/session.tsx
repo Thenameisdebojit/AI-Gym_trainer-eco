@@ -354,24 +354,51 @@ export default function WorkoutSessionScreen() {
 
           <Animated.View entering={FadeInDown.delay(120).springify()}>
             <Text style={styles.sectionLabel}>Exercise Plan</Text>
-            {exercises.map((ex, i) => {
-              const color = getCategoryColor(ex.category as any);
-              const icon = getCategoryIcon(ex.category as any);
+            {(["warmup", "main", "finisher"] as const).map((phase) => {
+              const phaseExs = exercises.filter((ex) => ex.phase === phase || (!ex.phase && phase === "main"));
+              if (phaseExs.length === 0) return null;
+              const phaseColor = phase === "warmup" ? "#10B981" : phase === "finisher" ? "#F97316" : COLORS.primary;
+              const phaseLabel = phase === "warmup" ? "Warm-Up" : phase === "finisher" ? "Finisher" : "Main Workout";
               return (
-                <View key={ex.id + i} style={[styles.exerciseRow, { borderColor: color + "25" }]}>
-                  <View style={[styles.exNum, { backgroundColor: color + "20" }]}>
-                    <Text style={[styles.exNumText, { color }]}>{i + 1}</Text>
+                <View key={phase}>
+                  <View style={styles.phaseSectionHeader}>
+                    <View style={[styles.phaseSectionDot, { backgroundColor: phaseColor }]} />
+                    <Text style={[styles.phaseSectionLabel, { color: phaseColor }]}>{phaseLabel}</Text>
                   </View>
-                  <View style={[styles.exIconSmall, { backgroundColor: color + "15" }]}>
-                    <Ionicons name={icon as any} size={18} color={color} />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.exName}>{ex.name}</Text>
-                    <Text style={styles.exSets}>{ex.sets} sets × {ex.reps} reps</Text>
-                  </View>
-                  <View style={[styles.catChip, { backgroundColor: color + "15" }]}>
-                    <Text style={[styles.catChipText, { color }]}>{ex.category.replace("_", " ")}</Text>
-                  </View>
+                  {phaseExs.map((ex, i) => {
+                    const color = getCategoryColor(ex.category as any);
+                    const icon = getCategoryIcon(ex.category as any);
+                    const primaryMuscle = ex.muscleGroups?.[0] ?? ex.category.replace("_", " ");
+                    const calDisplay = ex.calories ?? (ex.reps ? Math.round(ex.sets * ex.reps * 0.5) : null);
+                    return (
+                      <View key={ex.id + i} style={[styles.exerciseRow, { borderColor: color + "25" }]}>
+                        <View style={[styles.exNum, { backgroundColor: color + "20" }]}>
+                          <Text style={[styles.exNumText, { color }]}>{i + 1}</Text>
+                        </View>
+                        <View style={[styles.exIconSmall, { backgroundColor: color + "15" }]}>
+                          <Ionicons name={icon as any} size={18} color={color} />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.exName}>{ex.name}</Text>
+                          <Text style={styles.exSets}>{ex.sets} sets × {ex.reps} reps</Text>
+                          <View style={styles.exMetaRow}>
+                            <View style={[styles.muscleTag, { backgroundColor: color + "18" }]}>
+                              <Text style={[styles.muscleTagText, { color }]}>{primaryMuscle}</Text>
+                            </View>
+                            {calDisplay ? (
+                              <View style={styles.calTag}>
+                                <Ionicons name="flame" size={10} color="#F97316" />
+                                <Text style={styles.calTagText}>{calDisplay} kcal</Text>
+                              </View>
+                            ) : null}
+                          </View>
+                        </View>
+                        <View style={[styles.catChip, { backgroundColor: color + "15" }]}>
+                          <Text style={[styles.catChipText, { color }]}>{ex.category.replace("_", " ")}</Text>
+                        </View>
+                      </View>
+                    );
+                  })}
                 </View>
               );
             })}
@@ -491,6 +518,10 @@ export default function WorkoutSessionScreen() {
   const setProgress = (currentSet - 1) / (currentExercise?.sets ?? 1);
   const overallProgress = (exerciseIndex + setProgress) / exercises.length;
   const targetReps = currentExercise?.reps ?? 12;
+  const currentPhase = currentExercise?.phase;
+  const phaseLabel = currentPhase === "warmup" ? "Warm-Up" : currentPhase === "finisher" ? "Finisher" : currentPhase === "main" ? "Main" : null;
+  const phaseColor = currentPhase === "warmup" ? "#10B981" : currentPhase === "finisher" ? "#F97316" : COLORS.primary;
+  const primaryMuscle = currentExercise?.muscleGroups?.[0];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -549,6 +580,19 @@ export default function WorkoutSessionScreen() {
             <Ionicons name={exerciseIcon as any} size={52} color={exerciseColor} />
           </View>
 
+          <View style={styles.exerciseMetaBadges}>
+            {phaseLabel ? (
+              <View style={[styles.phaseBadge, { backgroundColor: phaseColor + "20" }]}>
+                <View style={[styles.phaseBadgeDot, { backgroundColor: phaseColor }]} />
+                <Text style={[styles.phaseBadgeText, { color: phaseColor }]}>{phaseLabel}</Text>
+              </View>
+            ) : null}
+            {primaryMuscle ? (
+              <View style={[styles.muscleBadge, { backgroundColor: exerciseColor + "15" }]}>
+                <Text style={[styles.muscleBadgeText, { color: exerciseColor }]}>{primaryMuscle}</Text>
+              </View>
+            ) : null}
+          </View>
           <Text style={[styles.targetText, { color: exerciseColor }]}>Target: {targetReps} reps</Text>
 
           <RepCounterBig count={reps} color={exerciseColor} />
@@ -795,6 +839,14 @@ const styles = StyleSheet.create({
   },
   exName: { fontFamily: FONTS.semiBold, fontSize: SIZES.base, color: COLORS.text },
   exSets: { fontFamily: FONTS.regular, fontSize: SIZES.sm, color: COLORS.textSecondary, marginTop: 2 },
+  exMetaRow: { flexDirection: "row", alignItems: "center", gap: SPACING.xs, marginTop: 4, flexWrap: "wrap" },
+  muscleTag: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: RADIUS.full },
+  muscleTagText: { fontFamily: FONTS.medium, fontSize: 10, textTransform: "capitalize" },
+  calTag: { flexDirection: "row", alignItems: "center", gap: 2 },
+  calTagText: { fontFamily: FONTS.medium, fontSize: 10, color: "#F97316" },
+  phaseSectionHeader: { flexDirection: "row", alignItems: "center", gap: SPACING.xs, marginTop: SPACING.md, marginBottom: SPACING.xs },
+  phaseSectionDot: { width: 8, height: 8, borderRadius: 4 },
+  phaseSectionLabel: { fontFamily: FONTS.bold, fontSize: SIZES.xs, textTransform: "uppercase", letterSpacing: 1 },
   catChip: { paddingHorizontal: SPACING.sm, paddingVertical: 2, borderRadius: RADIUS.full },
   catChipText: { fontFamily: FONTS.medium, fontSize: SIZES.xs, textTransform: "capitalize" },
 

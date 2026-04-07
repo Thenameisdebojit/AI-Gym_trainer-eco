@@ -19,7 +19,8 @@ import {
   getCategoryColor,
   getCategoryIcon,
 } from "@/constants/exercises";
-import { generateWorkout } from "@/lib/api";
+import { generateWorkout as apiGenerateWorkout } from "@/lib/api";
+import { generateWorkout as localGenerateWorkout, WorkoutGoal, EquipmentLevel as GenEquipLevel } from "@/utils/workoutGenerator";
 import { useWorkoutStore, WorkoutPlan } from "@/store/useWorkoutStore";
 import { useApp } from "@/context/AppContext";
 
@@ -59,7 +60,18 @@ const FEATURED: { id: string; label: string; category: ExerciseCategory }[] = [
 interface GeneratedWorkout {
   name: string;
   description: string;
-  exercises: { id: string; name: string; sets: number; reps: number; category: string }[];
+  exercises: {
+    id: string;
+    name: string;
+    sets: number;
+    reps: number;
+    category: string;
+    muscleGroups?: string[];
+    caloriesPerRep?: number;
+    phase?: "warmup" | "main" | "finisher";
+    restSeconds?: number;
+    durationSeconds?: number;
+  }[];
 }
 
 export default function WorkoutScreen() {
@@ -87,11 +99,31 @@ export default function WorkoutScreen() {
     setLoading(true);
     setGeneratedWorkout(null);
     try {
-      const result = await generateWorkout({ goal, equipment, level, duration_minutes: 30 });
-      setGeneratedWorkout(result);
+      const plan = localGenerateWorkout({ goal: goal as WorkoutGoal, equipment: equipment as GenEquipLevel, level, durationMinutes: 30 });
+      setGeneratedWorkout({
+        name: plan.name,
+        description: plan.description,
+        exercises: plan.exercises.map((ex) => ({
+          id: ex.id,
+          name: ex.name,
+          category: ex.category,
+          sets: ex.sets,
+          reps: ex.reps,
+          muscleGroups: ex.muscleGroups,
+          caloriesPerRep: ex.caloriesPerRep,
+          phase: ex.phase,
+          restSeconds: ex.restSeconds,
+          durationSeconds: ex.durationSeconds,
+        })),
+      });
     } catch {
-      const fallback = generateLocalWorkout(goal, equipment, level);
-      setGeneratedWorkout(fallback);
+      try {
+        const result = await apiGenerateWorkout({ goal, equipment, level, duration_minutes: 30 });
+        setGeneratedWorkout(result);
+      } catch {
+        const fallback = generateLocalWorkout(goal, equipment, level);
+        setGeneratedWorkout(fallback);
+      }
     } finally {
       setLoading(false);
     }
@@ -106,13 +138,17 @@ export default function WorkoutScreen() {
       level,
       equipment,
       duration_minutes: 30,
-      exercises: workout.exercises.map(ex => ({
+      exercises: workout.exercises.map((ex) => ({
         id: ex.id,
         name: ex.name,
         sets: ex.sets,
         reps: ex.reps,
         category: ex.category,
-        restSeconds: 45,
+        restSeconds: ex.restSeconds ?? 45,
+        calories: ex.caloriesPerRep ? Math.round(ex.sets * ex.reps * ex.caloriesPerRep) : undefined,
+        muscleGroups: ex.muscleGroups,
+        phase: ex.phase,
+        durationSeconds: ex.durationSeconds,
       })),
       createdAt: Date.now(),
     };
@@ -311,23 +347,52 @@ export default function WorkoutScreen() {
                     <Text style={styles.resultDesc}>{generatedWorkout.description}</Text>
                   </View>
                 </View>
-                {generatedWorkout.exercises.map((ex, i) => {
-                  const color = getCategoryColor(ex.category as ExerciseCategory);
+                {(["warmup", "main", "finisher"] as const).map((phase) => {
+                  const phaseExercises = generatedWorkout.exercises.filter((ex) => ex.phase === phase || (!ex.phase && phase === "main"));
+                  if (phaseExercises.length === 0) return null;
+                  const phaseLabel = phase === "warmup" ? "Warm-Up" : phase === "finisher" ? "Finisher" : "Main";
+                  const phaseColor = phase === "warmup" ? "#10B981" : phase === "finisher" ? COLORS.secondary : COLORS.primary;
                   return (
-                    <TouchableOpacity
-                      key={ex.id}
-                      style={[styles.genExRow, { borderColor: color + "20" }]}
-                      onPress={() => router.push({ pathname: "/exercise/detail", params: { id: ex.id, category: ex.category } })}
-                    >
-                      <View style={[styles.genExNum, { backgroundColor: color + "20" }]}>
-                        <Text style={[styles.genExNumText, { color }]}>{i + 1}</Text>
+                    <View key={phase}>
+                      <View style={styles.phaseHeader}>
+                        <View style={[styles.phaseDot, { backgroundColor: phaseColor }]} />
+                        <Text style={[styles.phaseLabel, { color: phaseColor }]}>{phaseLabel}</Text>
                       </View>
-                      <View style={{ flex: 1 }}>
-                        <Text style={styles.genExName}>{ex.name}</Text>
-                        <Text style={styles.genExSets}>{ex.sets} sets × {ex.reps} reps</Text>
-                      </View>
-                      <Ionicons name="chevron-forward" size={16} color={color} />
-                    </TouchableOpacity>
+                      {phaseExercises.map((ex, i) => {
+                        const color = getCategoryColor(ex.category as ExerciseCategory);
+                        const muscle = ex.muscleGroups?.[0];
+                        const estCal = ex.caloriesPerRep ? Math.round(ex.sets * ex.reps * ex.caloriesPerRep) : null;
+                        return (
+                          <TouchableOpacity
+                            key={ex.id}
+                            style={[styles.genExRow, { borderColor: color + "20" }]}
+                            onPress={() => router.push({ pathname: "/exercise/detail", params: { id: ex.id, category: ex.category } })}
+                          >
+                            <View style={[styles.genExNum, { backgroundColor: color + "20" }]}>
+                              <Text style={[styles.genExNumText, { color }]}>{i + 1}</Text>
+                            </View>
+                            <View style={{ flex: 1 }}>
+                              <Text style={styles.genExName}>{ex.name}</Text>
+                              <Text style={styles.genExSets}>{ex.sets} sets × {ex.reps} reps</Text>
+                              <View style={styles.genExMeta}>
+                                {muscle ? (
+                                  <View style={[styles.muscleChip, { backgroundColor: color + "18" }]}>
+                                    <Text style={[styles.muscleChipText, { color }]}>{muscle}</Text>
+                                  </View>
+                                ) : null}
+                                {estCal ? (
+                                  <View style={styles.calChip}>
+                                    <Ionicons name="flame" size={10} color={COLORS.amber} />
+                                    <Text style={styles.calChipText}>{estCal} kcal</Text>
+                                  </View>
+                                ) : null}
+                              </View>
+                            </View>
+                            <Ionicons name="chevron-forward" size={16} color={color} />
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
                   );
                 })}
                 <TouchableOpacity
@@ -562,6 +627,14 @@ const styles = StyleSheet.create({
   genExNumText: { fontFamily: FONTS.bold, fontSize: SIZES.sm },
   genExName: { fontFamily: FONTS.semiBold, fontSize: SIZES.base, color: COLORS.text },
   genExSets: { fontFamily: FONTS.regular, fontSize: SIZES.xs, color: COLORS.textSecondary, marginTop: 2 },
+  genExMeta: { flexDirection: "row", alignItems: "center", gap: SPACING.xs, marginTop: SPACING.xs, flexWrap: "wrap" },
+  muscleChip: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: RADIUS.full },
+  muscleChipText: { fontFamily: FONTS.medium, fontSize: 10 },
+  calChip: { flexDirection: "row", alignItems: "center", gap: 2 },
+  calChipText: { fontFamily: FONTS.medium, fontSize: 10, color: COLORS.amber },
+  phaseHeader: { flexDirection: "row", alignItems: "center", gap: SPACING.xs, marginTop: SPACING.xs, marginBottom: 4 },
+  phaseDot: { width: 8, height: 8, borderRadius: 4 },
+  phaseLabel: { fontFamily: FONTS.bold, fontSize: SIZES.xs, textTransform: "uppercase", letterSpacing: 0.8 },
 
   startFullBtn: {
     flexDirection: "row",

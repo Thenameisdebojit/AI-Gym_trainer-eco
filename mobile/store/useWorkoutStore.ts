@@ -8,6 +8,10 @@ export interface WorkoutExercise {
   reps: number;
   category: string;
   restSeconds?: number;
+  calories?: number;
+  muscleGroups?: string[];
+  phase?: "warmup" | "main" | "finisher";
+  durationSeconds?: number;
 }
 
 export interface WorkoutPlan {
