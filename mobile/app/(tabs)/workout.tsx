@@ -49,9 +49,9 @@ const LEVEL_OPTIONS: { id: Level; label: string; color: string }[] = [
 ];
 
 const FEATURED: { id: string; label: string; category: ExerciseCategory }[] = [
-  { id: "pushup_normal", label: "Push-up", category: "freehand" },
-  { id: "squat_bodyweight", label: "Squat", category: "freehand" },
-  { id: "pullup", label: "Pull-up", category: "calisthenics" },
+  { id: "push_up", label: "Push-up", category: "freehand" },
+  { id: "squat_bw", label: "Squat", category: "freehand" },
+  { id: "pull_up_calis", label: "Pull-up", category: "calisthenics" },
   { id: "burpee", label: "Burpee", category: "cardio" },
   { id: "jab_cross", label: "Jab-Cross", category: "martial_arts" },
   { id: "downward_dog", label: "Down Dog", category: "yoga" },
@@ -86,7 +86,7 @@ export default function WorkoutScreen() {
   const [goal, setGoal] = useState<Goal>("general");
   const [equipment, setEquipment] = useState<EquipmentLevel>("none");
   const [level, setLevel] = useState<Level>("beginner");
-  const [duration, setDuration] = useState<20 | 30 | 45 | 60>(30);
+  const [duration, setDuration] = useState<10 | 20 | 35 | 60>(20);
   const [loading, setLoading] = useState(false);
   const [generatedWorkout, setGeneratedWorkout] = useState<GeneratedWorkout | null>(null);
   const [showGenerator, setShowGenerator] = useState(false);
@@ -252,7 +252,7 @@ export default function WorkoutScreen() {
             </View>
             <TouchableOpacity
               style={styles.aiBtn}
-              onPress={() => router.push({ pathname: "/exercise/detail", params: { id: "pushup_normal", category: "freehand" } })}
+              onPress={() => router.push({ pathname: "/exercise/detail", params: { id: "push_up", category: "freehand" } })}
             >
               <Ionicons name="play" size={16} color={COLORS.background} />
             </TouchableOpacity>
@@ -331,13 +331,19 @@ export default function WorkoutScreen() {
 
             <Text style={styles.genSectionLabel}>Duration</Text>
             <View style={styles.durationRow}>
-              {([20, 30, 45, 60] as const).map(d => (
+              {([
+                { value: 10, label: "Quick", sub: "~10 min" },
+                { value: 20, label: "Medium", sub: "~20 min" },
+                { value: 35, label: "Long", sub: "~35 min" },
+                { value: 60, label: "Epic", sub: "~60 min" },
+              ] as const).map(d => (
                 <TouchableOpacity
-                  key={d}
-                  style={[styles.durationBtn, duration === d && { borderColor: COLORS.primary, backgroundColor: COLORS.primary + "20" }]}
-                  onPress={() => setDuration(d)}
+                  key={d.value}
+                  style={[styles.durationBtn, duration === d.value && { borderColor: COLORS.primary, backgroundColor: COLORS.primary + "20" }]}
+                  onPress={() => setDuration(d.value)}
                 >
-                  <Text style={[styles.durationLabel, duration === d && { color: COLORS.primary }]}>{d} min</Text>
+                  <Text style={[styles.durationLabel, duration === d.value && { color: COLORS.primary }]}>{d.label}</Text>
+                  <Text style={[styles.durationSub, duration === d.value && { color: COLORS.primary + "aa" }]}>{d.sub}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -617,6 +623,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5, borderColor: COLORS.border, alignItems: "center",
   },
   durationLabel: { fontFamily: FONTS.semiBold, fontSize: SIZES.sm, color: COLORS.textSecondary },
+  durationSub: { fontFamily: FONTS.regular, fontSize: 10, color: COLORS.textMuted, marginTop: 1 },
   levelRow: { flexDirection: "row", gap: SPACING.sm },
   levelBtn: {
     flex: 1,

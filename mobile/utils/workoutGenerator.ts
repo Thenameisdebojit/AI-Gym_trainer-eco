@@ -73,34 +73,35 @@ const GOAL_DESCRIPTIONS: Record<WorkoutGoal, string> = {
  * Returns the number of MAIN exercises to pick (excluding warmup=2 and finisher=1).
  * Total exercises = warmup(2) + main + finisher(1).
  *
- * Target total ranges:
- *   beginner  <20 min  → 5-6 total → 2-3 main
- *   beginner  20-39min → 6-8 total → 3-5 main
- *   beginner  ≥40 min  → 7-8 total → 4-5 main
- *   intermed  <20 min  → 6-8 total → 3-5 main
- *   intermed  20-39min → 8-10 total → 5-7 main
- *   intermed  ≥40 min  → 9-10 total → 6-7 main
- *   advanced  <20 min  → 7-9 total → 4-6 main
- *   advanced  20-39min → 9-12 total → 6-9 main
- *   advanced  ≥40 min  → 10-12 total → 7-9 main
+ * Duration bins mirror the UI picker values:
+ *   short  = <10 min  (Quick)
+ *   medium = 10–25 min  (Medium)
+ *   long   = 25+ min  (Long / Epic)
+ *
+ * Target total ranges by level:
+ *   beginner   short → 5 total  → 2 main
+ *   beginner   medium → 6 total → 3 main
+ *   beginner   long   → 6 total → 3 main
+ *   intermediate short → 6 total → 3 main
+ *   intermediate medium → 8 total → 5 main
+ *   intermediate long   → 8 total → 5 main
+ *   advanced   short  → 8 total  → 5 main
+ *   advanced   medium → 11 total → 8 main
+ *   advanced   long   → 12 total → 9 main
  */
 function mainExerciseCount(level: DifficultyLevel, durationMinutes: number): number {
-  const short = durationMinutes < 20;
-  const medium = durationMinutes < 40;
+  const short = durationMinutes < 10;
+  const medium = durationMinutes <= 25;
 
   if (level === "beginner") {
-    if (short) return 3;
-    if (medium) return 4;
-    return 5;
+    return short ? 2 : 3;
   }
   if (level === "intermediate") {
-    if (short) return 4;
-    if (medium) return 6;
-    return 7;
+    return short ? 3 : 5;
   }
   // advanced
   if (short) return 5;
-  if (medium) return 7;
+  if (medium) return 8;
   return 9;
 }
 

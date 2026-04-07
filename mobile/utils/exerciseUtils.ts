@@ -20,18 +20,29 @@ export function getExercisesByCategory(category: ExerciseCategory): Exercise[] {
   return EXERCISES.filter((e) => e.category === category);
 }
 
+export function filterByLevel(level: DifficultyLevel): Exercise[];
+export function filterByLevel(exercises: Exercise[], level: DifficultyLevel): Exercise[];
 export function filterByLevel(
-  exercises: Exercise[],
-  level: DifficultyLevel
+  exercisesOrLevel: Exercise[] | DifficultyLevel,
+  level?: DifficultyLevel
 ): Exercise[] {
-  return exercises.filter((e) => e.difficulty === level);
+  if (typeof exercisesOrLevel === "string") {
+    return EXERCISES.filter((e) => e.difficulty === exercisesOrLevel);
+  }
+  return exercisesOrLevel.filter((e) => e.difficulty === level!);
 }
 
+export function filterByEquipment(allowedEquipment: Equipment[]): Exercise[];
+export function filterByEquipment(exercises: Exercise[], allowedEquipment: Equipment[]): Exercise[];
 export function filterByEquipment(
-  exercises: Exercise[],
-  allowedEquipment: Equipment[]
+  exercisesOrAllowed: Exercise[] | Equipment[],
+  allowedEquipment?: Equipment[]
 ): Exercise[] {
-  return exercises.filter((e) =>
+  if (allowedEquipment === undefined) {
+    const allowed = exercisesOrAllowed as Equipment[];
+    return EXERCISES.filter((e) => e.equipment.some((eq) => allowed.includes(eq)));
+  }
+  return (exercisesOrAllowed as Exercise[]).filter((e) =>
     e.equipment.some((eq) => allowedEquipment.includes(eq))
   );
 }
