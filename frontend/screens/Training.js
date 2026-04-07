@@ -1749,20 +1749,38 @@ export default function Training() {
                   const allowedDomains = domainMap[selectedMode?.id] || [];
                   const levelId = selectedLevel?.id || 'beginner';
                   const DIFF_C = { beginner: '#10B981', intermediate: '#F59E0B', advanced: '#EF4444' };
+                  const bodySubcategoryMap = {
+                    full_body: [],
+                    chest: ['Chest', 'Push'],
+                    arms:  ['Arms'],
+                    legs:  ['Legs', 'Lower Body'],
+                    back:  ['Back', 'Pull'],
+                    abs:   ['Core'],
+                  };
                   const bodyMusclekwMap = {
                     full_body: [],
-                    chest: ['Chest', 'Pec'],
-                    arms: ['Biceps', 'Triceps', 'Forearm', 'Brachialis'],
-                    legs: ['Quad', 'Hamstring', 'Glute', 'Calf', 'Hip'],
-                    back: ['Lat', 'Back', 'Rhomboid', 'Trap'],
-                    abs: ['Core', 'Abs'],
+                    chest: ['Chest', 'Pec', 'Serratus'],
+                    arms:  ['Biceps', 'Triceps', 'Forearm', 'Brachialis'],
+                    legs:  ['Quad', 'Hamstring', 'Glute', 'Calf', 'Adductor', 'Abductor'],
+                    back:  ['Lat', 'Rhomboid', 'Trap', 'Erector', 'Teres', 'Rear Deltoid'],
+                    abs:   ['Abs', 'Oblique', 'Hip Flexor'],
                   };
-                  const bodyKws = bodyMusclekwMap[selectedBody?.id] || [];
+                  // Generic subcategories where muscle-keyword fallback applies
+                  const genericSubs = new Set(['Upper Body','Full Body','Skills','Cardio','Standing','Prone','Seated','Supine','Kneeling','Inversion','Flow']);
+                  const bodySubs = bodySubcategoryMap[selectedBody?.id] || [];
+                  const bodyKws  = bodyMusclekwMap[selectedBody?.id] || [];
                   const matched = liveExercises.filter(ex => {
                     if (!allowedDomains.includes(ex.domain)) return false;
                     if (ex.difficulty !== levelId) return false;
-                    if (bodyKws.length === 0) return true;
-                    return (ex.muscle_groups || []).some(m => bodyKws.some(kw => m.toLowerCase().includes(kw.toLowerCase())));
+                    if (bodySubs.length === 0) return true; // full_body — show all
+                    const exSub = (ex.subcategory || '');
+                    // Primary: exact subcategory match
+                    if (bodySubs.some(s => exSub.toLowerCase() === s.toLowerCase())) return true;
+                    // Fallback for generic / cross-category subcategories: use muscle keyword
+                    if (genericSubs.has(exSub) && bodyKws.length > 0) {
+                      return (ex.muscle_groups || []).some(m => bodyKws.some(kw => m.toLowerCase().includes(kw.toLowerCase())));
+                    }
+                    return false;
                   });
                   if (matched.length === 0) return null;
                   return (
