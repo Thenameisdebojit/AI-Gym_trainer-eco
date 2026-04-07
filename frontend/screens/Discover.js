@@ -725,6 +725,7 @@ export default function Discover() {
         const EX_DIFFS = ['all','beginner','intermediate','advanced'];
         const DIFF_COLORS = { beginner: '#10B981', intermediate: '#F59E0B', advanced: '#EF4444' };
         const CAT_ICONS = { gym:'🏋️', freehand:'🤸', calisthenics:'💪', cardio:'🏃', yoga:'🧘', martial_arts:'🥊', rehab:'🩹', all:'✦' };
+        const CAT_COLORS = { gym:'#7C3AED', freehand:'#2563EB', calisthenics:'#0891B2', cardio:'#EF4444', yoga:'#10B981', martial_arts:'#F97316', rehab:'#EC4899' };
         const searchLow = exLibSearch.toLowerCase();
         const filtered = exLib.filter(ex =>
           (exLibCat === 'all' || ex.domain === exLibCat) &&
@@ -785,7 +786,7 @@ export default function Discover() {
                               {ex.difficulty.charAt(0).toUpperCase() + ex.difficulty.slice(1)}
                             </span>
                           </div>
-                          <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>{cat}</div>
+                          <span style={{ alignSelf: 'flex-start', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 99, background: `${CAT_COLORS[ex.domain] || '#64748B'}18`, color: CAT_COLORS[ex.domain] || '#64748B', border: `1px solid ${CAT_COLORS[ex.domain] || '#64748B'}30` }}>{cat}</span>
                           {ex.muscle_groups && ex.muscle_groups.length > 0 && (
                             <div style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 2 }}>
                               {ex.muscle_groups.slice(0, 2).map((m, mi) => (

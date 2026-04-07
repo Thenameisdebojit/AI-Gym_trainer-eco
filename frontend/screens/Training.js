@@ -1822,9 +1822,21 @@ export default function Training() {
                   const allowedDomains = domainMap[selectedMode?.id] || [];
                   const levelId = selectedLevel?.id || 'beginner';
                   const DIFF_C = { beginner: '#10B981', intermediate: '#F59E0B', advanced: '#EF4444' };
-                  const matched = liveExercises.filter(ex =>
-                    allowedDomains.includes(ex.domain) && ex.difficulty === levelId
-                  );
+                  const bodyMusclekwMap = {
+                    full_body: [],
+                    chest: ['Chest', 'Pec'],
+                    arms: ['Biceps', 'Triceps', 'Forearm', 'Brachialis'],
+                    legs: ['Quad', 'Hamstring', 'Glute', 'Calf', 'Hip'],
+                    back: ['Lat', 'Back', 'Rhomboid', 'Trap'],
+                    abs: ['Core', 'Abs'],
+                  };
+                  const bodyKws = bodyMusclekwMap[selectedBody?.id] || [];
+                  const matched = liveExercises.filter(ex => {
+                    if (!allowedDomains.includes(ex.domain)) return false;
+                    if (ex.difficulty !== levelId) return false;
+                    if (bodyKws.length === 0) return true;
+                    return (ex.muscle_groups || []).some(m => bodyKws.some(kw => m.toLowerCase().includes(kw.toLowerCase())));
+                  });
                   if (matched.length === 0) return null;
                   return (
                     <div style={{ marginBottom: '24px' }}>

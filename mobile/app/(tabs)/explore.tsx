@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import type { ComponentProps } from "react";
 import { router } from "expo-router";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { COLORS, FONTS, SIZES, RADIUS, SPACING } from "@/constants/theme";
@@ -19,9 +20,24 @@ import {
   EXERCISES,
   ExerciseCategory,
   getCategoryColor,
-  getCategoryIcon,
   getCategoryLabel,
 } from "@/constants/exercises";
+
+type IoniconsName = ComponentProps<typeof Ionicons>["name"];
+
+const CAT_ICON_MAP: Record<ExerciseCategory, IoniconsName> = {
+  gym: "barbell-outline",
+  freehand: "body-outline",
+  calisthenics: "fitness-outline",
+  martial_arts: "flame-outline",
+  yoga: "leaf-outline",
+  cardio: "flash-outline",
+  rehab: "shield-checkmark-outline",
+};
+
+function getCatIcon(cat: ExerciseCategory): IoniconsName {
+  return CAT_ICON_MAP[cat];
+}
 
 const EXERCISE_CATEGORIES: ExerciseCategory[] = [
   "gym",
@@ -131,7 +147,7 @@ export default function ExploreScreen() {
         <View style={styles.catGrid}>
           {EXERCISE_CATEGORIES.map((cat, i) => {
             const color = getCategoryColor(cat);
-            const icon = getCategoryIcon(cat);
+            const icon = getCatIcon(cat);
             const label = getCategoryLabel(cat);
             const count = categoryCounts[cat] || 0;
             return (
@@ -153,7 +169,7 @@ export default function ExploreScreen() {
                   <View style={styles.catOverlay} />
                   <View style={[styles.catGradient, { backgroundColor: color + "99" }]} />
                   <View style={[styles.catIconBadge, { backgroundColor: color + "CC" }]}>
-                    <Ionicons name={icon as any} size={18} color="#fff" />
+                    <Ionicons name={icon} size={18} color="#fff" />
                   </View>
                   <View style={styles.catCountBadge}>
                     <Text style={styles.catCountText}>{count}</Text>
@@ -184,7 +200,7 @@ export default function ExploreScreen() {
         >
           {sampleExercises.map((ex, i) => {
             const color = getCategoryColor(ex.category);
-            const icon = getCategoryIcon(ex.category);
+            const icon = getCatIcon(ex.category);
             return (
               <Animated.View key={ex.id} entering={FadeInRight.delay(560 + i * 60).springify()}>
                 <TouchableOpacity
@@ -193,7 +209,7 @@ export default function ExploreScreen() {
                   activeOpacity={0.85}
                 >
                   <View style={[styles.sampleIcon, { backgroundColor: color + "20" }]}>
-                    <Ionicons name={icon as any} size={26} color={color} />
+                    <Ionicons name={icon} size={26} color={color} />
                   </View>
                   <Text style={styles.sampleName} numberOfLines={2}>{ex.name}</Text>
                   <Text style={styles.sampleMuscle} numberOfLines={1}>
