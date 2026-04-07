@@ -127,6 +127,24 @@ const SHORTS = '#1A1A2E';
 const SHOE   = '#37474F';
 const BAR    = '#1E293B';
 
+function Limb({ x1, y1, x2, y2, w, fill }) {
+  const dx  = x2 - x1;
+  const dy  = y2 - y1;
+  const len = Math.sqrt(dx * dx + dy * dy);
+  const deg = Math.atan2(dy, dx) * (180 / Math.PI) - 90;
+  return (
+    <rect
+      x={-(w / 2)}
+      y={0}
+      width={w}
+      height={len}
+      rx={w / 2}
+      fill={fill}
+      transform={`translate(${x1},${y1}) rotate(${deg.toFixed(2)})`}
+    />
+  );
+}
+
 function Head({ cx = 0, cy = 0, r = 13 }) {
   return (
     <>
@@ -147,17 +165,17 @@ function HumanFigure({ animKey, paused }) {
       <g transform="translate(100, 55)">
         <g style={{ animation: A('ea-jumpjack'), transformOrigin: '0 0' }}>
           <g style={{ animation: A('ea-arm-out'), transformOrigin: '-18px 28px' }}>
-            <line x1="-18" y1="28" x2="-52" y2="12" stroke={SKIN} strokeWidth="10" strokeLinecap="round" />
+            <Limb x1={-18} y1={28} x2={-52} y2={12} w={10} fill={SKIN} />
           </g>
           <g style={{ animation: A('ea-arm-out-r'), transformOrigin: '18px 28px' }}>
-            <line x1="18" y1="28" x2="52" y2="12" stroke={SKIN} strokeWidth="10" strokeLinecap="round" />
+            <Limb x1={18} y1={28} x2={52} y2={12} w={10} fill={SKIN} />
           </g>
           <g style={{ animation: A('ea-leg-out'), transformOrigin: '-12px 70px' }}>
-            <line x1="-12" y1="70" x2="-36" y2="115" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
+            <Limb x1={-12} y1={70} x2={-36} y2={115} w={11} fill={SKIN} />
             <ellipse cx="-37" cy="118" rx="11" ry="5" fill={SHOE} />
           </g>
           <g style={{ animation: A('ea-leg-out-r'), transformOrigin: '12px 70px' }}>
-            <line x1="12" y1="70" x2="36" y2="115" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
+            <Limb x1={12} y1={70} x2={36} y2={115} w={11} fill={SKIN} />
             <ellipse cx="37" cy="118" rx="11" ry="5" fill={SHOE} />
           </g>
           <rect x="-13" y="14" width="26" height="40" fill={SHIRT} rx="7" />
@@ -174,17 +192,17 @@ function HumanFigure({ animKey, paused }) {
       <g transform="translate(100, 60)">
         <g style={{ animation: A('ea-squat-body'), transformOrigin: '0 60px' }}>
           <g style={{ animation: A('ea-squat-knee'), transformOrigin: '-15px 60px' }}>
-            <line x1="-15" y1="60" x2="-24" y2="100" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-            <line x1="-24" y1="100" x2="-20" y2="120" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
+            <Limb x1={-15} y1={60} x2={-24} y2={100} w={11} fill={SKIN} />
+            <Limb x1={-24} y1={100} x2={-20} y2={120} w={9} fill={SKIN} />
             <ellipse cx="-20" cy="123" rx="11" ry="5" fill={SHOE} />
           </g>
           <g style={{ animation: A('ea-squat-knee-r'), transformOrigin: '15px 60px' }}>
-            <line x1="15" y1="60" x2="24" y2="100" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-            <line x1="24" y1="100" x2="20" y2="120" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
+            <Limb x1={15} y1={60} x2={24} y2={100} w={11} fill={SKIN} />
+            <Limb x1={24} y1={100} x2={20} y2={120} w={9} fill={SKIN} />
             <ellipse cx="20" cy="123" rx="11" ry="5" fill={SHOE} />
           </g>
-          <line x1="-20" y1="28" x2="-36" y2="52" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-          <line x1="20" y1="28" x2="36" y2="52" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
+          <Limb x1={-20} y1={28} x2={-36} y2={52} w={9} fill={SKIN} />
+          <Limb x1={20} y1={28} x2={36} y2={52} w={9} fill={SKIN} />
           <rect x="-13" y="14" width="26" height="40" fill={SHIRT} rx="7" />
           <rect x="-14" y="52" width="28" height="14" fill={SHORTS} rx="5" />
           <rect x="-5" y="12" width="10" height="6" fill={SKIN} rx="2" />
@@ -198,12 +216,12 @@ function HumanFigure({ animKey, paused }) {
     return (
       <g transform="translate(100, 130)">
         <g style={{ animation: A('ea-pushup-body'), transformOrigin: '0 0' }}>
-          <line x1="-30" y1="10" x2="-45" y2="32" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-          <line x1="30" y1="10" x2="45" y2="32" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-          <circle cx="-47" cy="34" r="5" fill={SKIN} />
-          <circle cx="47" cy="34" r="5" fill={SKIN} />
-          <line x1="-10" y1="28" x2="-18" y2="50" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-          <line x1="10" y1="28" x2="18" y2="50" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
+          <Limb x1={-30} y1={10} x2={-45} y2={32} w={9} fill={SKIN} />
+          <Limb x1={30} y1={10} x2={45} y2={32} w={9} fill={SKIN} />
+          <circle cx="-47" cy="34" r="6" fill={SKIN} />
+          <circle cx="47" cy="34" r="6" fill={SKIN} />
+          <Limb x1={-10} y1={28} x2={-18} y2={50} w={11} fill={SKIN} />
+          <Limb x1={10} y1={28} x2={18} y2={50} w={11} fill={SKIN} />
           <ellipse cx="-19" cy="53" rx="11" ry="5" fill={SHOE} />
           <ellipse cx="19" cy="53" rx="11" ry="5" fill={SHOE} />
           <rect x="-16" y="5" width="32" height="20" fill={SHIRT} rx="8" />
@@ -220,16 +238,16 @@ function HumanFigure({ animKey, paused }) {
     return (
       <g transform="translate(60, 120)">
         <g style={{ animation: A('ea-plank-breathe'), transformOrigin: '40px 0px' }}>
-          <line x1="-2" y1="0" x2="-12" y2="26" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-          <line x1="18" y1="0" x2="10" y2="26" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-          <line x1="68" y1="0" x2="68" y2="26" stroke={SKIN} strokeWidth="10" strokeLinecap="round" />
+          <Limb x1={-2} y1={0} x2={-12} y2={26} w={9} fill={SKIN} />
+          <Limb x1={18} y1={0} x2={10} y2={26} w={9} fill={SKIN} />
+          <Limb x1={68} y1={0} x2={68} y2={26} w={10} fill={SKIN} />
           <ellipse cx="-12" cy="29" rx="9" ry="4" fill={SKIN} />
           <ellipse cx="10" cy="29" rx="9" ry="4" fill={SKIN} />
           <ellipse cx="68" cy="29" rx="10" ry="5" fill={SHOE} />
           <rect x="5" y="-7" width="62" height="17" fill={SHIRT} rx="7" />
           <rect x="-8" y="-5" width="20" height="13" fill={SHORTS} rx="4" />
           <rect x="74" y="0" width="8" height="6" fill={SKIN} rx="2" />
-          <line x1="80" y1="2" x2="93" y2="10" stroke={SKIN} strokeWidth="8" strokeLinecap="round" />
+          <Limb x1={80} y1={2} x2={93} y2={10} w={8} fill={SKIN} />
           <Head cx={80} cy={-10} r={12} />
         </g>
       </g>
@@ -240,17 +258,17 @@ function HumanFigure({ animKey, paused }) {
     return (
       <g transform="translate(100, 100)">
         <g style={{ animation: A('ea-crunch-torso'), transformOrigin: '0 30px' }}>
-          <line x1="-20" y1="8" x2="-40" y2="25" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-          <line x1="20" y1="8" x2="40" y2="25" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
+          <Limb x1={-20} y1={8} x2={-40} y2={25} w={9} fill={SKIN} />
+          <Limb x1={20} y1={8} x2={40} y2={25} w={9} fill={SKIN} />
           <rect x="-12" y="-5" width="24" height="36" fill={SHIRT} rx="7" />
           <rect x="-5" y="-20" width="10" height="8" fill={SKIN} rx="2" />
           <Head cx={0} cy={-18} r={13} />
         </g>
         <g style={{ animation: A('ea-crunch-legs'), transformOrigin: '0 30px' }}>
-          <line x1="0" y1="30" x2="-18" y2="55" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-          <line x1="0" y1="30" x2="18" y2="55" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-          <line x1="-18" y1="55" x2="-38" y2="45" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-          <line x1="18" y1="55" x2="38" y2="45" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
+          <Limb x1={0} y1={30} x2={-18} y2={55} w={11} fill={SKIN} />
+          <Limb x1={0} y1={30} x2={18} y2={55} w={11} fill={SKIN} />
+          <Limb x1={-18} y1={55} x2={-38} y2={45} w={9} fill={SKIN} />
+          <Limb x1={18} y1={55} x2={38} y2={45} w={9} fill={SKIN} />
           <ellipse cx="-39" cy="44" rx="9" ry="5" fill={SHOE} />
           <ellipse cx="39" cy="44" rx="9" ry="5" fill={SHOE} />
           <rect x="-12" y="28" width="24" height="16" fill={SHORTS} rx="5" />
@@ -263,21 +281,21 @@ function HumanFigure({ animKey, paused }) {
     return (
       <g transform="translate(100, 50)">
         <g style={{ animation: A('ea-run-la'), transformOrigin: '-16px 30px' }}>
-          <line x1="-16" y1="30" x2="-38" y2="58" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-          <circle cx="-39" cy="61" r="5" fill={SKIN} />
+          <Limb x1={-16} y1={30} x2={-38} y2={58} w={9} fill={SKIN} />
+          <circle cx="-39" cy="61" r="6" fill={SKIN} />
         </g>
         <g style={{ animation: A('ea-run-ra'), transformOrigin: '16px 30px' }}>
-          <line x1="16" y1="30" x2="38" y2="58" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-          <circle cx="39" cy="61" r="5" fill={SKIN} />
+          <Limb x1={16} y1={30} x2={38} y2={58} w={9} fill={SKIN} />
+          <circle cx="39" cy="61" r="6" fill={SKIN} />
         </g>
         <g style={{ animation: A('ea-run-ll'), transformOrigin: '-12px 68px' }}>
-          <line x1="-12" y1="68" x2="-28" y2="105" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-          <line x1="-28" y1="105" x2="-20" y2="128" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
+          <Limb x1={-12} y1={68} x2={-28} y2={105} w={11} fill={SKIN} />
+          <Limb x1={-28} y1={105} x2={-20} y2={128} w={9} fill={SKIN} />
           <ellipse cx="-20" cy="131" rx="11" ry="5" fill={SHOE} />
         </g>
         <g style={{ animation: A('ea-run-rl'), transformOrigin: '12px 68px' }}>
-          <line x1="12" y1="68" x2="28" y2="105" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-          <line x1="28" y1="105" x2="20" y2="128" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
+          <Limb x1={12} y1={68} x2={28} y2={105} w={11} fill={SKIN} />
+          <Limb x1={28} y1={105} x2={20} y2={128} w={9} fill={SKIN} />
           <ellipse cx="20" cy="131" rx="11" ry="5" fill={SHOE} />
         </g>
         <rect x="-13" y="14" width="26" height="40" fill={SHIRT} rx="7" />
@@ -293,17 +311,17 @@ function HumanFigure({ animKey, paused }) {
       <g transform="translate(100, 50)">
         <g style={{ animation: A('ea-lunge-body'), transformOrigin: '0 60px' }}>
           <g style={{ animation: A('ea-lunge-front-leg'), transformOrigin: '-12px 65px' }}>
-            <line x1="-12" y1="65" x2="-38" y2="100" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-            <line x1="-38" y1="100" x2="-52" y2="120" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
+            <Limb x1={-12} y1={65} x2={-38} y2={100} w={11} fill={SKIN} />
+            <Limb x1={-38} y1={100} x2={-52} y2={120} w={9} fill={SKIN} />
             <ellipse cx="-53" cy="123" rx="11" ry="5" fill={SHOE} />
           </g>
           <g style={{ animation: A('ea-lunge-back-leg'), transformOrigin: '12px 65px' }}>
-            <line x1="12" y1="65" x2="35" y2="95" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-            <line x1="35" y1="95" x2="20" y2="120" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
+            <Limb x1={12} y1={65} x2={35} y2={95} w={11} fill={SKIN} />
+            <Limb x1={35} y1={95} x2={20} y2={120} w={9} fill={SKIN} />
             <ellipse cx="19" cy="123" rx="11" ry="5" fill={SHOE} />
           </g>
-          <line x1="-20" y1="28" x2="-38" y2="50" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-          <line x1="20" y1="28" x2="38" y2="50" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
+          <Limb x1={-20} y1={28} x2={-38} y2={50} w={9} fill={SKIN} />
+          <Limb x1={20} y1={28} x2={38} y2={50} w={9} fill={SKIN} />
           <rect x="-13" y="14" width="26" height="40" fill={SHIRT} rx="7" />
           <rect x="-14" y="52" width="28" height="16" fill={SHORTS} rx="5" />
           <rect x="-5" y="12" width="10" height="6" fill={SKIN} rx="2" />
@@ -317,19 +335,19 @@ function HumanFigure({ animKey, paused }) {
     return (
       <g transform="translate(100, 50)">
         <g style={{ animation: A('ea-dip-body'), transformOrigin: '0 0' }}>
-          <line x1="-15" y1="70" x2="-22" y2="112" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-          <line x1="15" y1="70" x2="22" y2="112" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
+          <Limb x1={-15} y1={70} x2={-22} y2={112} w={11} fill={SKIN} />
+          <Limb x1={15} y1={70} x2={22} y2={112} w={11} fill={SKIN} />
           <ellipse cx="-22" cy="115" rx="11" ry="5" fill={SHOE} />
           <ellipse cx="22" cy="115" rx="11" ry="5" fill={SHOE} />
           <g style={{ animation: A('ea-dip-arm'), transformOrigin: '-20px 30px' }}>
-            <line x1="-20" y1="30" x2="-44" y2="18" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-            <line x1="-44" y1="18" x2="-50" y2="50" stroke={SKIN} strokeWidth="8" strokeLinecap="round" />
-            <circle cx="-50" cy="52" r="5" fill={SKIN} />
+            <Limb x1={-20} y1={30} x2={-44} y2={18} w={9} fill={SKIN} />
+            <Limb x1={-44} y1={18} x2={-50} y2={50} w={8} fill={SKIN} />
+            <circle cx="-50" cy="52" r="6" fill={SKIN} />
           </g>
           <g style={{ animation: A('ea-dip-arm'), transformOrigin: '20px 30px' }}>
-            <line x1="20" y1="30" x2="44" y2="18" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-            <line x1="44" y1="18" x2="50" y2="50" stroke={SKIN} strokeWidth="8" strokeLinecap="round" />
-            <circle cx="50" cy="52" r="5" fill={SKIN} />
+            <Limb x1={20} y1={30} x2={44} y2={18} w={9} fill={SKIN} />
+            <Limb x1={44} y1={18} x2={50} y2={50} w={8} fill={SKIN} />
+            <circle cx="50" cy="52" r="6" fill={SKIN} />
           </g>
           <rect x="-13" y="14" width="26" height="40" fill={SHIRT} rx="7" />
           <rect x="-13" y="52" width="26" height="22" fill={SHORTS} rx="5" />
@@ -343,18 +361,18 @@ function HumanFigure({ animKey, paused }) {
   if (animKey === 'curl') {
     return (
       <g transform="translate(100, 55)">
-        <line x1="-15" y1="72" x2="-22" y2="115" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-        <line x1="15" y1="72" x2="22" y2="115" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
+        <Limb x1={-15} y1={72} x2={-22} y2={115} w={11} fill={SKIN} />
+        <Limb x1={15} y1={72} x2={22} y2={115} w={11} fill={SKIN} />
         <ellipse cx="-22" cy="118" rx="11" ry="5" fill={SHOE} />
         <ellipse cx="22" cy="118" rx="11" ry="5" fill={SHOE} />
-        <line x1="-18" y1="30" x2="-34" y2="52" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
+        <Limb x1={-18} y1={30} x2={-34} y2={52} w={9} fill={SKIN} />
         <g style={{ animation: A('ea-curl-forearm'), transformOrigin: '-34px 52px' }}>
-          <line x1="-34" y1="52" x2="-28" y2="78" stroke={SKIN} strokeWidth="8" strokeLinecap="round" />
+          <Limb x1={-34} y1={52} x2={-28} y2={78} w={8} fill={SKIN} />
           <circle cx="-27" cy="81" r="6" fill={SKIN} />
         </g>
-        <line x1="18" y1="30" x2="34" y2="52" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
+        <Limb x1={18} y1={30} x2={34} y2={52} w={9} fill={SKIN} />
         <g style={{ animation: A('ea-curl-forearm-r'), transformOrigin: '34px 52px' }}>
-          <line x1="34" y1="52" x2="28" y2="78" stroke={SKIN} strokeWidth="8" strokeLinecap="round" />
+          <Limb x1={34} y1={52} x2={28} y2={78} w={8} fill={SKIN} />
           <circle cx="27" cy="81" r="6" fill={SKIN} />
         </g>
         <rect x="-13" y="14" width="26" height="40" fill={SHIRT} rx="7" />
@@ -369,16 +387,16 @@ function HumanFigure({ animKey, paused }) {
     return (
       <g transform="translate(100, 60)">
         <g style={{ animation: A('ea-row-torso'), transformOrigin: '0 60px' }}>
-          <line x1="-18" y1="65" x2="-30" y2="108" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-          <line x1="18" y1="65" x2="30" y2="108" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
+          <Limb x1={-18} y1={65} x2={-30} y2={108} w={11} fill={SKIN} />
+          <Limb x1={18} y1={65} x2={30} y2={108} w={11} fill={SKIN} />
           <ellipse cx="-31" cy="111" rx="11" ry="5" fill={SHOE} />
           <ellipse cx="31" cy="111" rx="11" ry="5" fill={SHOE} />
           <g style={{ animation: A('ea-row-arm'), transformOrigin: '-18px 30px' }}>
-            <line x1="-18" y1="30" x2="-52" y2="30" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-            <circle cx="-54" cy="30" r="5" fill={SKIN} />
+            <Limb x1={-18} y1={30} x2={-52} y2={30} w={9} fill={SKIN} />
+            <circle cx="-54" cy="30" r="6" fill={SKIN} />
           </g>
-          <line x1="18" y1="30" x2="40" y2="48" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-          <circle cx="42" cy="50" r="5" fill={SKIN} />
+          <Limb x1={18} y1={30} x2={40} y2={48} w={9} fill={SKIN} />
+          <circle cx="42" cy="50" r="6" fill={SKIN} />
           <rect x="-13" y="13" width="26" height="38" fill={SHIRT} rx="7" />
           <rect x="-14" y="50" width="28" height="18" fill={SHORTS} rx="5" />
           <rect x="-5" y="11" width="10" height="6" fill={SKIN} rx="2" />
@@ -393,10 +411,10 @@ function HumanFigure({ animKey, paused }) {
       <g transform="translate(100, 40)">
         <rect x="-50" y="-4" width="100" height="8" fill={BAR} rx="4" />
         <g style={{ animation: A('ea-pullup-body'), transformOrigin: '0 15px' }}>
-          <line x1="-30" y1="0" x2="-22" y2="22" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-          <line x1="30" y1="0" x2="22" y2="22" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-          <line x1="-16" y1="95" x2="-26" y2="132" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-          <line x1="16" y1="95" x2="26" y2="132" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
+          <Limb x1={-30} y1={0} x2={-22} y2={22} w={9} fill={SKIN} />
+          <Limb x1={30} y1={0} x2={22} y2={22} w={9} fill={SKIN} />
+          <Limb x1={-16} y1={95} x2={-26} y2={132} w={11} fill={SKIN} />
+          <Limb x1={16} y1={95} x2={26} y2={132} w={11} fill={SKIN} />
           <ellipse cx="-27" cy="135" rx="11" ry="5" fill={SHOE} />
           <ellipse cx="27" cy="135" rx="11" ry="5" fill={SHOE} />
           <rect x="-13" y="38" width="26" height="40" fill={SHIRT} rx="7" />
@@ -413,19 +431,19 @@ function HumanFigure({ animKey, paused }) {
       <g transform="translate(100, 50)">
         <g style={{ animation: A('ea-jump-body'), transformOrigin: '0 0' }}>
           <g style={{ animation: A('ea-jump-legs'), transformOrigin: '-12px 70px' }}>
-            <line x1="-12" y1="70" x2="-24" y2="110" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-            <line x1="-24" y1="110" x2="-30" y2="130" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
+            <Limb x1={-12} y1={70} x2={-24} y2={110} w={11} fill={SKIN} />
+            <Limb x1={-24} y1={110} x2={-30} y2={130} w={9} fill={SKIN} />
             <ellipse cx="-31" cy="133" rx="11" ry="5" fill={SHOE} />
           </g>
           <g style={{ animation: A('ea-jump-legs'), transformOrigin: '12px 70px' }}>
-            <line x1="12" y1="70" x2="24" y2="110" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-            <line x1="24" y1="110" x2="30" y2="130" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
+            <Limb x1={12} y1={70} x2={24} y2={110} w={11} fill={SKIN} />
+            <Limb x1={24} y1={110} x2={30} y2={130} w={9} fill={SKIN} />
             <ellipse cx="31" cy="133" rx="11" ry="5" fill={SHOE} />
           </g>
-          <line x1="-20" y1="28" x2="-44" y2="48" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-          <line x1="20" y1="28" x2="44" y2="48" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-          <circle cx="-46" cy="50" r="5" fill={SKIN} />
-          <circle cx="46" cy="50" r="5" fill={SKIN} />
+          <Limb x1={-20} y1={28} x2={-44} y2={48} w={9} fill={SKIN} />
+          <Limb x1={20} y1={28} x2={44} y2={48} w={9} fill={SKIN} />
+          <circle cx="-46" cy="50" r="6" fill={SKIN} />
+          <circle cx="46" cy="50" r="6" fill={SKIN} />
           <rect x="-13" y="14" width="26" height="40" fill={SHIRT} rx="7" />
           <rect x="-13" y="52" width="26" height="22" fill={SHORTS} rx="5" />
           <rect x="-5" y="12" width="10" height="6" fill={SKIN} rx="2" />
@@ -438,12 +456,12 @@ function HumanFigure({ animKey, paused }) {
   return (
     <g transform="translate(100, 50)">
       <g style={{ animation: A('ea-default-bob'), transformOrigin: '0 0' }}>
-        <line x1="-20" y1="28" x2="-40" y2="55" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-        <line x1="20" y1="28" x2="40" y2="55" stroke={SKIN} strokeWidth="9" strokeLinecap="round" />
-        <circle cx="-41" cy="57" r="5" fill={SKIN} />
-        <circle cx="41" cy="57" r="5" fill={SKIN} />
-        <line x1="-14" y1="72" x2="-20" y2="115" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
-        <line x1="14" y1="72" x2="20" y2="115" stroke={SKIN} strokeWidth="11" strokeLinecap="round" />
+        <Limb x1={-20} y1={28} x2={-40} y2={55} w={9} fill={SKIN} />
+        <Limb x1={20} y1={28} x2={40} y2={55} w={9} fill={SKIN} />
+        <circle cx="-41" cy="57" r="6" fill={SKIN} />
+        <circle cx="41" cy="57" r="6" fill={SKIN} />
+        <Limb x1={-14} y1={72} x2={-20} y2={115} w={11} fill={SKIN} />
+        <Limb x1={14} y1={72} x2={20} y2={115} w={11} fill={SKIN} />
         <ellipse cx="-21" cy="118" rx="11" ry="5" fill={SHOE} />
         <ellipse cx="21" cy="118" rx="11" ry="5" fill={SHOE} />
         <rect x="-13" y="14" width="26" height="40" fill={SHIRT} rx="7" />
