@@ -85,7 +85,7 @@ export default function ExploreScreen() {
       const found = EXERCISES.find(e => e.category === cat);
       if (found) picks.push(found);
     });
-    return picks.slice(0, 7);
+    return picks.slice(0, 6);
   }, []);
 
   return (
