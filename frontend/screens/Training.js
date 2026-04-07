@@ -547,6 +547,10 @@ export default function Training() {
   const [recommendation, setRecommendation] = useState(null);
   const [generatedWorkout, setGeneratedWorkout] = useState(null);
   const [mounted, setMounted] = useState(false);
+  const [liveExercises, setLiveExercises] = useState([]);
+  const [exLibCat, setExLibCat] = useState('all');
+  const [exLibDiff, setExLibDiff] = useState('all');
+  const [exLibExpanded, setExLibExpanded] = useState(false);
 
   const timerRef = useRef(null);
   const coachPhaseRef = useRef(null);
@@ -564,6 +568,7 @@ export default function Training() {
     }).catch(() => {
       setRecommendation(getRecommendation([]));
     });
+    fetch('/api/exercises').then(r => r.json()).then(data => setLiveExercises(Array.isArray(data) ? data : [])).catch(() => {});
     try {
       const saved = JSON.parse(localStorage.getItem('fitai_workout_progress'));
       if (saved && saved.exercises?.length > 0) setSavedProgress(saved);
@@ -1404,6 +1409,77 @@ export default function Training() {
                 ))}
               </div>
             )}
+
+            {/* ── Exercise Library ── */}
+            {liveExercises.length > 0 && (() => {
+              const EX_CATS = ['all','gym','freehand','calisthenics','cardio','yoga','martial_arts','rehab'];
+              const EX_DIFFS = ['all','beginner','intermediate','advanced'];
+              const DIFF_COLORS_LIB = { beginner:'#10B981', intermediate:'#F59E0B', advanced:'#EF4444' };
+              const CAT_ICONS_LIB = { gym:'🏋️', freehand:'🤸', calisthenics:'💪', cardio:'🏃', yoga:'🧘', martial_arts:'🥊', rehab:'🩹', all:'✦' };
+              const filteredLib = liveExercises.filter(ex =>
+                (exLibCat === 'all' || ex.domain === exLibCat) &&
+                (exLibDiff === 'all' || ex.difficulty === exLibDiff)
+              );
+              const visibleLib = exLibExpanded ? filteredLib : filteredLib.slice(0, 9);
+              return (
+                <div style={{ marginBottom: '32px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                    <div style={{ fontSize: '17px', fontWeight: 800, color: 'var(--text)' }}>Exercise Library 📚</div>
+                    <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{filteredLib.length} exercises</span>
+                  </div>
+                  {/* Category chips */}
+                  <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '10px', scrollbarWidth: 'none' }}>
+                    {EX_CATS.map(cat => (
+                      <button key={cat} onClick={() => { setExLibCat(cat); setExLibExpanded(false); }}
+                        style={{ flexShrink: 0, padding: '6px 14px', borderRadius: '99px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', background: exLibCat === cat ? '#2563EB' : 'var(--surface)', color: exLibCat === cat ? '#fff' : 'var(--text-secondary)', border: exLibCat === cat ? 'none' : '1px solid var(--border)', transition: 'all .15s' }}>
+                        {CAT_ICONS_LIB[cat]} {cat === 'all' ? 'All' : cat.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </button>
+                    ))}
+                  </div>
+                  {/* Difficulty pills */}
+                  <div style={{ display: 'flex', gap: '8px', paddingBottom: '14px' }}>
+                    {EX_DIFFS.map(d => (
+                      <button key={d} onClick={() => { setExLibDiff(d); setExLibExpanded(false); }}
+                        style={{ padding: '4px 12px', borderRadius: '99px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', border: `1.5px solid ${d === 'all' ? (exLibDiff === 'all' ? '#2563EB' : 'var(--border)') : DIFF_COLORS_LIB[d]}`, background: exLibDiff === d ? (d === 'all' ? '#2563EB18' : DIFF_COLORS_LIB[d] + '18') : 'transparent', color: exLibDiff === d ? (d === 'all' ? '#2563EB' : DIFF_COLORS_LIB[d]) : 'var(--text-tertiary)' }}>
+                        {d === 'all' ? 'All levels' : d.charAt(0).toUpperCase() + d.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                  {/* Grid */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: '12px' }}>
+                    {visibleLib.map((ex, i) => {
+                      const dc = DIFF_COLORS_LIB[ex.difficulty] || '#64748B';
+                      const catLabel = (ex.domain || '').replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                      return (
+                        <div key={ex.id || i} style={{ background: 'var(--surface)', borderRadius: '14px', padding: '14px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
+                            <div style={{ fontWeight: 700, fontSize: '14px', color: 'var(--text)', lineHeight: '1.3', flex: 1 }}>{ex.name}</div>
+                            <span style={{ fontSize: '10px', fontWeight: 700, padding: '3px 8px', borderRadius: '99px', background: `${dc}18`, color: dc, flexShrink: 0, marginTop: '2px' }}>
+                              {ex.difficulty.charAt(0).toUpperCase() + ex.difficulty.slice(1)}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{catLabel}</div>
+                          {ex.muscle_groups && ex.muscle_groups.length > 0 && (
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '2px' }}>
+                              {ex.muscle_groups.slice(0, 2).map((m, mi) => (
+                                <span key={mi} style={{ fontSize: '11px', background: 'var(--surface-2)', padding: '2px 7px', borderRadius: '6px', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}>{m}</span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {filteredLib.length > 9 && (
+                    <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                      <button onClick={() => setExLibExpanded(e => !e)} style={{ padding: '9px 28px', borderRadius: '99px', border: '1.5px solid var(--border)', background: 'var(--surface)', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}>
+                        {exLibExpanded ? 'Show less' : `Show all ${filteredLib.length} exercises`}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </>
         );
       })()}

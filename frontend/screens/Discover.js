@@ -377,6 +377,12 @@ export default function Discover() {
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [hoveredCard, setHoveredCard] = useState(null);
 
+  const [exLib, setExLib] = useState([]);
+  const [exLibLoading, setExLibLoading] = useState(false);
+  const [exLibCat, setExLibCat] = useState('all');
+  const [exLibDiff, setExLibDiff] = useState('all');
+  const [exLibExpanded, setExLibExpanded] = useState(false);
+
   const [phase, setPhase] = useState('countdown');
   const [countdown, setCountdown] = useState(5);
   const [exIdx, setExIdx] = useState(0);
@@ -396,6 +402,15 @@ export default function Discover() {
       clearNavTarget();
     }
   }, [navTarget]);
+
+  useEffect(() => {
+    setExLibLoading(true);
+    fetch('/api/exercises')
+      .then(r => r.json())
+      .then(data => setExLib(Array.isArray(data) ? data : []))
+      .catch(() => setExLib([]))
+      .finally(() => setExLibLoading(false));
+  }, []);
 
   const openDetail = useCallback((workout) => { setSelectedWorkout(workout); setView('detail'); }, []);
   const openById = useCallback((id) => { const w = WORKOUT_CATALOG.find(x => x.id === id); if (w) openDetail(w); }, [openDetail]);
@@ -702,6 +717,83 @@ export default function Discover() {
           {stretchRecovery.map(w => <HScrollCard key={w.id} workout={w} onOpen={openDetail} hovered={hoveredCard} setHovered={setHoveredCard} />)}
         </div>
       </Section>
+
+      {/* ── Exercise Library ── */}
+      {(() => {
+        const EX_CATS = ['all','gym','freehand','calisthenics','cardio','yoga','martial_arts','rehab'];
+        const EX_DIFFS = ['all','beginner','intermediate','advanced'];
+        const DIFF_COLORS = { beginner: '#10B981', intermediate: '#F59E0B', advanced: '#EF4444' };
+        const CAT_ICONS = { gym:'🏋️', freehand:'🤸', calisthenics:'💪', cardio:'🏃', yoga:'🧘', martial_arts:'🥊', rehab:'🩹', all:'✦' };
+        const filtered = exLib.filter(ex =>
+          (exLibCat === 'all' || ex.domain === exLibCat) &&
+          (exLibDiff === 'all' || ex.difficulty === exLibDiff)
+        );
+        const visible = exLibExpanded ? filtered : filtered.slice(0, 12);
+        return (
+          <Section label="Exercise Library 📚" pad={false}>
+            {/* Category filter */}
+            <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingLeft: 24, paddingRight: 24, paddingBottom: 10 }} className="hide-scroll">
+              {EX_CATS.map(cat => (
+                <button key={cat} onClick={() => { setExLibCat(cat); setExLibExpanded(false); }}
+                  style={{ flexShrink: 0, padding: '6px 14px', borderRadius: 99, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', background: exLibCat === cat ? 'var(--primary)' : 'var(--surface)', color: exLibCat === cat ? '#fff' : 'var(--text-secondary)', transition: 'all .15s' }}>
+                  {CAT_ICONS[cat]} {cat === 'all' ? 'All' : cat.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </button>
+              ))}
+            </div>
+            {/* Difficulty filter */}
+            <div style={{ display: 'flex', gap: 8, paddingLeft: 24, paddingRight: 24, paddingBottom: 14 }}>
+              {EX_DIFFS.map(d => (
+                <button key={d} onClick={() => { setExLibDiff(d); setExLibExpanded(false); }}
+                  style={{ padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: `1.5px solid ${d === 'all' ? (exLibDiff === 'all' ? 'var(--primary)' : 'var(--border)') : DIFF_COLORS[d]}`, background: exLibDiff === d ? (d === 'all' ? 'var(--primary)' : DIFF_COLORS[d] + '18') : 'transparent', color: exLibDiff === d ? (d === 'all' ? 'var(--primary)' : DIFF_COLORS[d]) : 'var(--text-tertiary)', transition: 'all .15s' }}>
+                  {d === 'all' ? 'All levels' : d.charAt(0).toUpperCase() + d.slice(1)}
+                </button>
+              ))}
+            </div>
+            {/* Grid */}
+            <div style={{ padding: '0 24px' }}>
+              {exLibLoading ? (
+                <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-tertiary)', fontSize: 14 }}>Loading exercises…</div>
+              ) : filtered.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-tertiary)', fontSize: 14 }}>No exercises found</div>
+              ) : (
+                <>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
+                    {visible.map((ex, i) => {
+                      const dc = DIFF_COLORS[ex.difficulty] || '#64748B';
+                      const cat = (ex.domain || '').replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                      return (
+                        <div key={ex.id || i} style={{ background: 'var(--surface)', borderRadius: 14, padding: '14px 14px 12px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 6, animation: 'fadeIn .25s ease' }}>
+                          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+                            <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text)', lineHeight: '1.3', flex: 1 }}>{ex.name}</div>
+                            <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 99, background: `${dc}18`, color: dc, flexShrink: 0, marginTop: 2 }}>
+                              {ex.difficulty.charAt(0).toUpperCase() + ex.difficulty.slice(1)}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>{cat}</div>
+                          {ex.muscle_groups && ex.muscle_groups.length > 0 && (
+                            <div style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 2 }}>
+                              {ex.muscle_groups.slice(0, 2).map((m, mi) => (
+                                <span key={mi} style={{ background: 'var(--surface-2)', padding: '2px 7px', borderRadius: 6, border: '1px solid var(--border)' }}>{m}</span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {filtered.length > 12 && (
+                    <div style={{ textAlign: 'center', marginTop: 18 }}>
+                      <button onClick={() => setExLibExpanded(e => !e)} style={{ padding: '9px 28px', borderRadius: 99, border: '1.5px solid var(--border)', background: 'var(--surface)', color: 'var(--text-secondary)', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                        {exLibExpanded ? `Show less` : `Show all ${filtered.length} exercises`}
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </Section>
+        );
+      })()}
 
       <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
     </div>
